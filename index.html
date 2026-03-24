@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soulie - Your Emotional Wellness Companion</title>
-
+  
   <!-- Modern, clean font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+  
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <!-- Navigation bar -->
   <nav class="navbar">
@@ -22,86 +20,183 @@
   </nav>
 
   <main class="container">
-    <!-- 1. Hero Section -->
-    <section class="hero fade-in">
-      <div class="hero-content">
-        <h1>Breathe.<br>Reflect.<br>Reset.</h1>
-        <p class="subtitle">Your private space to check in with yourself, clear emotional overload, and find calm in the
-          chaos.</p>
-      </div>
-    </section>
-
-    <!-- 2. Problem and Solution Section -->
-    <section class="about fade-in delay-1">
-      <div class="card about-card glass">
-        <h2>Why Soulie?</h2>
-        <p>As a student or young professional, the pressure to perform while managing personal life can lead to burnout,
-          stress, and loneliness.</p>
-        <p><strong>You don't have to carry it all alone.</strong></p>
-        <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive
-          simple, grounded support when you need it most.</p>
-      </div>
-    </section>
-
-    <!-- 3. Mood Check Section -->
-    <section class="mood-check fade-in delay-2">
-      <h2>How are you feeling right now?</h2>
-      <p class="section-desc">Select the emotion that best matches your current state.</p>
-
-      <div class="mood-grid">
-        <button class="mood-btn" data-mood="anxious">
-          <span class="emoji">😰</span>
-          Anxious
-        </button>
-        <button class="mood-btn" data-mood="overwhelmed">
-          <span class="emoji">😵‍💫</span>
-          Overwhelmed
-        </button>
-        <button class="mood-btn" data-mood="lonely">
-          <span class="emoji">🌧️</span>
-          Lonely
-        </button>
-        <button class="mood-btn" data-mood="burned_out">
-          <span class="emoji">🔋</span>
-          Burned Out
-        </button>
-        <button class="mood-btn" data-mood="calm">
-          <span class="emoji">🌱</span>
-          Okay / Calm
-        </button>
-      </div>
-    </section>
-
-    <!-- 4. Journal Input Section -->
-    <section class="journal-input fade-in delay-3">
-      <h2>Take a moment to reflect</h2>
-      <p class="section-desc">What's on your mind? Write as much or as little as you need. (Optional)</p>
-
-      <div class="textarea-wrapper">
-        <textarea id="journal-entry" placeholder="I'm feeling..."></textarea>
-      </div>
-
-      <button id="find-support-btn" class="btn-primary">Find Support</button>
-    </section>
-
-    <!-- 5. Support Card Section -->
-    <section id="support-section" class="support-section hidden">
-      <h2>Here for you</h2>
-      <div class="card support-card">
-        <div id="support-message" class="support-message">
-          <!-- The message will be populated by JavaScript based on carefully selected logic -->
+    
+    <!-- ==================== HOME VIEW ==================== -->
+    <div id="view-home" class="app-view active fade-in">
+      
+      <!-- 1. Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Breathe.<br>Reflect.<br>Reset.</h1>
+          <p class="subtitle">Your private digital tool to better understand and manage your emotions. No judgment, just gentle support.</p>
         </div>
-      </div>
-      <button id="reset-btn" class="btn-secondary">Check in again</button>
-    </section>
+      </section>
+
+      <!-- 2. Problem and Solution Section -->
+      <section class="about delay-1">
+        <div class="card about-card glass">
+          <h2>Why Soulie?</h2>
+          <p>As a student or young professional, the pressure to perform while managing personal life can lead to burnout, stress, and loneliness.</p>
+          <p><strong>You don't have to carry it all alone.</strong></p>
+          <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive simple, grounded support when you need it most.</p>
+        </div>
+      </section>
+
+      <!-- Dashboard / Feature Cards -->
+      <section class="home-features delay-2" style="margin-top: 40px;">
+        <h2 style="margin-bottom: 20px;">Your Tools</h2>
+        <div class="grid-2col">
+          <div class="card glass feature-card" onclick="switchView('view-companion')">
+            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">✨</span>
+            <h3 style="margin-bottom: 4px;">AI Companion</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Warm, private reflections.</p>
+          </div>
+          <div class="card glass feature-card" onclick="switchView('view-journal')">
+            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">📝</span>
+            <h3 style="margin-bottom: 4px;">Journaling</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Free write or guided prompts.</p>
+          </div>
+          <div class="card glass feature-card" onclick="switchView('view-sound')">
+            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🎵</span>
+            <h3 style="margin-bottom: 4px;">Sound Support</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Mood-responsive audio therapy.</p>
+          </div>
+          <div class="card glass feature-card" onclick="switchView('view-regulate')">
+            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🧘</span>
+            <h3 style="margin-bottom: 4px;">Regulation Tools</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Grounding exercises.</p>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+
+    <!-- ==================== COMPANION VIEW ==================== -->
+    <div id="view-companion" class="app-view hidden fade-in">
+      
+      <section class="chat-section" style="margin-top: 20px;">
+        <h2>Soulie Chat</h2>
+        <p class="section-desc">Your private, judgment-free space.</p>
+        
+        <div class="chat-container">
+          <div class="chat-history" id="chat-history">
+            <!-- Initial Soulie Message -->
+            <div class="chat-bubble soulie-message">
+              <div class="message-avatar">✨</div>
+              <div class="message-text">Hi Emma. I'm here for you. How are you returning to yourself today?</div>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <div class="quick-replies" id="quick-replies" style="margin-bottom: 12px;">
+              <button class="chat-reply-btn" data-mood="overwhelmed">I feel overwhelmed</button>
+              <button class="chat-reply-btn" data-mood="lonely">I feel lonely</button>
+              <button class="chat-reply-btn" data-mood="calm">Help me reflect</button>
+              <button class="chat-reply-btn" data-mood="anxious">Help me calm down</button>
+              <button class="chat-reply-btn" data-mood="burned_out">I'm so exhausted</button>
+            </div>
+            <div class="chat-input-box">
+              <input type="text" id="chat-input-field" placeholder="Type how you're feeling..." />
+              <button id="chat-send-btn" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; margin-top: 0;">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+
+    <!-- ==================== JOURNAL VIEW ==================== -->
+    <div id="view-journal" class="app-view hidden fade-in">
+      
+      <!-- 4. Journal Input Section -->
+      <section class="journal-input" style="margin-top: 20px;">
+        <h2>Take a moment to reflect</h2>
+        <p class="section-desc">What's on your mind? Write as much or as little as you need. (Optional)</p>
+        
+        <div class="journal-tabs">
+          <button class="tab-btn active" data-tab="free-write">Free Write</button>
+          <button class="tab-btn" data-tab="guided-prompt">Guided Prompt</button>
+          <button class="tab-btn" data-tab="daily-checkin">Daily Check-In</button>
+        </div>
+
+        <div class="textarea-wrapper">
+          <p id="journal-prompt-text" class="journal-prompt hidden"></p>
+          <textarea id="journal-entry" placeholder="I'm feeling..."></textarea>
+        </div>
+
+        <button id="find-support-btn" class="btn-primary">Find Support</button>
+      </section>
+
+      <!-- 5. Support Card Section -->
+      <section id="support-section" class="support-section hidden" style="margin-top: 40px;">
+        <h2>Here for you</h2>
+        <div class="card support-card">
+          <div id="support-message" class="support-message">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+        <button id="reset-btn" class="btn-secondary">Check in again</button>
+      </section>
+
+    </div>
+
+    <!-- ==================== SOUND VIEW ==================== -->
+    <div id="view-sound" class="app-view hidden fade-in">
+      
+      <!-- Sound Support Section -->
+      <section id="sound-support" class="sound-support" style="margin-top: 20px;">
+        <h2>Sound Support</h2>
+        <p class="section-desc">Supportive sounds and music recommended for your current mood.</p>
+        
+        <div id="sound-cards-container" class="sound-grid">
+          <!-- Cards populated by JavaScript -->
+        </div>
+      </section>
+      
+    </div>
+
+    <!-- ==================== REGULATE VIEW ==================== -->
+    <div id="view-regulate" class="app-view hidden fade-in">
+      
+      <!-- 7. Regulate Your Body Section -->
+      <section id="regulate" class="regulation-tools" style="margin-top: 20px;">
+        <h2>Regulate Your Body</h2>
+        <p class="section-desc">Small body-based exercises to help you feel grounded and supported.</p>
+        
+        <div id="regulation-cards-container" class="grid-2col">
+          <!-- Cards populated by JavaScript -->
+        </div>
+      </section>
+      
+    </div>
+
   </main>
 
-  <footer class="footer">
-    <p>Take your time. We're always here.</p>
-  </footer>
+  <!-- App Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('view-home')">
+      <span class="emoji">🏠</span>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" onclick="switchView('view-companion')">
+      <span class="emoji">✨</span>
+      <span class="nav-label">Companion</span>
+    </button>
+    <button class="nav-item" onclick="switchView('view-journal')">
+      <span class="emoji">📝</span>
+      <span class="nav-label">Journal</span>
+    </button>
+    <button class="nav-item" onclick="switchView('view-sound')">
+      <span class="emoji">🎵</span>
+      <span class="nav-label">Sound</span>
+    </button>
+    <button class="nav-item" onclick="switchView('view-regulate')">
+      <span class="emoji">🧘</span>
+      <span class="nav-label">Regulate</span>
+    </button>
+  </nav>
 
   <!-- JavaScript file -->
   <script src="script.js"></script>
 </body>
-
 </html>
