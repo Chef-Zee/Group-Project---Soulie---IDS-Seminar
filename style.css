@@ -134,6 +134,7 @@ section {
   margin-bottom: 20px;
   background: linear-gradient(135deg, var(--primary-hover), var(--text-dark));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -189,6 +190,89 @@ section {
   color: #fff;
   border-color: var(--primary-color);
   box-shadow: 0 8px 20px rgba(163, 184, 163, 0.4);
+}
+
+/* Talk to Soulie */
+.talk-to-soulie h2 {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-sm {
+  padding: 8px 20px;
+  background: var(--text-dark);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+  background: #1f2523;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-dark);
+  border: 1px solid #ddd;
+}
+
+.btn-outline:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+/* Journal Tabs */
+.journal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 6px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.tab-btn.active {
+  background: #fff;
+  color: var(--text-dark);
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.journal-prompt {
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  padding: 0 8px;
 }
 
 /* 4. Journal Input */

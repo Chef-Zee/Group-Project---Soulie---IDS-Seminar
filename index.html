@@ -72,12 +72,36 @@
       </div>
     </section>
 
+    <!-- Talk to Soulie (AI Companion) Section -->
+    <section id="talk-to-soulie" class="talk-to-soulie hidden fade-in delay-2">
+      <h2>Talk to Soulie</h2>
+      <div class="card support-card glass">
+        <div id="talk-to-soulie-message" class="support-message">
+          <!-- Populated by JavaScript -->
+        </div>
+        <p id="talk-to-soulie-suggestion" class="section-desc" style="margin-top: 10px; margin-bottom: 20px;">
+          <!-- Populated by JavaScript -->
+        </p>
+        <div class="action-buttons">
+          <button class="btn-sm" onclick="document.querySelector('.journal-input').scrollIntoView({behavior: 'smooth'})">Reflect</button>
+          <button class="btn-sm btn-outline" id="reset-talk-btn">Reset</button>
+        </div>
+      </div>
+    </section>
+
     <!-- 4. Journal Input Section -->
     <section class="journal-input fade-in delay-3">
       <h2>Take a moment to reflect</h2>
       <p class="section-desc">What's on your mind? Write as much or as little as you need. (Optional)</p>
+      
+      <div class="journal-tabs">
+        <button class="tab-btn active" data-tab="free-write">Free Write</button>
+        <button class="tab-btn" data-tab="guided-prompt">Guided Prompt</button>
+        <button class="tab-btn" data-tab="daily-checkin">Daily Check-In</button>
+      </div>
 
       <div class="textarea-wrapper">
+        <p id="journal-prompt-text" class="journal-prompt hidden"></p>
         <textarea id="journal-entry" placeholder="I'm feeling..."></textarea>
       </div>
 

@@ -14,6 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const defaultMessage = "Thank you for checking in. Whatever you're going through, taking time to pause and reflect is a beautiful first step towards feeling better.";
 
+    const talkSuggestions = {
+        anxious: "Let's start with one small step toward calm. Box breathing can help.",
+        overwhelmed: "You may not need to solve everything today. Focus on only the very next thing.",
+        lonely: "We're here with you. Consider reaching out to one trusted person today.",
+        burned_out: "It's time to rest. Give yourself the grace to put down the heavy things for a bit.",
+        calm: "That's wonderful to hear. Keep noticing what feels peaceful right now."
+    };
+
+    const guidedPrompts = {
+        anxious: "What feels heaviest right now?",
+        overwhelmed: "What is one thing you can let go of today?",
+        lonely: "What is one way you can show yourself kindness today?",
+        burned_out: "What do you need most right now?",
+        calm: "What helped you feel safe, calm, or supported today?",
+        default: "Write about whatever is on your mind."
+    };
+
+    const dailyQuestions = "1. How did my body feel today?\n2. What is one good thing that happened?\n3. What do I need tomorrow?";
+
     // 3. Grab DOM Elements
     const moodButtons = document.querySelectorAll('.mood-btn');
     const submitBtn = document.getElementById('find-support-btn');
@@ -21,6 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const supportMessageEl = document.getElementById('support-message');
     const resetBtn = document.getElementById('reset-btn');
     const journalText = document.getElementById('journal-entry');
+    const talkToSoulieSection = document.getElementById('talk-to-soulie');
+    const talkToSoulieMessage = document.getElementById('talk-to-soulie-message');
+    const talkToSoulieSuggestion = document.getElementById('talk-to-soulie-suggestion');
+    const resetTalkBtn = document.getElementById('reset-talk-btn');
+
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const journalPromptText = document.getElementById('journal-prompt-text');
 
     // 4. Add click listeners to mood buttons
     moodButtons.forEach(button => {
@@ -33,6 +59,22 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Update state with the selected mood
             selectedMood = button.getAttribute('data-mood');
+            
+            // Update and show Talk to Soulie section
+            let responseMessage = supportMessages[selectedMood] || defaultMessage;
+            talkToSoulieMessage.innerHTML = `<p>${responseMessage}</p>`;
+            talkToSoulieSuggestion.innerText = talkSuggestions[selectedMood] || "";
+            talkToSoulieSection.classList.remove('hidden');
+            
+            // Update guided prompt if the tab is active
+            if (document.querySelector('.tab-btn[data-tab="guided-prompt"]').classList.contains('active')) {
+                journalPromptText.innerText = guidedPrompts[selectedMood] || guidedPrompts.default;
+            }
+            
+            // Scroll to it
+            setTimeout(() => {
+                talkToSoulieSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         });
     });
 
@@ -90,5 +132,49 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Scroll back to top smoothly
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Handle 'Reset' for Talk to Soulie
+    if (resetTalkBtn) {
+        resetTalkBtn.addEventListener('click', () => {
+            selectedMood = '';
+            moodButtons.forEach(btn => btn.classList.remove('selected'));
+            talkToSoulieSection.classList.add('hidden');
+            
+            // Reset journal tab if on guided mode
+            if (document.querySelector('.tab-btn[data-tab="guided-prompt"]').classList.contains('active')) {
+                journalPromptText.innerText = guidedPrompts.default;
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Handle Journal Tabs
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all
+            tabButtons.forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const tab = btn.getAttribute('data-tab');
+            
+            if (tab === 'free-write') {
+                journalPromptText.classList.add('hidden');
+                journalText.placeholder = "I'm feeling...";
+                if (journalText.value === dailyQuestions) journalText.value = '';
+            } else if (tab === 'guided-prompt') {
+                journalPromptText.classList.remove('hidden');
+                journalPromptText.innerText = guidedPrompts[selectedMood || 'default'];
+                journalText.placeholder = "Write your reflection here...";
+                if (journalText.value === dailyQuestions) journalText.value = '';
+            } else if (tab === 'daily-checkin') {
+                journalPromptText.classList.remove('hidden');
+                journalPromptText.innerText = "Daily Check-In Questions:";
+                if (!journalText.value.trim() || journalText.value === dailyQuestions) {
+                    journalText.value = dailyQuestions;
+                }
+            }
+        });
     });
 });
