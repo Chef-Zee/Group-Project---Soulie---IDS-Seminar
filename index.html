@@ -74,49 +74,31 @@
     <!-- ==================== COMPANION VIEW ==================== -->
     <div id="view-companion" class="app-view hidden fade-in">
       
-      <!-- 3. Mood Check Section -->
-      <section class="mood-check" style="margin-top: 20px;">
-        <h2>How are you feeling right now?</h2>
-        <p class="section-desc">Select the emotion that best matches your current state.</p>
+      <section class="chat-section" style="margin-top: 20px;">
+        <h2>Soulie Chat</h2>
+        <p class="section-desc">Your private, judgment-free space.</p>
         
-        <div class="mood-grid">
-          <button class="mood-btn" data-mood="anxious">
-            <span class="emoji">😰</span>
-            Anxious
-          </button>
-          <button class="mood-btn" data-mood="overwhelmed">
-            <span class="emoji">😵‍💫</span>
-            Overwhelmed
-          </button>
-          <button class="mood-btn" data-mood="lonely">
-            <span class="emoji">🌧️</span>
-            Lonely
-          </button>
-          <button class="mood-btn" data-mood="burned_out">
-            <span class="emoji">🔋</span>
-            Burned Out
-          </button>
-          <button class="mood-btn" data-mood="calm">
-            <span class="emoji">🌱</span>
-            Okay / Calm
-          </button>
-        </div>
-      </section>
-
-      <!-- Talk to Soulie (AI Companion) Section -->
-      <section id="talk-to-soulie" class="talk-to-soulie hidden fade-in delay-2" style="margin-top: 40px;">
-        <h2>Talk to Soulie</h2>
-        <div class="card support-card glass">
-          <div id="talk-to-soulie-message" class="support-message">
-            <!-- Populated by JavaScript -->
+        <div class="chat-container">
+          <div class="chat-history" id="chat-history">
+            <!-- Initial Soulie Message -->
+            <div class="chat-bubble soulie-message">
+              <div class="message-avatar">✨</div>
+              <div class="message-text">Hi Emma. I'm here for you. How are you returning to yourself today?</div>
+            </div>
           </div>
-          <p id="talk-to-soulie-suggestion" class="section-desc" style="margin-top: 10px; margin-bottom: 20px;">
-            <!-- Populated by JavaScript -->
-          </p>
-          <div class="action-buttons">
-            <button class="btn-sm" onclick="switchView('view-journal')">Reflect</button>
-            <button class="btn-sm" onclick="switchView('view-regulate')">Regulate</button>
-            <button class="btn-sm btn-outline" id="reset-talk-btn">Reset</button>
+          
+          <div class="chat-input-area">
+            <div class="quick-replies" id="quick-replies" style="margin-bottom: 12px;">
+              <button class="chat-reply-btn" data-mood="overwhelmed">I feel overwhelmed</button>
+              <button class="chat-reply-btn" data-mood="lonely">I feel lonely</button>
+              <button class="chat-reply-btn" data-mood="calm">Help me reflect</button>
+              <button class="chat-reply-btn" data-mood="anxious">Help me calm down</button>
+              <button class="chat-reply-btn" data-mood="burned_out">I'm so exhausted</button>
+            </div>
+            <div class="chat-input-box">
+              <input type="text" id="chat-input-field" placeholder="Type how you're feeling..." />
+              <button id="chat-send-btn" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; margin-top: 0;">Send</button>
+            </div>
           </div>
         </div>
       </section>
