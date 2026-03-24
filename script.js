@@ -1,4 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Global navigation function
+    window.switchView = (viewId) => {
+        // Hide all views
+        document.querySelectorAll('.app-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Remove active class from nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Show target view
+        document.getElementById(viewId).classList.add('active');
+        
+        // Set nav item active
+        const navItem = Array.from(document.querySelectorAll('.nav-item'))
+            .find(item => item.getAttribute('onclick').includes(viewId));
+        if (navItem) navItem.classList.add('active');
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
     // 1. State to keep track of the selected mood
     let selectedMood = '';
 

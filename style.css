@@ -567,3 +567,105 @@ textarea::placeholder {
     justify-content: center;
   }
 }
+
+/* ---- Application Layout ---- */
+body {
+  padding-bottom: 90px; /* Space for bottom nav */
+}
+
+/* App Views */
+.app-view {
+  display: none;
+  animation: fadeInOut 0.5s ease forwards;
+}
+
+.app-view.active {
+  display: block;
+}
+
+/* Feature Cards on Home */
+.feature-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.feature-card .emoji {
+  transition: transform 0.2s ease;
+}
+
+.feature-card:hover .emoji {
+  transform: scale(1.1);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 20px 0; /* extra padding for iPhone bottom safe area */
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.04);
+  z-index: 100;
+}
+
+.nav-item {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #a8b5b0; /* Unselected state color */
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.nav-item .emoji {
+  font-size: 1.4rem;
+  opacity: 0.6;
+  filter: grayscale(100%);
+  transition: all 0.2s ease;
+}
+
+.nav-item.active {
+  color: var(--text-dark);
+}
+
+.nav-item.active .emoji {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+.nav-item:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+@media(min-width: 600px) {
+  .bottom-nav {
+    max-width: 660px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px 20px 0 0;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-bottom: none;
+    padding: 12px 0;
+  }
+}
