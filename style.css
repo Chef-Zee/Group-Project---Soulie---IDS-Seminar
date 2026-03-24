@@ -1,0 +1,335 @@
+/* --- Base Styles & Variables --- */
+:root {
+  /* Soft, Calming Color Palette */
+  --bg-color: #faf9f6; /* Ivory / Off-white */
+  --text-dark: #333d39; /* Deep sage gray */
+  --text-light: #707b78; /* Soft sage gray */
+  --primary-color: #a3b8a3; /* Calming sage green */
+  --primary-hover: #8fa68f; 
+  --accent-blue: #c4d7e0; /* Soft sky blue */
+  --accent-purple: #dcd0e3; /* Soft lavender */
+  
+  /* UI Elements */
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  --border-radius: 20px;
+  
+  /* Typography */
+  --font-main: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Soft background gradients for a calming atmosphere */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60vw;
+  height: 60vh;
+  background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+  opacity: 0.3;
+  z-index: -1;
+  filter: blur(80px);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vh;
+  background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+  opacity: 0.3;
+  z-index: -1;
+  filter: blur(80px);
+}
+
+.container {
+  max-width: 660px; /* Narrower for mobile-first/blog style readablity */
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+}
+
+.subtitle {
+  color: var(--text-light);
+  font-size: 1.15rem;
+  max-width: 90%;
+}
+
+.section-desc {
+  color: var(--text-light);
+  font-size: 1.05rem;
+  margin-bottom: 20px;
+}
+
+/* Navbar */
+.navbar {
+  padding: 24px;
+  text-align: center;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  letter-spacing: -0.03em;
+}
+
+/* Generics / Layouts */
+section {
+  margin-top: 64px;
+}
+
+/* Cards (Glassmorphism effect) */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+/* 1. Hero */
+.hero {
+  margin-top: 20px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--primary-hover), var(--text-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero .subtitle {
+  margin: 0 auto;
+}
+
+/* 2. Problem/Solution */
+.about-card p {
+  margin-bottom: 14px;
+  font-size: 1.05rem;
+}
+
+.about-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* 3. Mood Options */
+.mood-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mood-btn {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.mood-btn .emoji {
+  font-size: 1.2rem;
+}
+
+.mood-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+  border-color: #d1d1d1;
+}
+
+.mood-btn.selected {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 20px rgba(163, 184, 163, 0.4);
+}
+
+/* 4. Journal Input */
+.textarea-wrapper {
+  background: #fff;
+  border-radius: var(--border-radius);
+  padding: 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 130px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--border-radius) - 4px);
+  padding: 18px;
+  font-size: 1.05rem;
+  font-family: inherit;
+  resize: vertical;
+  background: #fff;
+  color: var(--text-dark);
+  transition: all 0.3s ease;
+}
+
+textarea:focus {
+  outline: none;
+  background: #fafaf9;
+}
+
+textarea::placeholder {
+  color: #aab;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--text-dark);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 8px 20px rgba(51, 61, 57, 0.2);
+}
+
+.btn-primary:hover {
+  background: #1f2523;
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  color: var(--text-light);
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(0,0,0,0.03);
+  color: var(--text-dark);
+}
+
+/* 5. Support Section */
+.hidden {
+  display: none;
+  opacity: 0;
+}
+
+.support-section {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.support-section h2 {
+  text-align: center;
+}
+
+.support-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f4f7f6 100%);
+  border: 1px solid #e0ede6;
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.support-message {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #3f4d45;
+}
+
+.footer {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding-top: 60px;
+  padding-bottom: 20px;
+}
+
+/* Animations */
+.fade-in {
+  opacity: 0;
+  animation: fadeInOut 1s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+@keyframes fadeInOut {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+  
+  .card {
+    padding: 24px;
+  }
+  
+  .mood-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

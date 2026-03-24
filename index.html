@@ -1,320 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soullie — Your emotional wellness companion</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soulie - Your Emotional Wellness Companion</title>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      color: #111;
-      line-height: 1.5;
-    }
+  <!-- Modern, clean font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .hero h1 {
-      font-size: 42px;
-      margin-bottom: 12px;
-    }
-
-    .hero p {
-      font-size: 20px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    .hero button {
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 999px;
-      padding: 12px 24px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .mockup-box {
-      background: #eaeaea;
-      border-radius: 16px;
-      height: 320px;
-      margin: 30px auto 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      font-size: 18px;
-    }
-
-    .intro {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 50px;
-    }
-
-    .intro h2 {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-
-    .intro p {
-      color: #666;
-      font-size: 18px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 60px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      min-height: 170px;
-    }
-
-    .card h3 {
-      margin-top: 16px;
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-
-    .card p {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .icon {
-      width: 48px;
-      height: 48px;
-      background: #ededed;
-      border-radius: 12px;
-    }
-
-    .form-section {
-      background: white;
-      border-radius: 20px;
-      padding: 32px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      max-width: 760px;
-      margin: 0 auto 50px;
-    }
-
-    .form-section h2 {
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-
-    .form-section p {
-      color: #666;
-      margin-bottom: 24px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    input, textarea {
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 14px;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-      margin-bottom: 16px;
-    }
-
-    .submit-btn {
-      width: 100%;
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .summary {
-      display: none;
-      background: #f3f3f3;
-      border: 2px solid #d9d9d9;
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      margin-top: 24px;
-    }
-
-    .summary h3 {
-      margin-bottom: 8px;
-      font-size: 24px;
-    }
-
-    .summary p {
-      color: #666;
-    }
-
-    .benefits {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 50px;
-    }
-
-    .benefit-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      min-height: 180px;
-    }
-
-    .benefit-card h3 {
-      margin-top: 16px;
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-
-    .benefit-card p {
-      color: #666;
-      font-size: 14px;
-    }
-
-    @media (max-width: 900px) {
-      .cards,
-      .benefits {
-        grid-template-columns: 1fr;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .hero h1 {
-        font-size: 34px;
-      }
-
-      .hero p,
-      .intro p {
-        font-size: 17px;
-      }
-    }
-  </style>
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <div class="container">
+  <!-- Navigation bar -->
+  <nav class="navbar">
+    <div class="logo">Soulie</div>
+  </nav>
 
-    <section class="hero">
-      <h1>Soullie</h1>
-      <p>Your emotional wellness companion.</p>
-      <button>Get Started</button>
-    </section>
-
-    <div class="mockup-box">
-      App / platform preview
-    </div>
-
-    <section class="intro">
-      <h2>Soullie helps you reflect on emotions.</h2>
-      <p>
-        Receive gentle, real-time support. Feel seen, safe, and understood.
-      </p>
-    </section>
-
-    <section class="cards">
-      <div class="card">
-        <div class="icon"></div>
-        <h3>Feeling tense</h3>
-        <p>Check in with your emotions in a private and supportive space.</p>
-      </div>
-
-      <div class="card">
-        <div class="icon" style="border-radius: 999px;"></div>
-        <h3>On-edge now</h3>
-        <p>Access calm, adaptive support whenever you need it most.</p>
-      </div>
-
-      <div class="card">
-        <div class="icon" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border-radius: 0;"></div>
-        <h3>Want connection</h3>
-        <p>Reflect, reset, and build emotional awareness over time.</p>
+  <main class="container">
+    <!-- 1. Hero Section -->
+    <section class="hero fade-in">
+      <div class="hero-content">
+        <h1>Breathe.<br>Reflect.<br>Reset.</h1>
+        <p class="subtitle">Your private space to check in with yourself, clear emotional overload, and find calm in the
+          chaos.</p>
       </div>
     </section>
 
-    <section class="form-section">
-      <h2>How are you feeling today?</h2>
-      <p>Select a mood or describe your emotions below to begin.</p>
-
-      <div class="form-row">
-        <input type="text" placeholder="Your name" />
-        <input type="email" placeholder="Email address" />
-      </div>
-
-      <textarea placeholder="Write your thoughts here..."></textarea>
-
-      <button class="submit-btn" onclick="showSummary()">Reflect now</button>
-
-      <div class="summary" id="summaryBox">
-        <h3>AI insight: You're not alone.</h3>
-        <p>
-          Take a slow breath, name what you feel, and remember that emotional support can begin with one honest check-in.
-        </p>
+    <!-- 2. Problem and Solution Section -->
+    <section class="about fade-in delay-1">
+      <div class="card about-card glass">
+        <h2>Why Soulie?</h2>
+        <p>As a student or young professional, the pressure to perform while managing personal life can lead to burnout,
+          stress, and loneliness.</p>
+        <p><strong>You don't have to carry it all alone.</strong></p>
+        <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive
+          simple, grounded support when you need it most.</p>
       </div>
     </section>
 
-    <section class="benefits">
-      <div class="benefit-card">
-        <div class="icon"></div>
-        <h3>Adaptive AI journaling</h3>
-        <p>Soullie provides writing prompts based on your mood and patterns over time.</p>
-      </div>
+    <!-- 3. Mood Check Section -->
+    <section class="mood-check fade-in delay-2">
+      <h2>How are you feeling right now?</h2>
+      <p class="section-desc">Select the emotion that best matches your current state.</p>
 
-      <div class="benefit-card">
-        <div class="icon" style="border-radius: 999px;"></div>
-        <h3>Emotional insights</h3>
-        <p>Get reflective summaries that help you better understand your emotional state.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="icon" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border-radius: 0;"></div>
-        <h3>Mood-responsive support</h3>
-        <p>Receive calm recommendations that adjust to your emotional needs.</p>
+      <div class="mood-grid">
+        <button class="mood-btn" data-mood="anxious">
+          <span class="emoji">😰</span>
+          Anxious
+        </button>
+        <button class="mood-btn" data-mood="overwhelmed">
+          <span class="emoji">😵‍💫</span>
+          Overwhelmed
+        </button>
+        <button class="mood-btn" data-mood="lonely">
+          <span class="emoji">🌧️</span>
+          Lonely
+        </button>
+        <button class="mood-btn" data-mood="burned_out">
+          <span class="emoji">🔋</span>
+          Burned Out
+        </button>
+        <button class="mood-btn" data-mood="calm">
+          <span class="emoji">🌱</span>
+          Okay / Calm
+        </button>
       </div>
     </section>
 
-  </div>
+    <!-- 4. Journal Input Section -->
+    <section class="journal-input fade-in delay-3">
+      <h2>Take a moment to reflect</h2>
+      <p class="section-desc">What's on your mind? Write as much or as little as you need. (Optional)</p>
 
-  <script>
-    function showSummary() {
-      document.getElementById("summaryBox").style.display = "block";
-    }
-  </script>
+      <div class="textarea-wrapper">
+        <textarea id="journal-entry" placeholder="I'm feeling..."></textarea>
+      </div>
+
+      <button id="find-support-btn" class="btn-primary">Find Support</button>
+    </section>
+
+    <!-- 5. Support Card Section -->
+    <section id="support-section" class="support-section hidden">
+      <h2>Here for you</h2>
+      <div class="card support-card">
+        <div id="support-message" class="support-message">
+          <!-- The message will be populated by JavaScript based on carefully selected logic -->
+        </div>
+      </div>
+      <button id="reset-btn" class="btn-secondary">Check in again</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Take your time. We're always here.</p>
+  </footer>
+
+  <!-- JavaScript file -->
+  <script src="script.js"></script>
 </body>
+
 </html>
