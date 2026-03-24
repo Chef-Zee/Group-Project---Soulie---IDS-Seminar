@@ -33,6 +33,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dailyQuestions = "1. How did my body feel today?\n2. What is one good thing that happened?\n3. What do I need tomorrow?";
 
+    const soundRecommendations = {
+        anxious: [
+            { title: "Soft Piano Reset", desc: "Gentle keys to slow your racing thoughts.", tag: "8 min" },
+            { title: "Rain for Focus", desc: "Steady distant rain to block out noise.", tag: "15 min" },
+            { title: "Slow Ambient Breathing", desc: "A soft drone to pace your inhales and exhales.", tag: "5 min" }
+        ],
+        stressed: [
+            { title: "Soft Piano Reset", desc: "Gentle keys to slow your racing thoughts.", tag: "8 min" },
+            { title: "Rain for Focus", desc: "Steady distant rain to block out noise.", tag: "15 min" },
+            { title: "Slow Ambient Breathing", desc: "A soft drone to pace your inhales and exhales.", tag: "5 min" }
+        ],
+        lonely: [
+            { title: "Warm Acoustic Comfort", desc: "Relaxing guitar to keep you company.", tag: "12 min" },
+            { title: "Gentle Lo-fi Evening", desc: "Soft, comforting beats for quiet nights.", tag: "20 min" },
+            { title: "Safe Space Soundscape", desc: "Warm and embracing atmospheric tones.", tag: "10 min" }
+        ],
+        overwhelmed: [
+            { title: "Grounding Instrumental", desc: "Steady rhythms to anchor your mind.", tag: "7 min" },
+            { title: "White Noise Reset", desc: "Clean audio slate to wash away overwhelm.", tag: "10 min" },
+            { title: "One-Step Calm", desc: "Simplistic, repetitive melodies for focus.", tag: "5 min" }
+        ],
+        burned_out: [
+            { title: "Deep Rest Ambient", desc: "Low frequencies to promote physical relaxation.", tag: "15 min" },
+            { title: "Restore & Unwind", desc: "Effortless listening for complete detachment.", tag: "20 min" },
+            { title: "Quiet Nervous System Reset", desc: "Scientifically backed tones for recovery.", tag: "10 min" }
+        ],
+        calm: [
+            { title: "Light Focus Flow", desc: "Uplifting but unobtrusive background sounds.", tag: "30 min" },
+            { title: "Clear Mind Ambient", desc: "Airy, open electronic soundscapes.", tag: "15 min" },
+            { title: "Gentle Morning Balance", desc: "Bright and reassuring acoustic elements.", tag: "10 min" }
+        ]
+    };
+
     // 3. Grab DOM Elements
     const moodButtons = document.querySelectorAll('.mood-btn');
     const submitBtn = document.getElementById('find-support-btn');
@@ -47,6 +80,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tabButtons = document.querySelectorAll('.tab-btn');
     const journalPromptText = document.getElementById('journal-prompt-text');
+    const soundCardsContainer = document.getElementById('sound-cards-container');
+
+    const renderSoundCards = (mood) => {
+        const recommendations = soundRecommendations[mood] || soundRecommendations['calm'];
+        soundCardsContainer.innerHTML = recommendations.map(rec => `
+            <div class="sound-card">
+                <h3>${rec.title}</h3>
+                <p>${rec.desc}</p>
+                <div class="sound-meta">
+                    <span class="sound-tag">${rec.tag}</span>
+                    <button class="play-btn" aria-label="Play ${rec.title}">
+                        <div class="play-icon"></div>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    // Initial render
+    renderSoundCards('calm');
 
     // 4. Add click listeners to mood buttons
     moodButtons.forEach(button => {
@@ -70,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.querySelector('.tab-btn[data-tab="guided-prompt"]').classList.contains('active')) {
                 journalPromptText.innerText = guidedPrompts[selectedMood] || guidedPrompts.default;
             }
+            
+            // Update sound recommendations
+            renderSoundCards(selectedMood);
             
             // Scroll to it
             setTimeout(() => {
@@ -145,6 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.querySelector('.tab-btn[data-tab="guided-prompt"]').classList.contains('active')) {
                 journalPromptText.innerText = guidedPrompts.default;
             }
+            
+            // Reset sounds to default
+            renderSoundCards('calm');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
