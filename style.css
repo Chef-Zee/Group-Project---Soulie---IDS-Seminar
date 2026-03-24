@@ -361,6 +361,70 @@ section {
   margin-left: 2px;
 }
 
+/* Regulation Tools Section */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .grid-2col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.tool-desc {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.tool-toggle {
+  align-self: flex-start;
+  margin-top: 0;
+  width: auto;
+  padding: 10px 24px;
+}
+
+.tool-content {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+.tool-card.recommended {
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 4px 16px rgba(163, 184, 163, 0.2);
+}
+
+.recommended-badge {
+  display: inline-block;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+
 /* 4. Journal Input */
 .textarea-wrapper {
   background: #fff;

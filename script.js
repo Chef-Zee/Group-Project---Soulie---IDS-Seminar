@@ -101,6 +101,61 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial render
     renderSoundCards('calm');
 
+    const regulationToolsData = [
+        {
+            name: "Box Breathing",
+            purpose: "Reset your breath and slow your heart rate.",
+            instructions: "1. Inhale slowly for 4 seconds.<br>2. Hold your breath for 4 seconds.<br>3. Exhale completely for 4 seconds.<br>4. Hold empty for 4 seconds.<br>Repeat 4 times.",
+            bestFor: ['anxious', 'stressed', 'calm']
+        },
+        {
+            name: "5-4-3-2-1 Grounding",
+            purpose: "Find your surroundings and return to the present.",
+            instructions: "Take a deep breath. Look around and silently name:<br>- 5 things you can see<br>- 4 things you can physically feel<br>- 3 things you can hear<br>- 2 things you can smell<br>- 1 thing you can taste",
+            bestFor: ['overwhelmed', 'lonely', 'anxious']
+        },
+        {
+            name: "60-Second Body Scan",
+            purpose: "Check in with physical tension and release it.",
+            instructions: "Close your eyes. Start from your toes, slowly moving your awareness up your legs, torso, arms, and neck, all the way to the top of your head. Notice any tension, and breathe into it.",
+            bestFor: ['burned_out', 'stressed', 'calm']
+        },
+        {
+            name: "Shoulder Release",
+            purpose: "Drop the physical weight you're carrying.",
+            instructions: "Inhale deeply and lift your shoulders all the way up to your ears. Hold for a moment. Exhale forcefully through your mouth, letting your shoulders drop completely. Repeat 3 times.",
+            bestFor: ['overwhelmed', 'burned_out', 'lonely']
+        }
+    ];
+
+    const regulationContainer = document.getElementById('regulation-cards-container');
+
+    const renderRegulationTools = (mood) => {
+        const sortedTools = [...regulationToolsData].sort((a, b) => {
+            const aMatch = a.bestFor.includes(mood || 'calm') ? 1 : 0;
+            const bMatch = b.bestFor.includes(mood || 'calm') ? 1 : 0;
+            return bMatch - aMatch;
+        });
+
+        regulationContainer.innerHTML = sortedTools.map((tool, index) => {
+            const isRecommended = tool.bestFor.includes(mood || 'calm') && index === 0;
+            return `
+                <div class="card tool-card glass ${isRecommended ? 'recommended' : ''}">
+                    ${isRecommended ? '<span class="recommended-badge">Recommended</span>' : ''}
+                    <h3>${tool.name}</h3>
+                    <p class="tool-desc">${tool.purpose}</p>
+                    <button class="btn-secondary tool-toggle" onclick="this.nextElementSibling.classList.toggle('hidden');">Start</button>
+                    <div class="tool-content hidden">
+                        <p>${tool.instructions}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    // Initial render
+    renderRegulationTools('calm');
+
     // 4. Add click listeners to mood buttons
     moodButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -126,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Update sound recommendations
             renderSoundCards(selectedMood);
+            
+            // Update regulation tools
+            renderRegulationTools(selectedMood);
             
             // Scroll to it
             setTimeout(() => {
@@ -204,6 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Reset sounds to default
             renderSoundCards('calm');
+            
+            // Reset tools
+            renderRegulationTools('calm');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
