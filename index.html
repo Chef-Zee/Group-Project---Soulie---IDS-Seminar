@@ -36,9 +36,10 @@
           <div class="auth-form" style="display: flex; flex-direction: column; gap: 16px;">
             <input type="text" id="auth-username" class="form-input" placeholder="Username" />
             <input type="password" id="auth-password" class="form-input" placeholder="Password" />
+            <div id="auth-error" class="error-message" style="display: none;"></div>
             <button class="btn-primary" onclick="handleLogin()">Log In</button>
             <p style="text-align: center; margin: 10px 0; font-size: 0.9rem; color: var(--text-light);">or</p>
-            <button class="btn-secondary" style="margin-top: 0;" onclick="handleLogin()">Sign Up</button>
+            <button class="btn-secondary" style="margin-top: 0;" onclick="handleSignup()">Sign Up</button>
           </div>
         </div>
       </section>

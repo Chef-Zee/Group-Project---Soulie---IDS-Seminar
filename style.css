@@ -474,6 +474,14 @@ textarea::placeholder {
   border-color: var(--primary-color);
 }
 
+.error-message {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: -8px;
+  margin-bottom: 0px;
+}
+
 /* Buttons */
 .btn-primary {
   width: 100%;

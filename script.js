@@ -24,27 +24,80 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
 
-    // Global handleLogin function for auth UI
-    window.handleLogin = () => {
-        const usernameInput = document.getElementById('auth-username').value.trim();
-        if (!usernameInput) {
-            alert("Please enter a username to continue.");
-            return;
-        }
+    // Auth helper functions
+    const getSavedUsers = () => {
+        const users = localStorage.getItem('soulie_users');
+        return users ? JSON.parse(users) : {};
+    };
 
-        // Simple local storage demo
-        localStorage.setItem('soulie_username', usernameInput);
+    const showError = (msg) => {
+        const errorEl = document.getElementById('auth-error');
+        if (errorEl) {
+            errorEl.innerText = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+    };
+
+    const hideError = () => {
+        const errorEl = document.getElementById('auth-error');
+        if (errorEl) errorEl.style.display = 'none';
+    };
+
+    const loginUser = (username) => {
+        localStorage.setItem('soulie_currentUser', username);
         
-        // Update UI
         const homeGreeting = document.getElementById('home-greeting');
         const companionGreeting = document.getElementById('companion-greeting');
         
-        if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${usernameInput}.<br>Breathe.<br>Reflect.<br>Reset.`;
-        if (companionGreeting) companionGreeting.innerText = `Hi ${usernameInput}. I'm here for you. How are you returning to yourself today?`;
+        if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${username}.<br>Breathe.<br>Reflect.<br>Reset.`;
+        if (companionGreeting) companionGreeting.innerText = `Hi ${username}. I'm here for you. How are you returning to yourself today?`;
         
-        // Show nav and switch to home
-        document.getElementById('app-nav').style.display = 'flex';
+        const appNav = document.getElementById('app-nav');
+        if (appNav) appNav.style.display = 'flex';
         switchView('view-home');
+    };
+
+    window.handleSignup = () => {
+        hideError();
+        const usernameInput = document.getElementById('auth-username').value.trim();
+        const passwordInput = document.getElementById('auth-password').value;
+
+        if (!usernameInput || !passwordInput) {
+            showError("Please enter both username and password.");
+            return;
+        }
+
+        const users = getSavedUsers();
+        if (users[usernameInput]) {
+            showError("Username already exists. Please log in.");
+            return;
+        }
+
+        users[usernameInput] = passwordInput;
+        localStorage.setItem('soulie_users', JSON.stringify(users));
+        
+        loginUser(usernameInput);
+    };
+
+    window.handleLogin = () => {
+        hideError();
+        const usernameInput = document.getElementById('auth-username').value.trim();
+        const passwordInput = document.getElementById('auth-password').value;
+
+        if (!usernameInput || !passwordInput) {
+            showError("Please enter both username and password.");
+            return;
+        }
+
+        const users = getSavedUsers();
+        if (!users[usernameInput] || users[usernameInput] !== passwordInput) {
+            showError("Invalid username or password.");
+            return;
+        }
+
+        loginUser(usernameInput);
     };
 
     // 1. State to keep track of the selected mood
@@ -342,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialize Auth state on load
-    const savedUser = localStorage.getItem('soulie_username');
+    const savedUser = localStorage.getItem('soulie_currentUser');
     if (savedUser) {
         const homeGreeting = document.getElementById('home-greeting');
         const companionGreeting = document.getElementById('companion-greeting');
