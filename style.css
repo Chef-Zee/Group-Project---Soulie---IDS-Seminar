@@ -95,7 +95,30 @@ h2 {
 /* Navbar */
 .navbar {
   padding: 24px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logout-btn {
+  position: absolute;
+  right: 24px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-dark);
+  border-color: #bbb;
 }
 
 .logo {

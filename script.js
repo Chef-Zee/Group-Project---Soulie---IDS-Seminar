@@ -56,7 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const appNav = document.getElementById('app-nav');
         if (appNav) appNav.style.display = 'flex';
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) logoutBtn.style.display = 'block';
+
         switchView('view-home');
+    };
+
+    window.handleLogout = () => {
+        localStorage.removeItem('soulie_currentUser');
+
+        const appNav = document.getElementById('app-nav');
+        if (appNav) appNav.style.display = 'none';
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) logoutBtn.style.display = 'none';
+
+        // Clear auth inputs
+        const usernameInput = document.getElementById('auth-username');
+        const passwordInput = document.getElementById('auth-password');
+        if (usernameInput) usernameInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+
+        switchView('view-auth');
     };
 
     window.handleSignup = () => {
@@ -466,10 +488,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const homeGreeting = document.getElementById('home-greeting');
         const companionGreeting = document.getElementById('companion-greeting');
         const appNav = document.getElementById('app-nav');
+        const logoutBtn = document.getElementById('logout-btn');
         
         if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${savedUser}.<br>Breathe.<br>Reflect.<br>Reset.`;
         if (companionGreeting) companionGreeting.innerText = `Hi, ${savedUser}. I'm here with you.`;
         if (appNav) appNav.style.display = 'flex';
+        if (logoutBtn) logoutBtn.style.display = 'block';
         
         const authView = document.getElementById('view-auth');
         const homeView = document.getElementById('view-home');
