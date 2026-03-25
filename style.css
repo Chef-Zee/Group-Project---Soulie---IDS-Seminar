@@ -453,6 +453,39 @@ textarea:focus {
   background: #fafaf9;
 }
 
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+}
+.calendar-day:hover {
+  background: var(--primary-hover);
+  color: #fff;
+}
+.calendar-day.has-entry {
+  background: var(--accent-blue);
+  color: var(--text-dark);
+  font-weight: 500;
+}
+.calendar-day.active-day {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
+}
+
 textarea::placeholder {
   color: #aab;
 }

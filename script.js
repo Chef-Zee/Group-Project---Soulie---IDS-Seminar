@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const companionGreeting = document.getElementById('companion-greeting');
         
         if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${username}.<br>Breathe.<br>Reflect.<br>Reset.`;
-        if (companionGreeting) companionGreeting.innerText = `Hi ${username}. I'm here for you. How are you returning to yourself today?`;
+        if (companionGreeting) companionGreeting.innerText = `Hi, ${username}. I'm here with you.`;
         
         const appNav = document.getElementById('app-nav');
         if (appNav) appNav.style.display = 'flex';
@@ -199,14 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input-field');
     const chatSendBtn = document.getElementById('chat-send-btn');
     
-    const submitBtn = document.getElementById('find-support-btn');
-    const supportSection = document.getElementById('support-section');
-    const supportMessageEl = document.getElementById('support-message');
-    const resetBtn = document.getElementById('reset-btn');
     const journalText = document.getElementById('journal-entry');
-
     const tabButtons = document.querySelectorAll('.tab-btn');
-    const journalPromptText = document.getElementById('journal-prompt-text');
     const soundCardsContainer = document.getElementById('sound-cards-container');
     const regulationContainer = document.getElementById('regulation-cards-container');
 
@@ -329,43 +323,100 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Handle Journal 'Find Support' button click
-    if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
-            const hasText = journalText.value.trim().length > 0;
+    // New Journal / Diary Logic
+    const saveJournalBtn = document.getElementById('save-journal-btn');
+    const writeEntrySection = document.getElementById('write-entry-section');
+    const calendarSection = document.getElementById('calendar-section');
+    const calendarGrid = document.getElementById('calendar-grid');
 
-            if (!hasText) {
-                alert("Please take a moment to write something down first.");
+    const renderCalendar = () => {
+        if (!calendarGrid) return;
+        calendarGrid.innerHTML = '';
+        
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth(); // 0-11
+        
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        const currentUser = localStorage.getItem('soulie_currentUser');
+        const entriesStr = localStorage.getItem('soulie_entries');
+        const allEntries = entriesStr ? JSON.parse(entriesStr) : [];
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.innerText = i;
+            
+            const monthStr = String(month + 1).padStart(2, '0');
+            const dayStr = String(i).padStart(2, '0');
+            const dateKey = `${year}-${monthStr}-${dayStr}`;
+            
+            // Look for matching user AND date
+            const entry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
+            
+            if (entry) {
+                dayDiv.classList.add('has-entry');
+            }
+            
+            dayDiv.addEventListener('click', () => {
+                document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('active-day'));
+                dayDiv.classList.add('active-day');
+                
+                const viewEl = document.getElementById('calendar-entry-view');
+                document.getElementById('calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
+                
+                if (entry) {
+                    document.getElementById('calendar-entry-mood').innerText = `Mood: ${entry.mood}`;
+                    document.getElementById('calendar-entry-text').innerText = entry.text;
+                } else {
+                    document.getElementById('calendar-entry-mood').innerText = '';
+                    document.getElementById('calendar-entry-text').innerText = 'No entry for this day.';
+                }
+                viewEl.classList.remove('hidden');
+            });
+            
+            calendarGrid.appendChild(dayDiv);
+        }
+    };
+
+    if (saveJournalBtn) {
+        saveJournalBtn.addEventListener('click', () => {
+            const text = journalText.value.trim();
+            if (!text) {
+                alert("Please write something before saving.");
                 return;
             }
-
-            let responseMessage = "Thank you for sharing your thoughts. Writing down how you feel is a powerful way to process your emotions. Remember to take things one step at a time.";
             
-            supportMessageEl.innerHTML = `<p>${responseMessage}</p>`;
-            supportSection.classList.remove('hidden');
+            const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+            // ensure padded format is correct
+            const todayDate = new Date();
+            const yearStr = todayDate.getFullYear();
+            const monthStr = String(todayDate.getMonth() + 1).padStart(2, '0');
+            const dayStr = String(todayDate.getDate()).padStart(2, '0');
+            const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
             
-            journalText.disabled = true;
-            submitBtn.disabled = true;
+            const entriesStr = localStorage.getItem('soulie_entries');
+            let allEntries = entriesStr ? JSON.parse(entriesStr) : [];
             
-            setTimeout(() => {
-                supportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        });
-    }
-
-    // 6. Handle 'Check in again' reset button click in journal
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
+            // Override existing entry for the user today
+            allEntries = allEntries.filter(e => !(e.username === currentUser && e.date === todayStr));
+            
+            allEntries.push({
+                username: currentUser,
+                date: todayStr,
+                mood: selectedMood || 'calm',
+                text: text
+            });
+            
+            localStorage.setItem('soulie_entries', JSON.stringify(allEntries));
+            
             journalText.value = '';
-            journalText.disabled = false;
-            submitBtn.disabled = false;
-            
-            supportSection.classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            alert("Journal entry saved!");
+            renderCalendar();
         });
     }
 
-    // Handle Journal Tabs
     if (tabButtons) {
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -374,21 +425,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const tab = btn.getAttribute('data-tab');
                 
-                if (tab === 'free-write') {
-                    journalPromptText.classList.add('hidden');
-                    journalText.placeholder = "I'm feeling...";
-                    if (journalText.value === dailyQuestions) journalText.value = '';
-                } else if (tab === 'guided-prompt') {
-                    journalPromptText.classList.remove('hidden');
-                    journalPromptText.innerText = guidedPrompts[selectedMood || 'default'];
-                    journalText.placeholder = "Write your reflection here...";
-                    if (journalText.value === dailyQuestions) journalText.value = '';
-                } else if (tab === 'daily-checkin') {
-                    journalPromptText.classList.remove('hidden');
-                    journalPromptText.innerText = "Daily Check-In Questions:";
-                    if (!journalText.value.trim() || journalText.value === dailyQuestions) {
-                        journalText.value = dailyQuestions;
-                    }
+                if (tab === 'write-entry') {
+                    writeEntrySection.classList.remove('hidden');
+                    calendarSection.classList.add('hidden');
+                } else if (tab === 'calendar') {
+                    writeEntrySection.classList.add('hidden');
+                    calendarSection.classList.remove('hidden');
+                    renderCalendar();
                 }
             });
         });
@@ -402,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const appNav = document.getElementById('app-nav');
         
         if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${savedUser}.<br>Breathe.<br>Reflect.<br>Reset.`;
-        if (companionGreeting) companionGreeting.innerText = `Hi ${savedUser}. I'm here for you. How are you returning to yourself today?`;
+        if (companionGreeting) companionGreeting.innerText = `Hi, ${savedUser}. I'm here with you.`;
         if (appNav) appNav.style.display = 'flex';
         
         const authView = document.getElementById('view-auth');

@@ -107,7 +107,7 @@
             <!-- Initial Soulie Message -->
             <div class="chat-bubble soulie-message">
               <div class="message-avatar">✨</div>
-              <div class="message-text" id="companion-greeting">Hi Emma. I'm here for you. How are you returning to yourself today?</div>
+              <div class="message-text" id="companion-greeting">Hi. I'm here with you.</div>
             </div>
           </div>
           
@@ -132,34 +132,34 @@
     <!-- ==================== JOURNAL VIEW ==================== -->
     <div id="view-journal" class="app-view hidden fade-in">
       
-      <!-- 4. Journal Input Section -->
+      <!-- 4. Journal Section -->
       <section class="journal-input" style="margin-top: 20px;">
-        <h2>Take a moment to reflect</h2>
-        <p class="section-desc">What's on your mind? Write as much or as little as you need. (Optional)</p>
+        <h2>Diary</h2>
+        <p class="section-desc">Write your thoughts or revisit past entries.</p>
         
         <div class="journal-tabs">
-          <button class="tab-btn active" data-tab="free-write">Free Write</button>
-          <button class="tab-btn" data-tab="guided-prompt">Guided Prompt</button>
-          <button class="tab-btn" data-tab="daily-checkin">Daily Check-In</button>
+          <button class="tab-btn active" data-tab="write-entry">Write Entry</button>
+          <button class="tab-btn" data-tab="calendar">Calendar</button>
         </div>
 
-        <div class="textarea-wrapper">
-          <p id="journal-prompt-text" class="journal-prompt hidden"></p>
-          <textarea id="journal-entry" placeholder="I'm feeling..."></textarea>
+        <div id="write-entry-section">
+          <div class="textarea-wrapper">
+            <textarea id="journal-entry" placeholder="Dear Diary..."></textarea>
+          </div>
+          <button id="save-journal-btn" class="btn-primary" style="margin-top: 10px;">Save Entry</button>
         </div>
 
-        <button id="find-support-btn" class="btn-primary">Find Support</button>
-      </section>
-
-      <!-- 5. Support Card Section -->
-      <section id="support-section" class="support-section hidden" style="margin-top: 40px;">
-        <h2>Here for you</h2>
-        <div class="card support-card">
-          <div id="support-message" class="support-message">
-            <!-- Populated by JavaScript -->
+        <div id="calendar-section" class="hidden">
+          <div class="card glass" style="padding: 20px;">
+            <div id="calendar-grid" class="calendar-grid"></div>
+            
+            <div id="calendar-entry-view" class="hidden" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eaeaea;">
+               <h4 id="calendar-entry-date" style="margin-bottom: 4px;"></h4>
+               <p id="calendar-entry-mood" style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; text-transform: capitalize;"></p>
+               <p id="calendar-entry-text" style="line-height: 1.5; color: var(--text-dark);"></p>
+            </div>
           </div>
         </div>
-        <button id="reset-btn" class="btn-secondary">Check in again</button>
       </section>
 
     </div>
