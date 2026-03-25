@@ -24,6 +24,29 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
 
+    // Global handleLogin function for auth UI
+    window.handleLogin = () => {
+        const usernameInput = document.getElementById('auth-username').value.trim();
+        if (!usernameInput) {
+            alert("Please enter a username to continue.");
+            return;
+        }
+
+        // Simple local storage demo
+        localStorage.setItem('soulie_username', usernameInput);
+        
+        // Update UI
+        const homeGreeting = document.getElementById('home-greeting');
+        const companionGreeting = document.getElementById('companion-greeting');
+        
+        if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${usernameInput}.<br>Breathe.<br>Reflect.<br>Reset.`;
+        if (companionGreeting) companionGreeting.innerText = `Hi ${usernameInput}. I'm here for you. How are you returning to yourself today?`;
+        
+        // Show nav and switch to home
+        document.getElementById('app-nav').style.display = 'flex';
+        switchView('view-home');
+    };
+
     // 1. State to keep track of the selected mood
     let selectedMood = 'calm';
 
@@ -316,5 +339,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+
+    // Initialize Auth state on load
+    const savedUser = localStorage.getItem('soulie_username');
+    if (savedUser) {
+        const homeGreeting = document.getElementById('home-greeting');
+        const companionGreeting = document.getElementById('companion-greeting');
+        const appNav = document.getElementById('app-nav');
+        
+        if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${savedUser}.<br>Breathe.<br>Reflect.<br>Reset.`;
+        if (companionGreeting) companionGreeting.innerText = `Hi ${savedUser}. I'm here for you. How are you returning to yourself today?`;
+        if (appNav) appNav.style.display = 'flex';
+        
+        const authView = document.getElementById('view-auth');
+        const homeView = document.getElementById('view-home');
+        if (authView) authView.classList.remove('active');
+        if (homeView) homeView.classList.add('active');
     }
 });

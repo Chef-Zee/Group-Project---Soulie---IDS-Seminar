@@ -457,6 +457,23 @@ textarea::placeholder {
   color: #aab;
 }
 
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #eaeaea;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.2s ease;
+  color: var(--text-dark);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
 /* Buttons */
 .btn-primary {
   width: 100%;
