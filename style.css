@@ -95,7 +95,30 @@ h2 {
 /* Navbar */
 .navbar {
   padding: 24px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logout-btn {
+  position: absolute;
+  right: 24px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-dark);
+  border-color: #bbb;
 }
 
 .logo {
@@ -274,6 +297,72 @@ section {
   margin-bottom: 12px;
   padding: 0 8px;
 }
+
+/* Guided Prompt Card */
+/* Mood feedback after saving */
+.mood-feedback {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  background: rgba(163, 184, 163, 0.15);
+  border: 1px solid rgba(163, 184, 163, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  animation: fadeInOut 0.4s ease forwards;
+}
+
+.prompt-card {
+  background: linear-gradient(135deg, rgba(196, 215, 224, 0.35) 0%, rgba(220, 208, 227, 0.35) 100%);
+  border: 1px solid rgba(196, 215, 224, 0.5);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.prompt-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-light);
+}
+
+.prompt-refresh-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(163, 184, 163, 0.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-refresh-btn:hover {
+  background: #fff;
+  border-color: var(--primary-color);
+  color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.prompt-text {
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  font-style: italic;
+  line-height: 1.5;
+  margin: 0;
+}
+
 
 /* Sound Support Section */
 .sound-grid {
@@ -464,10 +553,12 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 3px;
   background: var(--bg-color);
   border-radius: 50%;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-dark);
   transition: all 0.2s ease;
 }
@@ -476,8 +567,6 @@ textarea:focus {
   color: #fff;
 }
 .calendar-day.has-entry {
-  background: var(--accent-blue);
-  color: var(--text-dark);
   font-weight: 500;
 }
 .calendar-day.active-day {
@@ -485,6 +574,21 @@ textarea:focus {
   color: #fff;
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
 }
+
+/* Mood dot indicator */
+.mood-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mood-dot--calm       { background: #8fc98f; }   /* soft green */
+.mood-dot--stressed   { background: #e8c46a; }   /* warm yellow */
+.mood-dot--lonely     { background: #7ab3d4; }   /* soft blue */
+.mood-dot--overwhelmed{ background: #b39dcc; }   /* muted purple */
+.mood-dot--burned_out { background: #7a5e99; }   /* dark muted purple */
+.mood-dot--angry      { background: #e07070; }   /* soft red */
+
 
 textarea::placeholder {
   color: #aab;

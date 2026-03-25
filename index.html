@@ -17,6 +17,7 @@
   <!-- Navigation bar -->
   <nav class="navbar">
     <div class="logo">Soulie</div>
+    <button id="logout-btn" class="logout-btn" style="display: none;" onclick="handleLogout()">Log out</button>
   </nav>
 
   <main class="container">
@@ -143,10 +144,20 @@
         </div>
 
         <div id="write-entry-section">
+          <!-- Guided Reflection Prompt -->
+          <div class="prompt-card">
+            <div class="prompt-header">
+              <span class="prompt-label">✨ Reflection Prompt</span>
+              <button id="new-prompt-btn" class="prompt-refresh-btn" aria-label="Show a new prompt">New Prompt</button>
+            </div>
+            <p id="guided-prompt-text" class="prompt-text">Loading your prompt...</p>
+          </div>
+
           <div class="textarea-wrapper">
             <textarea id="journal-entry" placeholder="Dear Diary..."></textarea>
           </div>
           <button id="save-journal-btn" class="btn-primary" style="margin-top: 10px;">Save Entry</button>
+          <p id="mood-feedback" class="mood-feedback" style="display: none;"></p>
         </div>
 
         <div id="calendar-section" class="hidden">
