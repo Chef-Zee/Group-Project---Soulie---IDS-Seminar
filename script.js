@@ -160,6 +160,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lastPromptIndex = -1;
 
+    // Rule-based mood detection from journal text
+    const detectMood = (text) => {
+        const t = text.toLowerCase();
+        if (/overwhelm|too much|can't handle|can't cope|too many|everything at once/.test(t)) return 'overwhelmed';
+        if (/lonely|alone|isolated|no one|nobody|by myself/.test(t)) return 'lonely';
+        if (/burned out|burnt out|drained|exhausted|tired|no energy|depleted/.test(t)) return 'burned_out';
+        if (/stress|anxious|anxiety|worried|worry|pressure|panic|nervous/.test(t)) return 'stressed';
+        if (/angry|anger|mad|frustrated|frustrat|annoyed|irritated|upset|furious/.test(t)) return 'angry';
+        if (/calm|peaceful|okay|good|grateful|happy|content|relaxed|fine/.test(t)) return 'calm';
+        return 'calm'; // default
+    };
+
+    // Human-readable mood labels
+    const moodLabels = {
+        overwhelmed: 'Overwhelmed',
+        lonely: 'Lonely',
+        burned_out: 'Burned Out',
+        stressed: 'Stressed',
+        angry: 'Angry',
+        calm: 'Calm'
+    };
+
+    const moodEmojis = {
+        overwhelmed: '🌊',
+        lonely: '🌙',
+        burned_out: '🕯️',
+        stressed: '💨',
+        angry: '🔥',
+        calm: '🌿'
+    };
+
     const showRandomPrompt = () => {
         const promptEl = document.getElementById('guided-prompt-text');
         if (!promptEl) return;
@@ -402,6 +433,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (entry) {
                 dayDiv.classList.add('has-entry');
+                // Replace plain text with number + colored dot
+                dayDiv.innerText = '';
+                const numSpan = document.createElement('span');
+                numSpan.textContent = i;
+                const dot = document.createElement('div');
+                dot.className = `mood-dot mood-dot--${entry.mood}`;
+                dayDiv.appendChild(numSpan);
+                dayDiv.appendChild(dot);
             }
             
             dayDiv.addEventListener('click', () => {
@@ -412,7 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
                 
                 if (entry) {
-                    document.getElementById('calendar-entry-mood').innerText = `Mood: ${entry.mood}`;
+                    const emoji = moodEmojis[entry.mood] || '✨';
+                    const label = moodLabels[entry.mood] || entry.mood;
+                    document.getElementById('calendar-entry-mood').innerText = `${emoji} Mood: ${label}`;
                     document.getElementById('calendar-entry-text').innerText = entry.text;
                 } else {
                     document.getElementById('calendar-entry-mood').innerText = '';
@@ -434,12 +475,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
-            // ensure padded format is correct
             const todayDate = new Date();
             const yearStr = todayDate.getFullYear();
             const monthStr = String(todayDate.getMonth() + 1).padStart(2, '0');
             const dayStr = String(todayDate.getDate()).padStart(2, '0');
             const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
+
+            // Auto-detect mood from the written text
+            const detectedMood = detectMood(text);
+            selectedMood = detectedMood;
             
             const entriesStr = localStorage.getItem('soulie_entries');
             let allEntries = entriesStr ? JSON.parse(entriesStr) : [];
@@ -450,15 +494,26 @@ document.addEventListener('DOMContentLoaded', () => {
             allEntries.push({
                 username: currentUser,
                 date: todayStr,
-                mood: selectedMood || 'calm',
+                mood: detectedMood,
                 text: text
             });
             
             localStorage.setItem('soulie_entries', JSON.stringify(allEntries));
             
+            // Show mood feedback
+            const moodFeedback = document.getElementById('mood-feedback');
+            if (moodFeedback) {
+                const emoji = moodEmojis[detectedMood] || '✨';
+                const label = moodLabels[detectedMood] || detectedMood;
+                moodFeedback.textContent = `${emoji} Detected mood: ${label}`;
+                moodFeedback.style.display = 'block';
+                setTimeout(() => { moodFeedback.style.display = 'none'; }, 4000);
+            }
+
             journalText.value = '';
-            alert("Journal entry saved!");
             renderCalendar();
+            renderSoundCards(detectedMood);
+            renderRegulationTools(detectedMood);
         });
     }
 
