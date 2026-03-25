@@ -204,36 +204,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dailyQuestions = "1. How did my body feel today?\n2. What is one good thing that happened?\n3. What do I need tomorrow?";
 
-    const soundRecommendations = {
-        anxious: [
-            { title: "Soft Piano Reset", desc: "Gentle keys to slow your racing thoughts.", tag: "8 min" },
-            { title: "Rain for Focus", desc: "Steady distant rain to block out noise.", tag: "15 min" },
-            { title: "Slow Ambient Breathing", desc: "A soft drone to pace your inhales and exhales.", tag: "5 min" }
-        ],
+    const supportRecommendations = {
         stressed: [
-            { title: "Soft Piano Reset", desc: "Gentle keys to slow your racing thoughts.", tag: "8 min" },
-            { title: "Rain for Focus", desc: "Steady distant rain to block out noise.", tag: "15 min" },
-            { title: "Slow Ambient Breathing", desc: "A soft drone to pace your inhales and exhales.", tag: "5 min" }
+            { title: "Zen Morning Meditation", category: "Meditation", desc: "Guided session to ground your energy and find focus.", type: "Online", icon: "🧘" },
+            { title: "Flow & Release Yoga", category: "Yoga", desc: "Gentle movement to release physical tension from stress.", type: "In-Person", icon: "🧘‍♀️" },
+            { title: "Box Breathing Workshop", category: "Breathwork", desc: "Learn techniques to reset your nervous system instantly.", type: "Online", icon: "🌬️" }
         ],
-        lonely: [
-            { title: "Warm Acoustic Comfort", desc: "Relaxing guitar to keep you company.", tag: "12 min" },
-            { title: "Gentle Lo-fi Evening", desc: "Soft, comforting beats for quiet nights.", tag: "20 min" },
-            { title: "Safe Space Soundscape", desc: "Warm and embracing atmospheric tones.", tag: "10 min" }
+        anxious: [
+            { title: "Calm Mind Meditation", category: "Meditation", desc: "Soft guidance to quiet racing thoughts and anxiety.", type: "Online", icon: "🧘" },
+            { title: "Restorative Yoga", category: "Yoga", desc: "Slow, supported poses to soothe the nervous system.", type: "In-Person", icon: "🧘‍♀️" },
+            { title: "1-on-1 Counseling", category: "Counseling", desc: "Private space to explore and manage anxious patterns.", type: "Online", icon: "💬" }
         ],
         overwhelmed: [
-            { title: "Grounding Instrumental", desc: "Steady rhythms to anchor your mind.", tag: "7 min" },
-            { title: "White Noise Reset", desc: "Clean audio slate to wash away overwhelm.", tag: "10 min" },
-            { title: "One-Step Calm", desc: "Simplistic, repetitive melodies for focus.", tag: "5 min" }
+            { title: "Grounding Breathwork", category: "Breathwork", desc: "Simple patterns to help you feel present and anchored.", type: "Online", icon: "🌬️" },
+            { title: "Slow Flow Yoga", category: "Yoga", desc: "Mindful movement at a pace that feels manageable.", type: "In-Person", icon: "🧘‍♀️" },
+            { title: "Crisis Support Chat", category: "Counseling", desc: "Immediate, short-term support for moments of high pressure.", type: "Online", icon: "💬" }
+        ],
+        lonely: [
+            { title: "Student Peer Circles", category: "Support Groups", desc: "Weekly gathering to share and connect with others.", type: "In-Person", icon: "👥" },
+            { title: "Therapeutic Counseling", category: "Counseling", desc: "Build a supportive relationship and explore connection.", type: "Online", icon: "💬" },
+            { title: "Community Yoga Flow", category: "Yoga", desc: "Connect with your body in a warm, shared environment.", type: "In-Person", icon: "🧘‍♀️" }
         ],
         burned_out: [
-            { title: "Deep Rest Ambient", desc: "Low frequencies to promote physical relaxation.", tag: "15 min" },
-            { title: "Restore & Unwind", desc: "Effortless listening for complete detachment.", tag: "20 min" },
-            { title: "Quiet Nervous System Reset", desc: "Scientifically backed tones for recovery.", tag: "10 min" }
+            { title: "Deep Rest Meditation", category: "Meditation", desc: "Yoga Nidra inspired rest for complete mental recovery.", type: "Online", icon: "🛌" },
+            { title: "Burnout Recovery Group", category: "Support Groups", desc: "Shared strategies for boundary setting and recovery.", type: "Online", icon: "👥" },
+            { title: "Gentle Somatic Yoga", category: "Yoga", desc: "Effortless movement to reconnect with your body safely.", type: "In-Person", icon: "🧘‍♀️" }
+        ],
+        angry: [
+            { title: "Release & Reset Breath", category: "Breathwork", desc: "Active techniques to transform and release fiery energy.", type: "Online", icon: "🌬️" },
+            { title: "Dynamic Movement Yoga", category: "Yoga", desc: "High-energy flow to channel frustration into strength.", type: "In-Person", icon: "🧘‍♀️" },
+            { title: "Communication Coaching", category: "Counseling", desc: "Tools to express needs and boundaries effectively.", type: "Online", icon: "💬" }
         ],
         calm: [
-            { title: "Light Focus Flow", desc: "Uplifting but unobtrusive background sounds.", tag: "30 min" },
-            { title: "Clear Mind Ambient", desc: "Airy, open electronic soundscapes.", tag: "15 min" },
-            { title: "Gentle Morning Balance", desc: "Bright and reassuring acoustic elements.", tag: "10 min" }
+            { title: "Daily Mindful Flow", category: "Yoga", desc: "Maintain your peace with a balanced daily practice.", type: "In-Person", icon: "🧘‍♀️" },
+            { title: "Gratitude Meditation", category: "Meditation", desc: "Deepen your sense of well-being through reflection.", type: "Online", icon: "🧘" },
+            { title: "Self-Growth Workshop", category: "Support Groups", desc: "Explore life goals in a structured, supportive group.", type: "Online", icon: "🌱" }
         ]
     };
 
@@ -272,24 +277,78 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const journalText = document.getElementById('journal-entry');
     const tabButtons = document.querySelectorAll('.tab-btn');
-    const soundCardsContainer = document.getElementById('sound-cards-container');
+    const supportCardsContainer = document.getElementById('support-cards-container');
     const regulationContainer = document.getElementById('regulation-cards-container');
+    const bookingModal = document.getElementById('booking-modal');
+    const closeModal = document.querySelector('.close-modal');
 
-    const renderSoundCards = (mood) => {
-        const recommendations = soundRecommendations[mood] || soundRecommendations['calm'];
-        soundCardsContainer.innerHTML = recommendations.map(rec => `
-            <div class="sound-card">
+    // Current category filter
+    let currentCategory = 'all';
+
+    const renderSupportCards = (mood) => {
+        if (!supportCardsContainer) return;
+        
+        let recommendations = supportRecommendations[mood] || supportRecommendations['calm'];
+        
+        // Filter by category if not 'all'
+        if (currentCategory !== 'all') {
+            recommendations = recommendations.filter(rec => rec.category === currentCategory);
+        }
+
+        if (recommendations.length === 0) {
+            supportCardsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">No ${currentCategory} sessions found for this mood. Try choosing "All" or a different category.</p>`;
+            return;
+        }
+
+        supportCardsContainer.innerHTML = recommendations.map(rec => `
+            <div class="support-card">
+                <div class="support-category">${rec.category}</div>
                 <h3>${rec.title}</h3>
-                <p>${rec.desc}</p>
-                <div class="sound-meta">
-                    <span class="sound-tag">${rec.tag}</span>
-                    <button class="play-btn" aria-label="Play ${rec.title}">
-                        <div class="play-icon"></div>
-                    </button>
+                <p class="support-desc">${rec.desc}</p>
+                <div class="support-footer">
+                    <span class="support-badge ${rec.type.toLowerCase() === 'online' ? 'online' : 'in-person'}">${rec.type}</span>
+                    <button class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-top: 0;" onclick="handleBook('${rec.title}', '${rec.icon}')">Book</button>
                 </div>
             </div>
         `).join('');
     };
+
+    window.handleBook = (name, icon) => {
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div class="modal-icon">${icon || '📅'}</div>
+            <h2 class="modal-title">Booking confirmed!</h2>
+            <p class="modal-text">You've successfully requested a spot for <strong>${name}</strong>.</p>
+            <p class="modal-text">Look out for a confirmation email at your student address soon.</p>
+            <button class="btn-primary" onclick="closeBookingModal()">Got it</button>
+        `;
+        bookingModal.classList.remove('hidden');
+    };
+
+    window.closeBookingModal = () => {
+        bookingModal.classList.add('hidden');
+    };
+
+    if (closeModal) {
+        closeModal.onclick = closeBookingModal;
+    }
+
+    window.onclick = (event) => {
+        if (event.target == bookingModal) {
+            closeBookingModal();
+        }
+    };
+
+    // Category Filter Listeners
+    const categoryChips = document.querySelectorAll('.category-chip');
+    categoryChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            categoryChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentCategory = chip.getAttribute('data-category');
+            renderSupportCards(selectedMood);
+        });
+    });
 
     const renderRegulationTools = (mood) => {
         const sortedTools = [...regulationToolsData].sort((a, b) => {
@@ -315,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initial render
-    renderSoundCards('calm');
+    renderSupportCards('calm');
     renderRegulationTools('calm');
 
     // 4. Chat Reply & Input Logic
@@ -362,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // (no guided-prompt tab — prompt is always visible in Write Entry)
         
-        renderSoundCards(selectedMood);
+        renderSupportCards(selectedMood);
         renderRegulationTools(selectedMood);
     };
 
@@ -512,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             journalText.value = '';
             renderCalendar();
-            renderSoundCards(detectedMood);
+            renderSupportCards(detectedMood);
             renderRegulationTools(detectedMood);
         });
     }
