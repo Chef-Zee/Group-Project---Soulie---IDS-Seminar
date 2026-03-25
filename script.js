@@ -122,13 +122,31 @@ document.addEventListener('DOMContentLoaded', () => {
         calm: "That's wonderful to hear. Keep noticing what feels peaceful right now."
     };
 
-    const guidedPrompts = {
-        anxious: "What feels heaviest right now?",
-        overwhelmed: "What is one thing you can let go of today?",
-        lonely: "What is one way you can show yourself kindness today?",
-        burned_out: "What do you need most right now?",
-        calm: "What helped you feel safe, calm, or supported today?",
-        default: "Write about whatever is on your mind."
+    // Pool of 10 guided reflection prompts
+    const guidedPromptsPool = [
+        "What feels heaviest on your heart right now, and why might that be?",
+        "What is one small thing you can let go of today?",
+        "How did your body feel when you woke up this morning?",
+        "What is one way you can show yourself kindness before the day ends?",
+        "What helped you feel safe, calm, or supported recently?",
+        "What do you need most right now — rest, connection, or space to breathe?",
+        "Describe one moment today, big or small, that made you feel something.",
+        "If a close friend were going through what you are, what would you tell them?",
+        "What are three things you are grateful for, even on a hard day?",
+        "What does your inner voice need you to hear today?"
+    ];
+
+    let lastPromptIndex = -1;
+
+    const showRandomPrompt = () => {
+        const promptEl = document.getElementById('guided-prompt-text');
+        if (!promptEl) return;
+        let idx;
+        do {
+            idx = Math.floor(Math.random() * guidedPromptsPool.length);
+        } while (idx === lastPromptIndex && guidedPromptsPool.length > 1);
+        lastPromptIndex = idx;
+        promptEl.textContent = guidedPromptsPool[idx];
     };
 
     const dailyQuestions = "1. How did my body feel today?\n2. What is one good thing that happened?\n3. What do I need tomorrow?";
@@ -289,9 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }, 600);
         
-        if (document.querySelector('.tab-btn[data-tab="guided-prompt"]').classList.contains('active')) {
-            journalPromptText.innerText = guidedPrompts[selectedMood] || guidedPrompts.default;
-        }
+        // (no guided-prompt tab — prompt is always visible in Write Entry)
         
         renderSoundCards(selectedMood);
         renderRegulationTools(selectedMood);
@@ -328,6 +344,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const writeEntrySection = document.getElementById('write-entry-section');
     const calendarSection = document.getElementById('calendar-section');
     const calendarGrid = document.getElementById('calendar-grid');
+
+    // Wire up guided prompt
+    showRandomPrompt();
+    const newPromptBtn = document.getElementById('new-prompt-btn');
+    if (newPromptBtn) {
+        newPromptBtn.addEventListener('click', showRandomPrompt);
+    }
 
     const renderCalendar = () => {
         if (!calendarGrid) return;

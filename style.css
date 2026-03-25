@@ -275,6 +275,59 @@ section {
   padding: 0 8px;
 }
 
+/* Guided Prompt Card */
+.prompt-card {
+  background: linear-gradient(135deg, rgba(196, 215, 224, 0.35) 0%, rgba(220, 208, 227, 0.35) 100%);
+  border: 1px solid rgba(196, 215, 224, 0.5);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.prompt-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-light);
+}
+
+.prompt-refresh-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(163, 184, 163, 0.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-refresh-btn:hover {
+  background: #fff;
+  border-color: var(--primary-color);
+  color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.prompt-text {
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  font-style: italic;
+  line-height: 1.5;
+  margin: 0;
+}
+
+
 /* Sound Support Section */
 .sound-grid {
   display: grid;
