@@ -317,6 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeInput = document.getElementById('booking-time');
         if (timeInput) timeInput.value = '';
 
+        // Clear email field and hide any previous error
+        const emailInput = document.getElementById('booking-email');
+        if (emailInput) emailInput.value = '';
+        const emailError = document.getElementById('booking-email-error');
+        if (emailError) emailError.classList.add('hidden');
+
         showSupportPanel('booking');
     };
 
@@ -339,13 +345,26 @@ document.addEventListener('DOMContentLoaded', () => {
     window.confirmBooking = () => {
         const dateInput = document.getElementById('booking-date');
         const timeInput = document.getElementById('booking-time');
+        const emailInput = document.getElementById('booking-email');
+        const emailError = document.getElementById('booking-email-error');
         const date = dateInput ? dateInput.value : '';
         const time = timeInput ? timeInput.value : '';
+        const email = emailInput ? emailInput.value.trim() : '';
 
+        // Validate date & time
         if (!date || !time) {
             alert('Please choose both a date and a time to continue.');
             return;
         }
+
+        // Validate email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailPattern.test(email)) {
+            if (emailError) emailError.classList.remove('hidden');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+        if (emailError) emailError.classList.add('hidden');
 
         // Format date nicely
         const [y, m, d] = date.split('-');
@@ -365,8 +384,9 @@ document.addEventListener('DOMContentLoaded', () => {
             category: selectedCenter ? selectedCenter.type : '',
             address: selectedCenter ? selectedCenter.address : '',
             date: prettyDate,
-            rawDate: date,   // keep for sorting
-            time: time
+            rawDate: date,
+            time: time,
+            email: email
         };
         const existing = localStorage.getItem('soulie_bookings');
         const allBookings = existing ? JSON.parse(existing) : [];
@@ -417,6 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>📍 ${b.address}</span>
                     <span>📅 ${b.date}</span>
                     <span>🕐 ${b.time}</span>
+                    ${b.email ? `<span class="booking-history-email">✉️ ${b.email}</span>` : ''}
                 </div>
             </div>
         `).join('');

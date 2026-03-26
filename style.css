@@ -1363,3 +1363,23 @@ select.booking-input {
   font-size: 0.95rem;
   line-height: 1.6;
 }
+
+/* Email validation error */
+.booking-email-error {
+  display: block;
+  font-size: 0.82rem;
+  color: #c0392b;
+  margin-top: 6px;
+  padding-left: 4px;
+}
+
+.booking-email-error.hidden {
+  display: none;
+}
+
+/* Email in booking history card */
+.booking-history-email {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  word-break: break-all;
+}
