@@ -567,13 +567,19 @@ section {
   padding: 10px 24px;
 }
 
-.tool-content {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(0,0,0,0.05);
-  font-size: 0.95rem;
-  color: var(--text-dark);
-  line-height: 1.5;
+/* =========================================================================
+   6. Regulation Tools (Interactive)
+   ========================================================================= */
+
+.regulation-tools {
+  margin-top: 20px;
+}
+
+.tool-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .tool-card.recommended {
@@ -582,16 +588,74 @@ section {
 }
 
 .recommended-badge {
-  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
   background: var(--primary-color);
   color: #fff;
   font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 8px;
-  border-radius: 10px;
-  margin-bottom: 12px;
+  padding: 4px 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.tool-desc {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.tool-toggle {
   align-self: flex-start;
+  margin-top: auto;
+  width: auto;
+  padding: 10px 24px;
+}
+
+/* Interactive Areas inside the card */
+.tool-interactive-content {
+  margin-top: 16px;
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.tool-active-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-prompt {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.tool-completed {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+
+/* General Animations */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 4. Journal Input */

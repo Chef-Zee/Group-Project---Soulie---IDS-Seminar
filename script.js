@@ -554,32 +554,270 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+    // ----------------------------------------------------
+    // REGULATION TOOLS - Interactive Engine
+    // ----------------------------------------------------
+
     const regulationToolsData = [
         {
+            id: 'tool-box-breathing',
             name: "Box Breathing",
             purpose: "Reset your breath and slow your heart rate.",
-            instructions: "1. Inhale slowly for 4 seconds.<br>2. Hold your breath for 4 seconds.<br>3. Exhale completely for 4 seconds.<br>4. Hold empty for 4 seconds.<br>Repeat 4 times.",
-            bestFor: ['anxious', 'stressed', 'calm']
+            estimatedTime: "1-2 minutes",
+            bestFor: ['anxious', 'stressed', 'calm'],
+            type: 'breathing',
+            phases: [
+                { text: "Inhale...", duration: 4 },
+                { text: "Hold...", duration: 4 },
+                { text: "Exhale...", duration: 4 },
+                { text: "Hold empty...", duration: 4 }
+            ],
+            cycles: 4
         },
         {
+            id: 'tool-grounding',
             name: "5-4-3-2-1 Grounding",
             purpose: "Find your surroundings and return to the present.",
-            instructions: "Take a deep breath. Look around and silently name:<br>- 5 things you can see<br>- 4 things you can physically feel<br>- 3 things you can hear<br>- 2 things you can smell<br>- 1 thing you can taste",
-            bestFor: ['overwhelmed', 'lonely', 'anxious']
+            estimatedTime: "2-3 minutes",
+            bestFor: ['overwhelmed', 'lonely', 'anxious'],
+            type: 'stepper',
+            steps: [
+                "Take a deep, slow breath.",
+                "Look around. Silently name 5 things you can see.",
+                "Notice your body. Name 4 things you can physically feel.",
+                "Listen closely. Name 3 things you can hear.",
+                "Name 2 things you can smell (or your favorite smells).",
+                "Name 1 thing you can taste (or a comforting flavor).",
+                "Take one last deep breath. You are here."
+            ]
         },
         {
+            id: 'tool-body-scan',
             name: "60-Second Body Scan",
             purpose: "Check in with physical tension and release it.",
-            instructions: "Close your eyes. Start from your toes, slowly moving your awareness up your legs, torso, arms, and neck, all the way to the top of your head. Notice any tension, and breathe into it.",
-            bestFor: ['burned_out', 'stressed', 'calm']
+            estimatedTime: "1 minute",
+            bestFor: ['burned_out', 'stressed', 'calm'],
+            type: 'timer',
+            totalSeconds: 60,
+            prompts: [
+                { time: 60, text: "Close your eyes and take a slow breath in." },
+                { time: 50, text: "Notice your forehead, eyes, and jaw. Let them soften." },
+                { time: 40, text: "Drop your shoulders away from your ears." },
+                { time: 30, text: "Notice your chest rising and falling. Don't force it." },
+                { time: 20, text: "Soften your hands and let your arms rest heavy." },
+                { time: 10, text: "Feel the weight of your legs and feet against the floor." },
+                { time: 0,  text: "Slowly open your eyes." }
+            ]
         },
         {
+            id: 'tool-shoulder',
             name: "Shoulder Release",
             purpose: "Drop the physical weight you're carrying.",
-            instructions: "Inhale deeply and lift your shoulders all the way up to your ears. Hold for a moment. Exhale forcefully through your mouth, letting your shoulders drop completely. Repeat 3 times.",
-            bestFor: ['overwhelmed', 'burned_out', 'lonely']
+            estimatedTime: "1 minute",
+            bestFor: ['overwhelmed', 'burned_out', 'lonely', 'angry'],
+            type: 'timed-steps',
+            steps: [
+                { text: "Sit up slightly, feet flat on the floor.", duration: 3 },
+                { text: "Inhale deeply. Lift your shoulders all the way up to your ears.", duration: 4 },
+                { text: "Hold them there. Notice the tension.", duration: 3 },
+                { text: "Exhale forcefully through your mouth. Drop your shoulders completely.", duration: 4 },
+                { text: "Let's do that again. Inhale and lift shoulders up.", duration: 4 },
+                { text: "Hold the tension.", duration: 3 },
+                { text: "Exhale and drop them heavily.", duration: 4 },
+                { text: "Gently roll your shoulders back a few times.", duration: 5 }
+            ]
         }
     ];
+
+    // State tracking for active tools
+    const activeTools = {};
+
+    window.startTool = (toolId) => {
+        const tool = regulationToolsData.find(t => t.id === toolId);
+        if (!tool) return;
+
+        const container = document.getElementById(`${toolId}-content`);
+        const startBtn = document.getElementById(`${toolId}-start-btn`);
+        
+        startBtn.classList.add('hidden');
+        container.classList.remove('hidden');
+
+        activeTools[toolId] = { isRunning: true, currentStep: 0, cycle: 0, timer: null };
+
+        if (tool.type === 'stepper') {
+            renderStepperTool(tool, container);
+        } else if (tool.type === 'breathing') {
+            runBreathingTool(tool, container);
+        } else if (tool.type === 'timer') {
+            runTimerTool(tool, container);
+        } else if (tool.type === 'timed-steps') {
+            runTimedStepsTool(tool, container);
+        }
+    };
+
+    const endTool = (toolId, container) => {
+        clearInterval(activeTools[toolId].timer);
+        activeTools[toolId].isRunning = false;
+        container.innerHTML = `
+            <div class="tool-completed slide-in">
+                <span class="emoji" style="font-size:2rem; margin-bottom:8px; display:block;">✨</span>
+                <p style="font-weight:600; margin-bottom:16px;">Exercise complete</p>
+                <button class="btn-secondary" onclick="resetTool('${toolId}')">Start Over</button>
+            </div>
+        `;
+    };
+
+    window.resetTool = (toolId) => {
+        const tool = regulationToolsData.find(t => t.id === toolId);
+        const container = document.getElementById(`${toolId}-content`);
+        const startBtn = document.getElementById(`${toolId}-start-btn`);
+        
+        if (activeTools[toolId] && activeTools[toolId].timer) {
+            clearInterval(activeTools[toolId].timer);
+        }
+        activeTools[toolId] = null;
+        
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        startBtn.classList.remove('hidden');
+    };
+
+    // --- Interactive Tool Renderers ---
+
+    const renderStepperTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        
+        const updateStep = () => {
+            const isLast = state.currentStep === tool.steps.length - 1;
+            container.innerHTML = `
+                <div class="tool-active-area fade-in">
+                    <p class="tool-prompt" style="font-size:1.1rem; min-height:60px;">${tool.steps[state.currentStep]}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                        <span style="font-size:0.85rem; color:var(--text-light);">${state.currentStep + 1} / ${tool.steps.length}</span>
+                        <button class="btn-primary" onclick="progressStepper('${tool.id}')">${isLast ? 'Finish' : 'Next'}</button>
+                    </div>
+                </div>
+            `;
+        };
+        updateStep();
+        
+        window.progressStepper = (id) => {
+            if (activeTools[id].currentStep >= tool.steps.length - 1) {
+                endTool(id, container);
+            } else {
+                activeTools[id].currentStep++;
+                updateStep();
+            }
+        };
+    };
+
+    const runBreathingTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        
+        const updatePhase = () => {
+            if (!state.isRunning) return;
+            if (state.cycle >= tool.cycles) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            const phase = tool.phases[state.currentStep];
+            // Visual circle that grows/shrinks
+            let circleTransform = 'scale(1)';
+            if (phase.text.includes('Inhale')) circleTransform = 'scale(1.5)';
+            else if (phase.text.includes('Hold')) circleTransform = state.currentStep === 1 ? 'scale(1.5)' : 'scale(1)';
+            else if (phase.text.includes('Exhale')) circleTransform = 'scale(1)';
+
+            container.innerHTML = `
+                <div class="tool-active-area fade-in" style="text-align:center;">
+                    <div class="breathing-circle" style="
+                        width:80px; height:80px; border-radius:50%; background:var(--primary-color); opacity:0.2; 
+                        margin: 20px auto; transition: transform ${phase.duration}s ease-in-out;
+                        transform: ${circleTransform};
+                    "></div>
+                    <h3 style="margin-bottom:8px; font-weight:600;">${phase.text}</h3>
+                    <p style="font-size:0.85rem; color:var(--text-light);">Cycle ${state.cycle + 1} of ${tool.cycles}</p>
+                </div>
+            `;
+
+            state.timer = setTimeout(() => {
+                state.currentStep++;
+                if (state.currentStep >= tool.phases.length) {
+                    state.currentStep = 0;
+                    state.cycle++;
+                }
+                updatePhase();
+            }, phase.duration * 1000);
+        };
+        updatePhase();
+    };
+
+    const runTimerTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        let secondsLeft = tool.totalSeconds;
+
+        const updateTimer = () => {
+            if (!state.isRunning) return;
+            if (secondsLeft <= 0) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            // Find current prompt based on time remaining
+            const currentPrompt = tool.prompts.find(p => secondsLeft <= p.time);
+            
+            container.innerHTML = `
+                <div class="tool-active-area" style="text-align:center;">
+                    <div style="font-size:2.5rem; font-weight:300; margin-bottom:16px; font-variant-numeric: tabular-nums;">
+                        0:${secondsLeft < 10 ? '0' : ''}${secondsLeft}
+                    </div>
+                    <p class="tool-prompt" style="font-size:1.1rem; min-height:50px; transition: opacity 0.5s;">
+                        ${currentPrompt ? currentPrompt.text : ''}
+                    </p>
+                </div>
+            `;
+
+            state.timer = setTimeout(() => {
+                secondsLeft--;
+                updateTimer();
+            }, 1000);
+        };
+        updateTimer();
+    };
+
+    const runTimedStepsTool = (tool, container) => {
+        const state = activeTools[tool.id];
+
+        const updateStep = () => {
+            if (!state.isRunning) return;
+            if (state.currentStep >= tool.steps.length) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            const step = tool.steps[state.currentStep];
+            container.innerHTML = `
+                <div class="tool-active-area fade-in" style="text-align:center; padding: 20px 0;">
+                    <p class="tool-prompt" style="font-size:1.15rem; font-weight:500;">${step.text}</p>
+                    <div style="margin-top:20px; width:100%; height:4px; background:var(--bg-dark); border-radius:2px; overflow:hidden;">
+                        <div style="height:100%; background:var(--primary-color); width:0%; transition: width ${step.duration}s linear;" id="${tool.id}-progress"></div>
+                    </div>
+                </div>
+            `;
+
+            // Trigger progress bar animation in next tick
+            setTimeout(() => {
+                const bar = document.getElementById(`${tool.id}-progress`);
+                if (bar) bar.style.width = '100%';
+            }, 50);
+
+            state.timer = setTimeout(() => {
+                state.currentStep++;
+                updateStep();
+            }, step.duration * 1000);
+        };
+        updateStep();
+    };
 
     // 3. Grab DOM Elements
     const chatHistory = document.getElementById('chat-history');
@@ -591,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const regulationContainer = document.getElementById('regulation-cards-container');
 
-
+    // Render original card list but wired up for interactivity
     const renderRegulationTools = (mood) => {
         const sortedTools = [...regulationToolsData].sort((a, b) => {
             const aMatch = a.bestFor.includes(mood || 'calm') ? 1 : 0;
@@ -604,11 +842,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="card tool-card glass ${isRecommended ? 'recommended' : ''}">
                     ${isRecommended ? '<span class="recommended-badge">Recommended</span>' : ''}
-                    <h3>${tool.name}</h3>
-                    <p class="tool-desc">${tool.purpose}</p>
-                    <button class="btn-secondary tool-toggle" onclick="this.nextElementSibling.classList.toggle('hidden');">Start</button>
-                    <div class="tool-content hidden">
-                        <p>${tool.instructions}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h3 style="margin-bottom:4px;">${tool.name}</h3>
+                            <span style="font-size:0.8rem; color:var(--text-light); background:var(--bg-dark); padding:2px 8px; border-radius:12px;">⏱ ${tool.estimatedTime}</span>
+                        </div>
+                    </div>
+                    <p class="tool-desc" style="margin-top:12px;">${tool.purpose}</p>
+                    
+                    <button id="${tool.id}-start-btn" class="btn-secondary tool-toggle" onclick="startTool('${tool.id}')">Start Exercise</button>
+                    
+                    <div id="${tool.id}-content" class="tool-interactive-content hidden" style="margin-top:20px; border-top:1px solid rgba(0,0,0,0.05); padding-top:16px;">
+                        <!-- Interactive content injected here -->
                     </div>
                 </div>
             `;
