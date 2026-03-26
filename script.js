@@ -320,7 +320,22 @@ document.addEventListener('DOMContentLoaded', () => {
         showSupportPanel('booking');
     };
 
-    // Step 5: Confirm booking
+    // Tab switcher: 'find' or 'mybookings'
+    window.switchSupportTab = (tab) => {
+        // Update tab button states
+        document.querySelectorAll('.support-tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+        });
+        // Show/hide tab content
+        document.getElementById('support-tab-find').classList.toggle('hidden', tab !== 'find');
+        document.getElementById('support-tab-mybookings').classList.toggle('hidden', tab !== 'mybookings');
+
+        if (tab === 'mybookings') {
+            renderMyBookings();
+        }
+    };
+
+    // Step 5: Confirm booking — save to localStorage then show success
     window.confirmBooking = () => {
         const dateInput = document.getElementById('booking-date');
         const timeInput = document.getElementById('booking-time');
@@ -342,7 +357,79 @@ document.addEventListener('DOMContentLoaded', () => {
             successEl.innerHTML = `Your appointment at <strong>${selectedCenter.name}</strong><br>has been confirmed for <strong>${prettyDate}</strong> at <strong>${time}</strong>. We look forward to seeing you! 🌿`;
         }
 
+        // --- Save booking to localStorage ---
+        const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+        const newBooking = {
+            username: currentUser,
+            centerName: selectedCenter ? selectedCenter.name : '',
+            category: selectedCenter ? selectedCenter.type : '',
+            address: selectedCenter ? selectedCenter.address : '',
+            date: prettyDate,
+            rawDate: date,   // keep for sorting
+            time: time
+        };
+        const existing = localStorage.getItem('soulie_bookings');
+        const allBookings = existing ? JSON.parse(existing) : [];
+        allBookings.push(newBooking);
+        localStorage.setItem('soulie_bookings', JSON.stringify(allBookings));
+
         showSupportPanel('success');
+    };
+
+    // Render My Bookings tab
+    const renderMyBookings = () => {
+        const container = document.getElementById('mybookings-list');
+        if (!container) return;
+
+        const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+        const existing = localStorage.getItem('soulie_bookings');
+        const allBookings = existing ? JSON.parse(existing) : [];
+
+        // Filter by current user, sort newest first (by rawDate desc)
+        const userBookings = allBookings
+            .map((b, i) => ({ ...b, globalIndex: i }))
+            .filter(b => b.username === currentUser)
+            .sort((a, b) => (b.rawDate || '').localeCompare(a.rawDate || ''));
+
+        if (userBookings.length === 0) {
+            container.innerHTML = `
+                <div class="mybookings-empty">
+                    <div class="mybookings-empty-icon">🗓️</div>
+                    <h3>No bookings yet</h3>
+                    <p>Once you book a wellness session,<br>it will appear here.</p>
+                    <button class="btn-secondary" style="margin-top:20px; width:auto; padding:10px 24px;"
+                        onclick="switchSupportTab('find')">Find Support</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = userBookings.map(b => `
+            <div class="booking-history-card">
+                <div class="booking-history-header">
+                    <div>
+                        <span class="booking-history-category">${b.category}</span>
+                        <h3 class="booking-history-name">${b.centerName}</h3>
+                    </div>
+                    <button class="booking-cancel-btn" onclick="cancelBooking(${b.globalIndex})" title="Cancel booking">✕</button>
+                </div>
+                <div class="booking-history-meta">
+                    <span>📍 ${b.address}</span>
+                    <span>📅 ${b.date}</span>
+                    <span>🕐 ${b.time}</span>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    // Cancel a booking (by global index in the full array)
+    window.cancelBooking = (globalIndex) => {
+        const existing = localStorage.getItem('soulie_bookings');
+        if (!existing) return;
+        const allBookings = JSON.parse(existing);
+        allBookings.splice(globalIndex, 1);
+        localStorage.setItem('soulie_bookings', JSON.stringify(allBookings));
+        renderMyBookings();
     };
 
     // Legacy close modal (kept for safety)
@@ -358,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bm = document.getElementById('booking-modal');
         if (bm && event.target === bm) window.closeBookingModal();
     };
+
 
     const regulationToolsData = [
         {
