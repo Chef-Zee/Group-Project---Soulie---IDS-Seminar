@@ -1564,6 +1564,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Dismiss calendar detail view when clicking outside
+    document.addEventListener('click', (e) => {
+        const calendarSection = document.getElementById('calendar-section');
+        const calendarView = document.getElementById('calendar-entry-view');
+        
+        // If clicking outside the entire calendar section
+        if (calendarSection && !calendarSection.contains(e.target)) {
+            if (calendarView && !calendarView.classList.contains('hidden')) {
+                calendarView.classList.add('hidden');
+                document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('active-day'));
+            }
+        }
+    });
+
     // Initialize Auth state on load
     const savedUser = localStorage.getItem('soulie_currentUser');
     if (savedUser) {

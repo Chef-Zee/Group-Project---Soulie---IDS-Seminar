@@ -146,51 +146,8 @@
         <h2>Keep Track</h2>
         <p class="section-desc">View your wellness timeline and record new entries.</p>
 
-        <!-- Calendar Timeline Section -->
-        <div id="calendar-section" style="margin-bottom: 30px;">
-          <div class="card glass" style="padding: 20px;">
-            
-            <!-- Calendar Navigation Header -->
-            <div id="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-              <button id="prev-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&lt;</button>
-              <h3 id="calendar-month-year" style="margin: 0; font-size: 1.1rem; font-weight: 600;">Month Year</h3>
-              <button id="next-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&gt;</button>
-            </div>
-
-            <div id="calendar-grid" class="calendar-grid"></div>
-
-            <div id="calendar-entry-view" class="hidden"
-              style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
-              
-              <h4 id="calendar-entry-date" style="margin-bottom: 16px; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 4px;"></h4>
-              
-              <!-- Journal Detail Container -->
-              <div id="detail-journal" class="hidden" style="margin-bottom: 16px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary-color);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                  <p id="calendar-entry-mood" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;"></p>
-                  <button id="delete-journal-entry-btn" title="Delete Entry" style="background: none; border: none; font-size: 1.4rem; color: var(--text-light); cursor: pointer; opacity: 0.5; display: none; padding: 0 4px; line-height: 1;">&times;</button>
-                </div>
-                <p id="calendar-entry-text" style="line-height: 1.5; color: var(--text-dark); font-size: 0.95rem; margin: 0;"></p>
-              </div>
-
-              <!-- Regulate Detail Container -->
-              <div id="detail-regulate" class="hidden" style="margin-bottom: 16px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid #6BA1D2;">
-                <p style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6BA1D2; margin-bottom: 8px;">Regulate Tools</p>
-                <ul id="calendar-entry-regulate-list" style="margin: 0; padding-left: 20px; font-size: 0.95rem; color: var(--text-dark); line-height: 1.5;"></ul>
-              </div>
-
-              <!-- Support Detail Container -->
-              <div id="detail-support" class="hidden" style="margin-bottom: 16px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 8px; border-left: 3px solid #A189C6;">
-                <p style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #A189C6; margin-bottom: 8px;">Support Bookings</p>
-                <ul id="calendar-entry-support-list" style="margin: 0; padding-left: 20px; font-size: 0.95rem; color: var(--text-dark); line-height: 1.5;"></ul>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
         <!-- Write Entry Section -->
-        <div id="write-entry-section">
+        <div id="write-entry-section" style="margin-bottom: 40px;">
           <!-- Guided Reflection Prompt -->
           <div class="prompt-card">
             <div class="prompt-header">
@@ -205,6 +162,49 @@
           </div>
           <button id="save-journal-btn" class="btn-primary" style="margin-top: 10px;">Save Entry</button>
           <p id="mood-feedback" class="mood-feedback" style="display: none;"></p>
+        </div>
+
+        <!-- Calendar Timeline Section -->
+        <div id="calendar-section" class="compact-calendar" style="margin-bottom: 30px;">
+          <div class="card glass" style="padding: 16px;">
+            
+            <!-- Calendar Navigation Header -->
+            <div id="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <button id="prev-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&lt;</button>
+              <h3 id="calendar-month-year" style="margin: 0; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light);">Month Year</h3>
+              <button id="next-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&gt;</button>
+            </div>
+
+            <div id="calendar-grid" class="calendar-grid"></div>
+
+            <div id="calendar-entry-view" class="hidden"
+              style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+              
+              <h4 id="calendar-entry-date" style="margin-bottom: 12px; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 4px; font-size: 0.9rem;"></h4>
+              
+              <!-- Journal Detail Container -->
+              <div id="detail-journal" class="hidden" style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                  <p id="calendar-entry-mood" style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;"></p>
+                  <button id="delete-journal-entry-btn" title="Delete Entry" style="background: none; border: none; font-size: 1.2rem; color: var(--text-light); cursor: pointer; opacity: 0.5; display: none; padding: 0 4px; line-height: 1;">&times;</button>
+                </div>
+                <p id="calendar-entry-text" style="line-height: 1.4; color: var(--text-dark); font-size: 0.9rem; margin: 0;"></p>
+              </div>
+
+              <!-- Regulate Detail Container -->
+              <div id="detail-regulate" class="hidden" style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #6BA1D2;">
+                <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6BA1D2; margin-bottom: 6px;">Regulate Tools</p>
+                <ul id="calendar-entry-regulate-list" style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;"></ul>
+              </div>
+
+              <!-- Support Detail Container -->
+              <div id="detail-support" class="hidden" style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #A189C6;">
+                <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #A189C6; margin-bottom: 6px;">Support Bookings</p>
+                <ul id="calendar-entry-support-list" style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;"></ul>
+              </div>
+
+            </div>
+          </div>
         </div>
       </section>
 
