@@ -88,10 +88,10 @@
             <h3 style="margin-bottom: 4px;">Journaling</h3>
             <p style="font-size: 0.95rem; color: var(--text-light);">Free write or guided prompts.</p>
           </div>
-          <div class="card glass feature-card" onclick="switchView('view-sound')">
-            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🎵</span>
-            <h3 style="margin-bottom: 4px;">Sound Support</h3>
-            <p style="font-size: 0.95rem; color: var(--text-light);">Mood-responsive audio therapy.</p>
+          <div class="card glass feature-card" onclick="switchView('view-support')">
+            <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🤝</span>
+            <h3 style="margin-bottom: 4px;">Find Support</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Book wellness services.</p>
           </div>
           <div class="card glass feature-card" onclick="switchView('view-regulate')">
             <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🧘</span>
@@ -186,40 +186,144 @@
 
     </div>
 
-<<<<<<< Updated upstream
-    <!-- ==================== SOUND VIEW ==================== -->
-    <div id="view-sound" class="app-view hidden fade-in">
-      
-      <!-- Sound Support Section -->
-      <section id="sound-support" class="sound-support" style="margin-top: 20px;">
-        <h2>Sound Support</h2>
-        <p class="section-desc">Supportive sounds and music recommended for your current mood.</p>
-        
-        <div id="sound-cards-container" class="sound-grid">
-=======
     <!-- ==================== SUPPORT VIEW ==================== -->
     <div id="view-support" class="app-view hidden fade-in">
 
       <section id="find-support" class="support-section" style="margin-top: 20px;">
-        <h2>Find Support</h2>
-        <p class="section-desc">Explore and book professional wellness services tailored to you.</p>
+        <h2>Find Nearby Support</h2>
+        <p class="section-desc">Discover wellness &amp; emotional support services near you.</p>
 
-        <!-- Category Filters -->
-        <div class="category-filters" id="support-categories">
-          <button class="category-chip active" data-category="all">All</button>
-          <button class="category-chip" data-category="Meditation">Meditation</button>
-          <button class="category-chip" data-category="Yoga">Yoga</button>
-          <button class="category-chip" data-category="Counseling">Counseling</button>
-          <button class="category-chip" data-category="Breathwork">Breathwork</button>
-          <button class="category-chip" data-category="Support Groups">Groups</button>
+        <!-- Tab bar -->
+        <div class="support-tabs">
+          <button class="support-tab-btn active" data-tab="find" onclick="switchSupportTab('find')">Find
+            Support</button>
+          <button class="support-tab-btn" data-tab="mybookings" onclick="switchSupportTab('mybookings')">My
+            Bookings</button>
         </div>
 
-        <div id="support-cards-container" class="support-grid">
->>>>>>> Stashed changes
-          <!-- Cards populated by JavaScript -->
+        <!-- ====== FIND TAB ====== -->
+        <div id="support-tab-find" class="support-tab-content">
+
+          <!-- PANEL 1: Search -->
+          <div id="support-panel-search" class="support-panel active-panel">
+            <div class="nearby-search-box">
+              <input type="text" id="nearby-address-input" class="form-input"
+                placeholder="Enter your address or area…" />
+              <button class="btn-primary nearby-search-btn" onclick="findNearbySupport()">Find Nearby Support</button>
+            </div>
+          </div>
+
+          <!-- PANEL 2: Results list -->
+          <div id="support-panel-results" class="support-panel hidden">
+            <div class="nearby-back-row">
+              <button class="back-link" onclick="showSupportPanel('search')">← Back</button>
+              <span id="nearby-results-label" class="nearby-results-label"></span>
+            </div>
+
+            <!-- Mood recommendation banner -->
+            <div id="support-recommendation-banner" class="support-recommendation-banner hidden">
+              <span class="recommendation-icon">✨</span>
+              <p id="support-recommendation-text"></p>
+            </div>
+
+            <!-- Category filter chips -->
+            <div class="results-filter-row">
+              <div class="results-chips" id="results-category-chips">
+                <button class="result-chip active" data-cat="all">All</button>
+                <button class="result-chip" data-cat="Meditation">Meditation</button>
+                <button class="result-chip" data-cat="Yoga">Yoga</button>
+                <button class="result-chip" data-cat="Counseling">Counseling</button>
+                <button class="result-chip" data-cat="Breathwork">Breathwork</button>
+                <button class="result-chip" data-cat="Support Groups">Groups</button>
+              </div>
+              <div class="results-sort">
+                <select id="results-sort-select" class="sort-select" onchange="applyResultsFilters()">
+                  <option value="nearest">Nearest</option>
+                  <option value="recommended">Recommended</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="nearby-results-grid" class="support-grid">
+              <!-- Result cards injected by JS -->
+            </div>
+          </div>
+
+          <!-- PANEL 3: Center detail -->
+          <div id="support-panel-detail" class="support-panel hidden">
+            <div class="nearby-back-row">
+              <button class="back-link" onclick="showSupportPanel('results')">← Back to Results</button>
+            </div>
+            <div id="nearby-detail-card" class="nearby-detail-card glass">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- PANEL 4: Booking form -->
+          <div id="support-panel-booking" class="support-panel hidden">
+            <div class="nearby-back-row">
+              <button class="back-link" onclick="showSupportPanel('detail')">← Back</button>
+            </div>
+            <div class="card glass booking-form-card">
+              <h3 id="booking-center-name" style="margin-bottom: 4px;"></h3>
+              <p id="booking-center-type" class="support-category" style="margin-bottom: 24px;"></p>
+              <label class="booking-label">Choose a date</label>
+              <input type="date" id="booking-date" class="form-input booking-input" />
+              <label class="booking-label" style="margin-top: 16px;">Choose a time</label>
+              <select id="booking-time" class="form-input booking-input">
+                <option value="">-- Select a time --</option>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="01:00 PM">01:00 PM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+                <option value="04:30 PM">04:30 PM</option>
+              </select>
+              <label class="booking-label" style="margin-top: 16px;">Your email address</label>
+              <input type="email" id="booking-email" class="form-input booking-input" placeholder="you@example.com" />
+              <span id="booking-email-error" class="booking-email-error hidden">Please enter a valid email
+                address.</span>
+              <button class="btn-primary" style="margin-top: 24px;" onclick="confirmBooking()">Confirm
+                Appointment</button>
+            </div>
+          </div>
+
+          <!-- PANEL 5: Booking success -->
+          <div id="support-panel-success" class="support-panel hidden">
+            <div class="card glass booking-success-card">
+              <div class="booking-success-icon">🎉</div>
+              <h3>Appointment Booked!</h3>
+              <p id="booking-success-details" class="booking-success-text"></p>
+              <div style="display:flex; flex-direction:column; gap:12px; margin-top:24px;">
+                <button class="btn-primary" onclick="switchSupportTab('mybookings')">View My Bookings</button>
+                <button class="btn-secondary" style="margin-top:0;" onclick="showSupportPanel('search')">Find
+                  Another</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end support-tab-find -->
+
+        <!-- ====== MY BOOKINGS TAB ====== -->
+        <div id="support-tab-mybookings" class="support-tab-content hidden">
+          <div id="mybookings-list">
+            <!-- Injected by JS -->
+          </div>
         </div>
+
       </section>
 
+    </div>
+
+    <!-- Booking Confirmation Modal (Simple) -->
+    <div id="booking-modal" class="modal hidden">
+      <div class="modal-content glass">
+        <span class="close-modal">&times;</span>
+        <div id="modal-body">
+          <!-- Content populated by JS -->
+        </div>
+      </div>
     </div>
 
     <!-- ==================== REGULATE VIEW ==================== -->
@@ -253,9 +357,9 @@
       <span class="emoji">📝</span>
       <span class="nav-label">Journal</span>
     </button>
-    <button class="nav-item" onclick="switchView('view-sound')">
-      <span class="emoji">🎵</span>
-      <span class="nav-label">Sound</span>
+    <button class="nav-item" onclick="switchView('view-support')">
+      <span class="emoji">🤝</span>
+      <span class="nav-label">Support</span>
     </button>
     <button class="nav-item" onclick="switchView('view-regulate')">
       <span class="emoji">🧘</span>
