@@ -720,13 +720,23 @@ textarea:focus {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
 }
 
-/* Mood dot indicator */
+/* Calendar Indicator Dots */
+.calendar-dots-container {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+}
+
 .mood-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+/* Journal Mood Colors */
 .mood-dot--calm       { background: #8fc98f; }   /* soft green */
 .mood-dot--stressed   { background: #e8c46a; }   /* warm yellow */
 .mood-dot--lonely     { background: #7ab3d4; }   /* soft blue */
@@ -734,6 +744,9 @@ textarea:focus {
 .mood-dot--burned_out { background: #7a5e99; }   /* dark muted purple */
 .mood-dot--angry      { background: #e07070; }   /* soft red */
 
+/* Activity Colors */
+.dot-regulate         { background: #6BA1D2; }   /* bright soft blue */
+.dot-support          { background: #A189C6; }   /* warm purple */
 
 textarea::placeholder {
   color: #aab;

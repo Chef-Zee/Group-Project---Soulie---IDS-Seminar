@@ -672,6 +672,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn-secondary" onclick="resetTool('${toolId}')">Start Over</button>
             </div>
         `;
+        
+        // Save to completedTools in localStorage
+        const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+        const today = new Date();
+        const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        
+        const completedToolsStr = localStorage.getItem('soulie_completed_tools');
+        let completedTools = completedToolsStr ? JSON.parse(completedToolsStr) : [];
+        const toolLabel = regulationToolsData.find(t => t.id === toolId)?.name || toolId;
+        
+        completedTools.push({
+            username: currentUser,
+            date: dateKey,
+            toolId: toolId,
+            toolName: toolLabel,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('soulie_completed_tools', JSON.stringify(completedTools));
     };
 
     window.resetTool = (toolId) => {
@@ -1338,42 +1356,91 @@ document.addEventListener('DOMContentLoaded', () => {
         newPromptBtn.addEventListener('click', showRandomPrompt);
     }
 
+    let currentCalendarDate = new Date();
+    
+    // Wire up Calendar Nav Buttons
+    const prevMonthBtn = document.getElementById('prev-month-btn');
+    const nextMonthBtn = document.getElementById('next-month-btn');
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
+
     const renderCalendar = () => {
         if (!calendarGrid) return;
         calendarGrid.innerHTML = '';
 
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth(); // 0-11
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth(); // 0-11
+        
+        const calendarHeaderMonthYear = document.getElementById('calendar-month-year');
+        if (calendarHeaderMonthYear) {
+            const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            calendarHeaderMonthYear.textContent = `${mNames[month]} ${year}`;
+        }
 
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         const currentUser = localStorage.getItem('soulie_currentUser');
+        
         const entriesStr = localStorage.getItem('soulie_entries');
         const allEntries = entriesStr ? JSON.parse(entriesStr) : [];
+        
+        const completedToolsStr = localStorage.getItem('soulie_completed_tools');
+        const allCompletedTools = completedToolsStr ? JSON.parse(completedToolsStr) : [];
+        
+        const supportBookingsStr = localStorage.getItem('soulie_bookings');
+        const allSupportBookings = supportBookingsStr ? JSON.parse(supportBookingsStr) : [];
 
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'calendar-day';
-            dayDiv.innerText = i;
 
             const monthStr = String(month + 1).padStart(2, '0');
             const dayStr = String(i).padStart(2, '0');
             const dateKey = `${year}-${monthStr}-${dayStr}`;
 
             // Look for matching user AND date
-            const entry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
+            const dayEntry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
+            const dayTools = allCompletedTools.filter(t => t.username === currentUser && t.date === dateKey);
+            const dayBookings = allSupportBookings.filter(b => b.username === currentUser && b.rawDate === dateKey);
 
-            if (entry) {
+            dayDiv.innerText = '';
+            const numSpan = document.createElement('span');
+            numSpan.textContent = i;
+            dayDiv.appendChild(numSpan);
+
+            // Add indicator dots
+            if (dayEntry || dayTools.length > 0 || dayBookings.length > 0) {
                 dayDiv.classList.add('has-entry');
-                // Replace plain text with number + colored dot
-                dayDiv.innerText = '';
-                const numSpan = document.createElement('span');
-                numSpan.textContent = i;
-                const dot = document.createElement('div');
-                dot.className = `mood-dot mood-dot--${entry.mood}`;
-                dayDiv.appendChild(numSpan);
-                dayDiv.appendChild(dot);
+                
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'calendar-dots-container';
+                
+                if (dayEntry) {
+                    const dot = document.createElement('div');
+                    dot.className = `mood-dot mood-dot--${dayEntry.mood}`;
+                    dotsContainer.appendChild(dot);
+                }
+                if (dayTools.length > 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mood-dot dot-regulate';
+                    dotsContainer.appendChild(dot);
+                }
+                if (dayBookings.length > 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mood-dot dot-support';
+                    dotsContainer.appendChild(dot);
+                }
+                dayDiv.appendChild(dotsContainer);
             }
 
             dayDiv.addEventListener('click', () => {
@@ -1383,15 +1450,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 const viewEl = document.getElementById('calendar-entry-view');
                 document.getElementById('calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
 
-                if (entry) {
-                    const emoji = moodEmojis[entry.mood] || '✨';
-                    const label = moodLabels[entry.mood] || entry.mood;
+                // 1. Journal
+                const jContainer = document.getElementById('detail-journal');
+                if (dayEntry) {
+                    jContainer.classList.remove('hidden');
+                    const emoji = moodEmojis[dayEntry.mood] || '✨';
+                    const label = moodLabels[dayEntry.mood] || dayEntry.mood;
                     document.getElementById('calendar-entry-mood').innerText = `${emoji} Mood: ${label}`;
-                    document.getElementById('calendar-entry-text').innerText = entry.text;
+                    document.getElementById('calendar-entry-text').innerText = dayEntry.text;
                 } else {
-                    document.getElementById('calendar-entry-mood').innerText = '';
-                    document.getElementById('calendar-entry-text').innerText = 'No entry for this day.';
+                    jContainer.classList.add('hidden');
                 }
+                
+                // 2. Regulate Tools
+                const rContainer = document.getElementById('detail-regulate');
+                const rList = document.getElementById('calendar-entry-regulate-list');
+                if (dayTools.length > 0) {
+                    rContainer.classList.remove('hidden');
+                    rList.innerHTML = dayTools.map(t => `<li style="margin-bottom:4px;">Completed <b>${t.toolName}</b></li>`).join('');
+                } else {
+                    rContainer.classList.add('hidden');
+                }
+                
+                // 3. Support Bookings
+                const sContainer = document.getElementById('detail-support');
+                const sList = document.getElementById('calendar-entry-support-list');
+                if (dayBookings.length > 0) {
+                    sContainer.classList.remove('hidden');
+                    sList.innerHTML = dayBookings.map(b => `<li style="margin-bottom:8px;"><b>${b.centerName}</b><br><span style="font-size:0.85rem; color:var(--text-light);">${b.time}</span></li>`).join('');
+                } else {
+                    sContainer.classList.add('hidden');
+                }
+                
+                // Show empty state if nothing
+                if (!dayEntry && dayTools.length === 0 && dayBookings.length === 0) {
+                    jContainer.classList.remove('hidden');
+                    document.getElementById('calendar-entry-mood').innerText = '';
+                    document.getElementById('calendar-entry-text').innerText = 'No wellness activity recorded for this day.';
+                }
+
                 viewEl.classList.remove('hidden');
             });
 
