@@ -617,14 +617,14 @@ document.addEventListener('DOMContentLoaded', () => {
             bestFor: ['overwhelmed', 'burned_out', 'lonely', 'angry'],
             type: 'timed-steps',
             steps: [
-                { text: "Sit up slightly, feet flat on the floor.", duration: 3 },
-                { text: "Inhale deeply. Lift your shoulders all the way up to your ears.", duration: 4 },
-                { text: "Hold them there. Notice the tension.", duration: 3 },
-                { text: "Exhale forcefully through your mouth. Drop your shoulders completely.", duration: 4 },
-                { text: "Let's do that again. Inhale and lift shoulders up.", duration: 4 },
-                { text: "Hold the tension.", duration: 3 },
-                { text: "Exhale and drop them heavily.", duration: 4 },
-                { text: "Gently roll your shoulders back a few times.", duration: 5 }
+                { text: "Sit up slightly, feet flat on the floor.", duration: 5 },
+                { text: "Inhale deeply. Lift your shoulders all the way up to your ears.", duration: 6 },
+                { text: "Hold them there. Notice the tension.", duration: 5 },
+                { text: "Exhale forcefully through your mouth. Drop your shoulders completely.", duration: 6 },
+                { text: "Let's do that again. Inhale and lift shoulders up.", duration: 6 },
+                { text: "Hold the tension.", duration: 5 },
+                { text: "Exhale and drop them heavily.", duration: 6 },
+                { text: "Gently roll your shoulders back a few times.", duration: 7 }
             ]
         }
     ];
@@ -633,6 +633,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeTools = {};
 
     window.startTool = (toolId) => {
+        // Enforce single-activity: reset any currently running tools
+        Object.keys(activeTools).forEach(id => {
+            if (activeTools[id] && activeTools[id].isRunning) {
+                window.resetTool(id);
+            }
+        });
+
         const tool = regulationToolsData.find(t => t.id === toolId);
         if (!tool) return;
 
@@ -687,19 +694,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderStepperTool = (tool, container) => {
         const state = activeTools[tool.id];
         
-        const updateStep = () => {
-            const isLast = state.currentStep === tool.steps.length - 1;
-            container.innerHTML = `
-                <div class="tool-active-area fade-in">
-                    <p class="tool-prompt" style="font-size:1.1rem; min-height:60px;">${tool.steps[state.currentStep]}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-                        <span style="font-size:0.85rem; color:var(--text-light);">${state.currentStep + 1} / ${tool.steps.length}</span>
-                        <button class="btn-primary" onclick="progressStepper('${tool.id}')">${isLast ? 'Finish' : 'Next'}</button>
+        container.innerHTML = `
+            <div class="tool-active-area fade-in">
+                <p id="${tool.id}-stepper-text" class="tool-prompt" style="font-size:1.1rem; min-height:90px; transition: opacity 0.3s;"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                    <span id="${tool.id}-stepper-count" style="font-size:0.85rem; color:var(--text-light);"></span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;" onclick="resetTool('${tool.id}')">Stop</button>
+                        <button id="${tool.id}-stepper-btn" class="btn-primary" style="padding: 8px 16px; font-size: 0.85rem;" onclick="progressStepper('${tool.id}')">Next</button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
+        
+        const textEl = document.getElementById(`${tool.id}-stepper-text`);
+        const countEl = document.getElementById(`${tool.id}-stepper-count`);
+        const btnEl = document.getElementById(`${tool.id}-stepper-btn`);
+
+        const updateStep = (init = false) => {
+            const isLast = state.currentStep === tool.steps.length - 1;
+            const newText = tool.steps[state.currentStep];
+            
+            if (init && textEl) {
+                textEl.textContent = newText;
+                if (countEl) countEl.textContent = `${state.currentStep + 1} / ${tool.steps.length}`;
+                if (btnEl) btnEl.textContent = isLast ? 'Finish' : 'Next';
+            } else if (textEl) {
+                textEl.style.opacity = '0';
+                setTimeout(() => {
+                    if (!state.isRunning) return;
+                    textEl.textContent = newText;
+                    textEl.style.opacity = '1';
+                    if (countEl) countEl.textContent = `${state.currentStep + 1} / ${tool.steps.length}`;
+                    if (btnEl) btnEl.textContent = isLast ? 'Finish' : 'Next';
+                }, 300);
+            }
         };
-        updateStep();
+        updateStep(true);
         
         window.progressStepper = (id) => {
             if (activeTools[id].currentStep >= tool.steps.length - 1) {
@@ -714,6 +745,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const runBreathingTool = (tool, container) => {
         const state = activeTools[tool.id];
         
+        // Initial DOM Setup
+        container.innerHTML = `
+            <div class="tool-active-area fade-in" style="text-align:center;">
+                <div id="${tool.id}-circle" style="
+                    width:80px; height:80px; border-radius:50%; background:var(--primary-color); opacity:0.2; 
+                    margin: 20px auto; transition: transform 4s ease-in-out;
+                    transform: scale(1);
+                "></div>
+                <h3 id="${tool.id}-text" style="margin-bottom:8px; font-weight:600;"></h3>
+                <p id="${tool.id}-cycle" style="font-size:0.85rem; color:var(--text-light); margin-bottom: 20px;"></p>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+        
         const updatePhase = () => {
             if (!state.isRunning) return;
             if (state.cycle >= tool.cycles) {
@@ -722,23 +767,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const phase = tool.phases[state.currentStep];
+            
             // Visual circle that grows/shrinks
             let circleTransform = 'scale(1)';
             if (phase.text.includes('Inhale')) circleTransform = 'scale(1.5)';
             else if (phase.text.includes('Hold')) circleTransform = state.currentStep === 1 ? 'scale(1.5)' : 'scale(1)';
             else if (phase.text.includes('Exhale')) circleTransform = 'scale(1)';
 
-            container.innerHTML = `
-                <div class="tool-active-area fade-in" style="text-align:center;">
-                    <div class="breathing-circle" style="
-                        width:80px; height:80px; border-radius:50%; background:var(--primary-color); opacity:0.2; 
-                        margin: 20px auto; transition: transform ${phase.duration}s ease-in-out;
-                        transform: ${circleTransform};
-                    "></div>
-                    <h3 style="margin-bottom:8px; font-weight:600;">${phase.text}</h3>
-                    <p style="font-size:0.85rem; color:var(--text-light);">Cycle ${state.cycle + 1} of ${tool.cycles}</p>
-                </div>
-            `;
+            const circle = document.getElementById(`${tool.id}-circle`);
+            const textEl = document.getElementById(`${tool.id}-text`);
+            const cycleEl = document.getElementById(`${tool.id}-cycle`);
+
+            if (circle) {
+                circle.style.transition = `transform ${phase.duration}s ease-in-out`;
+                circle.style.transform = circleTransform;
+            }
+            if (textEl) textEl.textContent = phase.text;
+            if (cycleEl) cycleEl.textContent = `Cycle ${state.cycle + 1} of ${tool.cycles}`;
 
             state.timer = setTimeout(() => {
                 state.currentStep++;
@@ -749,12 +794,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 updatePhase();
             }, phase.duration * 1000);
         };
-        updatePhase();
+        
+        // Trigger first phase slightly delayed so CSS transition registers
+        setTimeout(updatePhase, 50);
     };
 
     const runTimerTool = (tool, container) => {
         const state = activeTools[tool.id];
         let secondsLeft = tool.totalSeconds;
+
+        container.innerHTML = `
+            <div class="tool-active-area" style="text-align:center;">
+                <div id="${tool.id}-timer-text" style="font-size:2.5rem; font-weight:300; margin-bottom:16px; font-variant-numeric: tabular-nums;"></div>
+                <p id="${tool.id}-prompt-text" class="tool-prompt" style="font-size:1.1rem; min-height:90px; transition: opacity 0.5s; margin-bottom:20px;"></p>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+        
+        const timeEl = document.getElementById(`${tool.id}-timer-text`);
+        const promptEl = document.getElementById(`${tool.id}-prompt-text`);
+        let currentPromptText = "";
 
         const updateTimer = () => {
             if (!state.isRunning) return;
@@ -763,19 +822,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Find current prompt based on time remaining
+            if (timeEl) timeEl.textContent = `0:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+
             const currentPrompt = tool.prompts.find(p => secondsLeft <= p.time);
+            const newPromptText = currentPrompt ? currentPrompt.text : '';
             
-            container.innerHTML = `
-                <div class="tool-active-area" style="text-align:center;">
-                    <div style="font-size:2.5rem; font-weight:300; margin-bottom:16px; font-variant-numeric: tabular-nums;">
-                        0:${secondsLeft < 10 ? '0' : ''}${secondsLeft}
-                    </div>
-                    <p class="tool-prompt" style="font-size:1.1rem; min-height:50px; transition: opacity 0.5s;">
-                        ${currentPrompt ? currentPrompt.text : ''}
-                    </p>
-                </div>
-            `;
+            if (promptEl && newPromptText !== currentPromptText) {
+                if (currentPromptText === "") {
+                    // first load
+                    promptEl.textContent = newPromptText;
+                } else {
+                    // fade transition
+                    promptEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (!state.isRunning) return;
+                        promptEl.textContent = newPromptText;
+                        promptEl.style.opacity = '1';
+                    }, 500);
+                }
+                currentPromptText = newPromptText;
+            }
 
             state.timer = setTimeout(() => {
                 secondsLeft--;
@@ -788,6 +854,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const runTimedStepsTool = (tool, container) => {
         const state = activeTools[tool.id];
 
+        // Initial DOM Setup
+        container.innerHTML = `
+            <div class="tool-active-area fade-in" style="text-align:center; padding: 20px 0;">
+                <p id="${tool.id}-step-text" class="tool-prompt" style="font-size:1.15rem; font-weight:500; min-height:80px; margin-bottom: 20px; transition: opacity 0.3s;"></p>
+                <div style="margin-top:20px; width:100%; height:4px; background:var(--bg-dark); border-radius:2px; overflow:hidden; margin-bottom: 20px;">
+                    <div id="${tool.id}-progress" style="height:100%; background:var(--primary-color); width:0%;"></div>
+                </div>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+
+        const textEl = document.getElementById(`${tool.id}-step-text`);
+        const barEl = document.getElementById(`${tool.id}-progress`);
+
         const updateStep = () => {
             if (!state.isRunning) return;
             if (state.currentStep >= tool.steps.length) {
@@ -796,19 +876,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const step = tool.steps[state.currentStep];
-            container.innerHTML = `
-                <div class="tool-active-area fade-in" style="text-align:center; padding: 20px 0;">
-                    <p class="tool-prompt" style="font-size:1.15rem; font-weight:500;">${step.text}</p>
-                    <div style="margin-top:20px; width:100%; height:4px; background:var(--bg-dark); border-radius:2px; overflow:hidden;">
-                        <div style="height:100%; background:var(--primary-color); width:0%; transition: width ${step.duration}s linear;" id="${tool.id}-progress"></div>
-                    </div>
-                </div>
-            `;
+            
+            if (textEl && textEl.textContent !== step.text) {
+                if (textEl.textContent === "") {
+                    textEl.textContent = step.text;
+                } else {
+                    textEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (!state.isRunning) return;
+                        textEl.textContent = step.text;
+                        textEl.style.opacity = '1';
+                    }, 300);
+                }
+            }
+            
+            // Reset bar instantly
+            if (barEl) {
+                barEl.style.transition = 'none';
+                barEl.style.width = '0%';
+            }
 
             // Trigger progress bar animation in next tick
             setTimeout(() => {
-                const bar = document.getElementById(`${tool.id}-progress`);
-                if (bar) bar.style.width = '100%';
+                if (barEl && state.isRunning) {
+                    barEl.style.transition = `width ${step.duration}s linear`;
+                    barEl.style.width = '100%';
+                }
             }, 50);
 
             state.timer = setTimeout(() => {
@@ -816,7 +909,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateStep();
             }, step.duration * 1000);
         };
-        updateStep();
+        
+        // Short delay to establish DOM before animations start
+        setTimeout(updateStep, 50);
     };
 
     // 3. Grab DOM Elements
