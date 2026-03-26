@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soulie - Your Emotional Wellness Companion</title>
-  
+
   <!-- Modern, clean font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
+
+  <link rel="icon" type="image/png" href="favicon.png">
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Navigation bar -->
   <nav class="navbar">
@@ -21,7 +25,7 @@
   </nav>
 
   <main class="container">
-    
+
     <!-- ==================== AUTH VIEW ==================== -->
     <div id="view-auth" class="app-view active fade-in">
       <section class="hero" style="margin-top: 60px;">
@@ -48,12 +52,13 @@
 
     <!-- ==================== HOME VIEW ==================== -->
     <div id="view-home" class="app-view fade-in">
-      
+
       <!-- 1. Hero Section -->
       <section class="hero">
         <div class="hero-content">
           <h1 id="home-greeting">Breathe.<br>Reflect.<br>Reset.</h1>
-          <p class="subtitle">Your private digital tool to better understand and manage your emotions. No judgment, just gentle support.</p>
+          <p class="subtitle">Your private digital tool to better understand and manage your emotions. No judgment, just
+            gentle support.</p>
         </div>
       </section>
 
@@ -61,9 +66,11 @@
       <section class="about delay-1">
         <div class="card about-card glass">
           <h2>Why Soulie?</h2>
-          <p>As a student or young professional, the pressure to perform while managing personal life can lead to burnout, stress, and loneliness.</p>
+          <p>As a student or young professional, the pressure to perform while managing personal life can lead to
+            burnout, stress, and loneliness.</p>
           <p><strong>You don't have to carry it all alone.</strong></p>
-          <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive simple, grounded support when you need it most.</p>
+          <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive
+            simple, grounded support when you need it most.</p>
         </div>
       </section>
 
@@ -93,16 +100,16 @@
           </div>
         </div>
       </section>
-      
+
     </div>
 
     <!-- ==================== COMPANION VIEW ==================== -->
     <div id="view-companion" class="app-view hidden fade-in">
-      
+
       <section class="chat-section" style="margin-top: 20px;">
         <h2>Soulie Chat</h2>
         <p class="section-desc">Your private, judgment-free space.</p>
-        
+
         <div class="chat-container">
           <div class="chat-history" id="chat-history">
             <!-- Initial Soulie Message -->
@@ -111,7 +118,7 @@
               <div class="message-text" id="companion-greeting">Hi. I'm here with you.</div>
             </div>
           </div>
-          
+
           <div class="chat-input-area">
             <div class="quick-replies" id="quick-replies" style="margin-bottom: 12px;">
               <button class="chat-reply-btn" data-mood="overwhelmed">I feel overwhelmed</button>
@@ -122,22 +129,23 @@
             </div>
             <div class="chat-input-box">
               <input type="text" id="chat-input-field" placeholder="Type how you're feeling..." />
-              <button id="chat-send-btn" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; margin-top: 0;">Send</button>
+              <button id="chat-send-btn" class="btn-primary"
+                style="width: auto; padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; margin-top: 0;">Send</button>
             </div>
           </div>
         </div>
       </section>
-      
+
     </div>
 
     <!-- ==================== JOURNAL VIEW ==================== -->
     <div id="view-journal" class="app-view hidden fade-in">
-      
+
       <!-- 4. Journal Section -->
       <section class="journal-input" style="margin-top: 20px;">
         <h2>Diary</h2>
         <p class="section-desc">Write your thoughts or revisit past entries.</p>
-        
+
         <div class="journal-tabs">
           <button class="tab-btn active" data-tab="write-entry">Write Entry</button>
           <button class="tab-btn" data-tab="calendar">Calendar</button>
@@ -163,11 +171,14 @@
         <div id="calendar-section" class="hidden">
           <div class="card glass" style="padding: 20px;">
             <div id="calendar-grid" class="calendar-grid"></div>
-            
-            <div id="calendar-entry-view" class="hidden" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eaeaea;">
-               <h4 id="calendar-entry-date" style="margin-bottom: 4px;"></h4>
-               <p id="calendar-entry-mood" style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; text-transform: capitalize;"></p>
-               <p id="calendar-entry-text" style="line-height: 1.5; color: var(--text-dark);"></p>
+
+            <div id="calendar-entry-view" class="hidden"
+              style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eaeaea;">
+              <h4 id="calendar-entry-date" style="margin-bottom: 4px;"></h4>
+              <p id="calendar-entry-mood"
+                style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; text-transform: capitalize;">
+              </p>
+              <p id="calendar-entry-text" style="line-height: 1.5; color: var(--text-dark);"></p>
             </div>
           </div>
         </div>
@@ -177,11 +188,11 @@
 
     <!-- ==================== SUPPORT VIEW ==================== -->
     <div id="view-support" class="app-view hidden fade-in">
-      
+
       <section id="find-support" class="support-section" style="margin-top: 20px;">
         <h2>Find Support</h2>
         <p class="section-desc">Explore and book professional wellness services tailored to you.</p>
-        
+
         <!-- Category Filters -->
         <div class="category-filters" id="support-categories">
           <button class="category-chip active" data-category="all">All</button>
@@ -196,7 +207,7 @@
           <!-- Cards populated by JavaScript -->
         </div>
       </section>
-      
+
     </div>
 
     <!-- Booking Confirmation Modal (Simple) -->
@@ -211,17 +222,17 @@
 
     <!-- ==================== REGULATE VIEW ==================== -->
     <div id="view-regulate" class="app-view hidden fade-in">
-      
+
       <!-- 7. Regulate Your Body Section -->
       <section id="regulate" class="regulation-tools" style="margin-top: 20px;">
         <h2>Regulate Your Body</h2>
         <p class="section-desc">Small body-based exercises to help you feel grounded and supported.</p>
-        
+
         <div id="regulation-cards-container" class="grid-2col">
           <!-- Cards populated by JavaScript -->
         </div>
       </section>
-      
+
     </div>
 
   </main>
@@ -253,4 +264,5 @@
   <!-- JavaScript file -->
   <script src="script.js"></script>
 </body>
+
 </html>
