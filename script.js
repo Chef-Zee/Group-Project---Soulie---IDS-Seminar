@@ -204,42 +204,159 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dailyQuestions = "1. How did my body feel today?\n2. What is one good thing that happened?\n3. What do I need tomorrow?";
 
-    const supportRecommendations = {
-        stressed: [
-            { title: "Zen Morning Meditation", category: "Meditation", desc: "Guided session to ground your energy and find focus.", type: "Online", icon: "🧘" },
-            { title: "Flow & Release Yoga", category: "Yoga", desc: "Gentle movement to release physical tension from stress.", type: "In-Person", icon: "🧘‍♀️" },
-            { title: "Box Breathing Workshop", category: "Breathwork", desc: "Learn techniques to reset your nervous system instantly.", type: "Online", icon: "🌬️" }
-        ],
-        anxious: [
-            { title: "Calm Mind Meditation", category: "Meditation", desc: "Soft guidance to quiet racing thoughts and anxiety.", type: "Online", icon: "🧘" },
-            { title: "Restorative Yoga", category: "Yoga", desc: "Slow, supported poses to soothe the nervous system.", type: "In-Person", icon: "🧘‍♀️" },
-            { title: "1-on-1 Counseling", category: "Counseling", desc: "Private space to explore and manage anxious patterns.", type: "Online", icon: "💬" }
-        ],
-        overwhelmed: [
-            { title: "Grounding Breathwork", category: "Breathwork", desc: "Simple patterns to help you feel present and anchored.", type: "Online", icon: "🌬️" },
-            { title: "Slow Flow Yoga", category: "Yoga", desc: "Mindful movement at a pace that feels manageable.", type: "In-Person", icon: "🧘‍♀️" },
-            { title: "Crisis Support Chat", category: "Counseling", desc: "Immediate, short-term support for moments of high pressure.", type: "Online", icon: "💬" }
-        ],
-        lonely: [
-            { title: "Student Peer Circles", category: "Support Groups", desc: "Weekly gathering to share and connect with others.", type: "In-Person", icon: "👥" },
-            { title: "Therapeutic Counseling", category: "Counseling", desc: "Build a supportive relationship and explore connection.", type: "Online", icon: "💬" },
-            { title: "Community Yoga Flow", category: "Yoga", desc: "Connect with your body in a warm, shared environment.", type: "In-Person", icon: "🧘‍♀️" }
-        ],
-        burned_out: [
-            { title: "Deep Rest Meditation", category: "Meditation", desc: "Yoga Nidra inspired rest for complete mental recovery.", type: "Online", icon: "🛌" },
-            { title: "Burnout Recovery Group", category: "Support Groups", desc: "Shared strategies for boundary setting and recovery.", type: "Online", icon: "👥" },
-            { title: "Gentle Somatic Yoga", category: "Yoga", desc: "Effortless movement to reconnect with your body safely.", type: "In-Person", icon: "🧘‍♀️" }
-        ],
-        angry: [
-            { title: "Release & Reset Breath", category: "Breathwork", desc: "Active techniques to transform and release fiery energy.", type: "Online", icon: "🌬️" },
-            { title: "Dynamic Movement Yoga", category: "Yoga", desc: "High-energy flow to channel frustration into strength.", type: "In-Person", icon: "🧘‍♀️" },
-            { title: "Communication Coaching", category: "Counseling", desc: "Tools to express needs and boundaries effectively.", type: "Online", icon: "💬" }
-        ],
-        calm: [
-            { title: "Daily Mindful Flow", category: "Yoga", desc: "Maintain your peace with a balanced daily practice.", type: "In-Person", icon: "🧘‍♀️" },
-            { title: "Gratitude Meditation", category: "Meditation", desc: "Deepen your sense of well-being through reflection.", type: "Online", icon: "🧘" },
-            { title: "Self-Growth Workshop", category: "Support Groups", desc: "Explore life goals in a structured, supportive group.", type: "Online", icon: "🌱" }
-        ]
+    // ===== Find Nearby Support — mock data & flow =====
+    const nearbyCentersData = [
+        { id: 1, name: "Serenity Mindfulness Studio", type: "Meditation", icon: "🧘", address: "12 Rue de la Paix, 75001 Paris", desc: "A peaceful urban retreat offering guided meditation, breathwork, and mindfulness classes for all levels.", distance: "0.3 km" },
+        { id: 2, name: "The Yoga Loft", type: "Yoga", icon: "🧘‍♀️", address: "47 Boulevard Saint-Germain, 75005 Paris", desc: "Community-focused yoga studio with restorative, vinyasa, and yin classes. Welcoming to beginners.", distance: "0.6 km" },
+        { id: 3, name: "Open Mind Counseling", type: "Counseling", icon: "💬", address: "8 Rue du Temple, 75004 Paris", desc: "Confidential individual and group counseling for students and young professionals dealing with stress, anxiety, and burnout.", distance: "0.9 km" },
+        { id: 4, name: "Breath & Be Studio", type: "Breathwork", icon: "🌬️", address: "23 Rue Montorgueil, 75002 Paris", desc: "Specializing in somatic breathwork and nervous system regulation techniques. Drop-in sessions available.", distance: "1.1 km" },
+        { id: 5, name: "Circle of Care", type: "Support Groups", icon: "👥", address: "5 Passage Brady, 75010 Paris", desc: "Weekly peer support circles for loneliness, academic pressure, and life transitions. All genders welcome.", distance: "1.4 km" },
+        { id: 6, name: "Calm Space Therapy", type: "Counseling", icon: "💬", address: "31 Rue de Rivoli, 75004 Paris", desc: "Short-term therapeutic consultations in a safe, judgment-free space. First session free for students.", distance: "1.7 km" },
+        { id: 7, name: "Lotus Flow Yoga", type: "Yoga", icon: "🧘‍♀️", address: "18 Rue de Bretagne, 75003 Paris", desc: "Hot and gentle yoga classes in a beautiful studio space. Specializes in stress relief and flexibility.", distance: "2.0 km" },
+        { id: 8, name: "Rise Together Group", type: "Support Groups", icon: "👥", address: "64 Rue Oberkampf, 75011 Paris", desc: "Themed monthly meetups focused on resilience, self-compassion, and community connection.", distance: "2.3 km" }
+    ];
+
+    // Track the currently selected center for the booking flow
+    let selectedCenter = null;
+
+    // Show a support panel by name ('search' | 'results' | 'detail' | 'booking' | 'success')
+    window.showSupportPanel = (name) => {
+        document.querySelectorAll('.support-panel').forEach(p => {
+            p.classList.remove('active-panel');
+            p.classList.add('hidden');
+        });
+        const target = document.getElementById(`support-panel-${name}`);
+        if (target) {
+            target.classList.remove('hidden');
+            target.classList.add('active-panel');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Step 1: Search
+    window.findNearbySupport = () => {
+        const address = document.getElementById('nearby-address-input').value.trim();
+        if (!address) {
+            document.getElementById('nearby-address-input').focus();
+            return;
+        }
+
+        // Simulate a brief loading feel, then show results
+        const btn = document.querySelector('.nearby-search-btn');
+        btn.textContent = 'Searching…';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            btn.textContent = 'Find Nearby Support';
+            btn.disabled = false;
+
+            const label = document.getElementById('nearby-results-label');
+            if (label) label.textContent = `Results near "${address}"`;
+
+            renderNearbyResults();
+            showSupportPanel('results');
+        }, 900);
+    };
+
+    // Step 2: Render result cards
+    const renderNearbyResults = () => {
+        const grid = document.getElementById('nearby-results-grid');
+        if (!grid) return;
+        grid.innerHTML = nearbyCentersData.map(center => `
+            <div class="support-card nearby-result-card" onclick="viewCenterDetail(${center.id})">
+                <div class="nearby-result-top">
+                    <span class="nearby-result-icon">${center.icon}</span>
+                    <span class="nearby-distance-badge">${center.distance}</span>
+                </div>
+                <div class="support-category">${center.type}</div>
+                <h3>${center.name}</h3>
+                <p class="support-desc">${center.desc}</p>
+                <button class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.88rem; margin-top: auto;"
+                    onclick="event.stopPropagation(); viewCenterDetail(${center.id})">View Details</button>
+            </div>
+        `).join('');
+    };
+
+    // Step 3: Show detail view
+    window.viewCenterDetail = (centerId) => {
+        selectedCenter = nearbyCentersData.find(c => c.id === centerId);
+        if (!selectedCenter) return;
+
+        const detailCard = document.getElementById('nearby-detail-card');
+        if (detailCard) {
+            detailCard.innerHTML = `
+                <div class="detail-icon">${selectedCenter.icon}</div>
+                <div class="detail-type-chip">${selectedCenter.type}</div>
+                <h3 class="detail-name">${selectedCenter.name}</h3>
+                <p class="detail-address">📍 ${selectedCenter.address}</p>
+                <p class="detail-desc">${selectedCenter.desc}</p>
+                <button class="btn-primary" style="margin-top: 28px;" onclick="openBookingForm()">Book Appointment</button>
+            `;
+        }
+        showSupportPanel('detail');
+    };
+
+    // Step 4: Open booking form
+    window.openBookingForm = () => {
+        if (!selectedCenter) return;
+        const nameEl = document.getElementById('booking-center-name');
+        const typeEl = document.getElementById('booking-center-type');
+        if (nameEl) nameEl.textContent = selectedCenter.name;
+        if (typeEl) typeEl.textContent = selectedCenter.type;
+
+        // Set min date to today
+        const dateInput = document.getElementById('booking-date');
+        if (dateInput) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+            dateInput.value = '';
+        }
+        const timeInput = document.getElementById('booking-time');
+        if (timeInput) timeInput.value = '';
+
+        showSupportPanel('booking');
+    };
+
+    // Step 5: Confirm booking
+    window.confirmBooking = () => {
+        const dateInput = document.getElementById('booking-date');
+        const timeInput = document.getElementById('booking-time');
+        const date = dateInput ? dateInput.value : '';
+        const time = timeInput ? timeInput.value : '';
+
+        if (!date || !time) {
+            alert('Please choose both a date and a time to continue.');
+            return;
+        }
+
+        // Format date nicely
+        const [y, m, d] = date.split('-');
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const prettyDate = `${months[parseInt(m,10)-1]} ${parseInt(d,10)}, ${y}`;
+
+        const successEl = document.getElementById('booking-success-details');
+        if (successEl && selectedCenter) {
+            successEl.innerHTML = `Your appointment at <strong>${selectedCenter.name}</strong><br>has been confirmed for <strong>${prettyDate}</strong> at <strong>${time}</strong>. We look forward to seeing you! 🌿`;
+        }
+
+        showSupportPanel('success');
+    };
+
+    // Legacy close modal (kept for safety)
+    window.closeBookingModal = () => {
+        const bm = document.getElementById('booking-modal');
+        if (bm) bm.classList.add('hidden');
+    };
+
+    const closeModal = document.querySelector('.close-modal');
+    if (closeModal) closeModal.onclick = window.closeBookingModal;
+
+    window.onclick = (event) => {
+        const bm = document.getElementById('booking-modal');
+        if (bm && event.target === bm) window.closeBookingModal();
     };
 
     const regulationToolsData = [
@@ -277,78 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const journalText = document.getElementById('journal-entry');
     const tabButtons = document.querySelectorAll('.tab-btn');
-    const supportCardsContainer = document.getElementById('support-cards-container');
     const regulationContainer = document.getElementById('regulation-cards-container');
-    const bookingModal = document.getElementById('booking-modal');
-    const closeModal = document.querySelector('.close-modal');
 
-    // Current category filter
-    let currentCategory = 'all';
-
-    const renderSupportCards = (mood) => {
-        if (!supportCardsContainer) return;
-        
-        let recommendations = supportRecommendations[mood] || supportRecommendations['calm'];
-        
-        // Filter by category if not 'all'
-        if (currentCategory !== 'all') {
-            recommendations = recommendations.filter(rec => rec.category === currentCategory);
-        }
-
-        if (recommendations.length === 0) {
-            supportCardsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">No ${currentCategory} sessions found for this mood. Try choosing "All" or a different category.</p>`;
-            return;
-        }
-
-        supportCardsContainer.innerHTML = recommendations.map(rec => `
-            <div class="support-card">
-                <div class="support-category">${rec.category}</div>
-                <h3>${rec.title}</h3>
-                <p class="support-desc">${rec.desc}</p>
-                <div class="support-footer">
-                    <span class="support-badge ${rec.type.toLowerCase() === 'online' ? 'online' : 'in-person'}">${rec.type}</span>
-                    <button class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-top: 0;" onclick="handleBook('${rec.title}', '${rec.icon}')">Book</button>
-                </div>
-            </div>
-        `).join('');
-    };
-
-    window.handleBook = (name, icon) => {
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = `
-            <div class="modal-icon">${icon || '📅'}</div>
-            <h2 class="modal-title">Booking confirmed!</h2>
-            <p class="modal-text">You've successfully requested a spot for <strong>${name}</strong>.</p>
-            <p class="modal-text">Look out for a confirmation email at your student address soon.</p>
-            <button class="btn-primary" onclick="closeBookingModal()">Got it</button>
-        `;
-        bookingModal.classList.remove('hidden');
-    };
-
-    window.closeBookingModal = () => {
-        bookingModal.classList.add('hidden');
-    };
-
-    if (closeModal) {
-        closeModal.onclick = closeBookingModal;
-    }
-
-    window.onclick = (event) => {
-        if (event.target == bookingModal) {
-            closeBookingModal();
-        }
-    };
-
-    // Category Filter Listeners
-    const categoryChips = document.querySelectorAll('.category-chip');
-    categoryChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            categoryChips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            currentCategory = chip.getAttribute('data-category');
-            renderSupportCards(selectedMood);
-        });
-    });
 
     const renderRegulationTools = (mood) => {
         const sortedTools = [...regulationToolsData].sort((a, b) => {
@@ -374,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initial render
-    renderSupportCards('calm');
     renderRegulationTools('calm');
 
     // 4. Chat Reply & Input Logic
@@ -419,9 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }, 600);
         
-        // (no guided-prompt tab — prompt is always visible in Write Entry)
-        
-        renderSupportCards(selectedMood);
+        // Update regulation tools based on mood
         renderRegulationTools(selectedMood);
     };
 
@@ -571,7 +615,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             journalText.value = '';
             renderCalendar();
-            renderSupportCards(detectedMood);
             renderRegulationTools(detectedMood);
         });
     }

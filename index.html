@@ -190,22 +190,73 @@
     <div id="view-support" class="app-view hidden fade-in">
 
       <section id="find-support" class="support-section" style="margin-top: 20px;">
-        <h2>Find Support</h2>
-        <p class="section-desc">Explore and book professional wellness services tailored to you.</p>
+        <h2>Find Nearby Support</h2>
+        <p class="section-desc">Discover wellness &amp; emotional support services near you.</p>
 
-        <!-- Category Filters -->
-        <div class="category-filters" id="support-categories">
-          <button class="category-chip active" data-category="all">All</button>
-          <button class="category-chip" data-category="Meditation">Meditation</button>
-          <button class="category-chip" data-category="Yoga">Yoga</button>
-          <button class="category-chip" data-category="Counseling">Counseling</button>
-          <button class="category-chip" data-category="Breathwork">Breathwork</button>
-          <button class="category-chip" data-category="Support Groups">Groups</button>
+        <!-- PANEL 1: Search -->
+        <div id="support-panel-search" class="support-panel active-panel">
+          <div class="nearby-search-box">
+            <input type="text" id="nearby-address-input" class="form-input" placeholder="Enter your address or area…" />
+            <button class="btn-primary nearby-search-btn" onclick="findNearbySupport()">Find Nearby Support</button>
+          </div>
         </div>
 
-        <div id="support-cards-container" class="support-grid">
-          <!-- Cards populated by JavaScript -->
+        <!-- PANEL 2: Results list -->
+        <div id="support-panel-results" class="support-panel hidden">
+          <div class="nearby-back-row">
+            <button class="back-link" onclick="showSupportPanel('search')">← Back</button>
+            <span id="nearby-results-label" class="nearby-results-label"></span>
+          </div>
+          <div id="nearby-results-grid" class="support-grid">
+            <!-- Result cards injected by JS -->
+          </div>
         </div>
+
+        <!-- PANEL 3: Center detail -->
+        <div id="support-panel-detail" class="support-panel hidden">
+          <div class="nearby-back-row">
+            <button class="back-link" onclick="showSupportPanel('results')">← Back to Results</button>
+          </div>
+          <div id="nearby-detail-card" class="nearby-detail-card glass">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- PANEL 4: Booking form -->
+        <div id="support-panel-booking" class="support-panel hidden">
+          <div class="nearby-back-row">
+            <button class="back-link" onclick="showSupportPanel('detail')">← Back</button>
+          </div>
+          <div class="card glass booking-form-card">
+            <h3 id="booking-center-name" style="margin-bottom: 4px;"></h3>
+            <p id="booking-center-type" class="support-category" style="margin-bottom: 24px;"></p>
+            <label class="booking-label">Choose a date</label>
+            <input type="date" id="booking-date" class="form-input booking-input" />
+            <label class="booking-label" style="margin-top: 16px;">Choose a time</label>
+            <select id="booking-time" class="form-input booking-input">
+              <option value="">-- Select a time --</option>
+              <option value="09:00 AM">09:00 AM</option>
+              <option value="10:00 AM">10:00 AM</option>
+              <option value="11:00 AM">11:00 AM</option>
+              <option value="01:00 PM">01:00 PM</option>
+              <option value="02:00 PM">02:00 PM</option>
+              <option value="03:00 PM">03:00 PM</option>
+              <option value="04:30 PM">04:30 PM</option>
+            </select>
+            <button class="btn-primary" style="margin-top: 24px;" onclick="confirmBooking()">Confirm Appointment</button>
+          </div>
+        </div>
+
+        <!-- PANEL 5: Booking success -->
+        <div id="support-panel-success" class="support-panel hidden">
+          <div class="card glass booking-success-card">
+            <div class="booking-success-icon">🎉</div>
+            <h3>Appointment Booked!</h3>
+            <p id="booking-success-details" class="booking-success-text"></p>
+            <button class="btn-primary" style="margin-top: 24px;" onclick="showSupportPanel('search')">Find Another</button>
+          </div>
+        </div>
+
       </section>
 
     </div>

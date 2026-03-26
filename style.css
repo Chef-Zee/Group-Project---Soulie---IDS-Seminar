@@ -1038,3 +1038,191 @@ body {
   outline: none;
   border-color: var(--primary-color);
 }
+
+/* ===== Find Nearby Support Panels ===== */
+.support-panel {
+  animation: fadeInOut 0.35s ease forwards;
+}
+
+.support-panel.hidden {
+  display: none;
+}
+
+.support-panel.active-panel {
+  display: block;
+}
+
+/* Search box */
+.nearby-search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.nearby-search-btn {
+  width: 100%;
+}
+
+/* Back row */
+.nearby-back-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.back-link {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--primary-hover);
+  cursor: pointer;
+  padding: 4px 0;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--text-dark); }
+
+.nearby-results-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Result card enhancements */
+.nearby-result-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nearby-result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.07);
+}
+
+.nearby-result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.nearby-result-icon {
+  font-size: 1.8rem;
+}
+
+.nearby-distance-badge {
+  background: rgba(163, 184, 163, 0.15);
+  border: 1px solid rgba(163, 184, 163, 0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  color: var(--primary-hover);
+  font-weight: 500;
+}
+
+/* Detail card */
+.nearby-detail-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.detail-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.detail-type-chip {
+  display: inline-block;
+  background: rgba(163, 184, 163, 0.15);
+  border: 1px solid rgba(163, 184, 163, 0.35);
+  color: var(--primary-hover);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 20px;
+  padding: 4px 14px;
+  margin-bottom: 16px;
+}
+
+.detail-name {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.detail-address {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+.detail-desc {
+  font-size: 1rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* Booking form */
+.booking-form-card {
+  text-align: left;
+}
+
+.booking-label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.booking-input {
+  margin-bottom: 0;
+  border-radius: 14px;
+}
+
+select.booking-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23707b78' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+/* Booking success */
+.booking-success-card {
+  text-align: center;
+  padding: 40px 28px;
+}
+
+.booking-success-icon {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+  animation: popIn 0.5s ease forwards;
+}
+
+.booking-success-text {
+  font-size: 1rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
