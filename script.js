@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .find(item => item.getAttribute('onclick').includes(viewId));
         if (navItem) navItem.classList.add('active');
 
+        // Dynamic rendering
+        if (viewId === 'view-journal') {
+            if (typeof renderCalendar === 'function') renderCalendar();
+        }
+
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
@@ -554,32 +559,383 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+    // ----------------------------------------------------
+    // REGULATION TOOLS - Interactive Engine
+    // ----------------------------------------------------
+
     const regulationToolsData = [
         {
+            id: 'tool-box-breathing',
             name: "Box Breathing",
             purpose: "Reset your breath and slow your heart rate.",
-            instructions: "1. Inhale slowly for 4 seconds.<br>2. Hold your breath for 4 seconds.<br>3. Exhale completely for 4 seconds.<br>4. Hold empty for 4 seconds.<br>Repeat 4 times.",
-            bestFor: ['anxious', 'stressed', 'calm']
+            estimatedTime: "1-2 minutes",
+            bestFor: ['anxious', 'stressed', 'calm'],
+            type: 'breathing',
+            phases: [
+                { text: "Inhale...", duration: 4 },
+                { text: "Hold...", duration: 4 },
+                { text: "Exhale...", duration: 4 },
+                { text: "Hold empty...", duration: 4 }
+            ],
+            cycles: 4
         },
         {
+            id: 'tool-grounding',
             name: "5-4-3-2-1 Grounding",
             purpose: "Find your surroundings and return to the present.",
-            instructions: "Take a deep breath. Look around and silently name:<br>- 5 things you can see<br>- 4 things you can physically feel<br>- 3 things you can hear<br>- 2 things you can smell<br>- 1 thing you can taste",
-            bestFor: ['overwhelmed', 'lonely', 'anxious']
+            estimatedTime: "2-3 minutes",
+            bestFor: ['overwhelmed', 'lonely', 'anxious'],
+            type: 'stepper',
+            steps: [
+                "Take a deep, slow breath.",
+                "Look around. Silently name 5 things you can see.",
+                "Notice your body. Name 4 things you can physically feel.",
+                "Listen closely. Name 3 things you can hear.",
+                "Name 2 things you can smell (or your favorite smells).",
+                "Name 1 thing you can taste (or a comforting flavor).",
+                "Take one last deep breath. You are here."
+            ]
         },
         {
+            id: 'tool-body-scan',
             name: "60-Second Body Scan",
             purpose: "Check in with physical tension and release it.",
-            instructions: "Close your eyes. Start from your toes, slowly moving your awareness up your legs, torso, arms, and neck, all the way to the top of your head. Notice any tension, and breathe into it.",
-            bestFor: ['burned_out', 'stressed', 'calm']
+            estimatedTime: "1 minute",
+            bestFor: ['burned_out', 'stressed', 'calm'],
+            type: 'timer',
+            totalSeconds: 60,
+            prompts: [
+                { time: 60, text: "Close your eyes and take a slow breath in." },
+                { time: 50, text: "Notice your forehead, eyes, and jaw. Let them soften." },
+                { time: 40, text: "Drop your shoulders away from your ears." },
+                { time: 30, text: "Notice your chest rising and falling. Don't force it." },
+                { time: 20, text: "Soften your hands and let your arms rest heavy." },
+                { time: 10, text: "Feel the weight of your legs and feet against the floor." },
+                { time: 0,  text: "Slowly open your eyes." }
+            ]
         },
         {
+            id: 'tool-shoulder',
             name: "Shoulder Release",
             purpose: "Drop the physical weight you're carrying.",
-            instructions: "Inhale deeply and lift your shoulders all the way up to your ears. Hold for a moment. Exhale forcefully through your mouth, letting your shoulders drop completely. Repeat 3 times.",
-            bestFor: ['overwhelmed', 'burned_out', 'lonely']
+            estimatedTime: "1 minute",
+            bestFor: ['overwhelmed', 'burned_out', 'lonely', 'angry'],
+            type: 'timed-steps',
+            steps: [
+                { text: "Sit up slightly, feet flat on the floor.", duration: 5 },
+                { text: "Inhale deeply. Lift your shoulders all the way up to your ears.", duration: 6 },
+                { text: "Hold them there. Notice the tension.", duration: 5 },
+                { text: "Exhale forcefully through your mouth. Drop your shoulders completely.", duration: 6 },
+                { text: "Let's do that again. Inhale and lift shoulders up.", duration: 6 },
+                { text: "Hold the tension.", duration: 5 },
+                { text: "Exhale and drop them heavily.", duration: 6 },
+                { text: "Gently roll your shoulders back a few times.", duration: 7 }
+            ]
         }
     ];
+
+    // State tracking for active tools
+    const activeTools = {};
+
+    window.startTool = (toolId) => {
+        // Enforce single-activity: reset any currently running tools
+        Object.keys(activeTools).forEach(id => {
+            if (activeTools[id] && activeTools[id].isRunning) {
+                window.resetTool(id);
+            }
+        });
+
+        const tool = regulationToolsData.find(t => t.id === toolId);
+        if (!tool) return;
+
+        const container = document.getElementById(`${toolId}-content`);
+        const startBtn = document.getElementById(`${toolId}-start-btn`);
+        
+        startBtn.classList.add('hidden');
+        container.classList.remove('hidden');
+
+        activeTools[toolId] = { isRunning: true, currentStep: 0, cycle: 0, timer: null };
+
+        if (tool.type === 'stepper') {
+            renderStepperTool(tool, container);
+        } else if (tool.type === 'breathing') {
+            runBreathingTool(tool, container);
+        } else if (tool.type === 'timer') {
+            runTimerTool(tool, container);
+        } else if (tool.type === 'timed-steps') {
+            runTimedStepsTool(tool, container);
+        }
+    };
+
+    const endTool = (toolId, container) => {
+        clearInterval(activeTools[toolId].timer);
+        activeTools[toolId].isRunning = false;
+        container.innerHTML = `
+            <div class="tool-completed slide-in">
+                <span class="emoji" style="font-size:2rem; margin-bottom:8px; display:block;">✨</span>
+                <p style="font-weight:600; margin-bottom:16px;">Exercise complete</p>
+                <button class="btn-secondary" onclick="resetTool('${toolId}')">Start Over</button>
+            </div>
+        `;
+        
+        // Save to completedTools in localStorage
+        const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+        const today = new Date();
+        const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        
+        const completedToolsStr = localStorage.getItem('soulie_completed_tools');
+        let completedTools = completedToolsStr ? JSON.parse(completedToolsStr) : [];
+        const toolLabel = regulationToolsData.find(t => t.id === toolId)?.name || toolId;
+        
+        completedTools.push({
+            username: currentUser,
+            date: dateKey,
+            toolId: toolId,
+            toolName: toolLabel,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('soulie_completed_tools', JSON.stringify(completedTools));
+    };
+
+    window.resetTool = (toolId) => {
+        const tool = regulationToolsData.find(t => t.id === toolId);
+        const container = document.getElementById(`${toolId}-content`);
+        const startBtn = document.getElementById(`${toolId}-start-btn`);
+        
+        if (activeTools[toolId] && activeTools[toolId].timer) {
+            clearInterval(activeTools[toolId].timer);
+        }
+        activeTools[toolId] = null;
+        
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        startBtn.classList.remove('hidden');
+    };
+
+    // --- Interactive Tool Renderers ---
+
+    const renderStepperTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        
+        container.innerHTML = `
+            <div class="tool-active-area fade-in">
+                <p id="${tool.id}-stepper-text" class="tool-prompt" style="font-size:1.1rem; min-height:90px; transition: opacity 0.3s;"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                    <span id="${tool.id}-stepper-count" style="font-size:0.85rem; color:var(--text-light);"></span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;" onclick="resetTool('${tool.id}')">Stop</button>
+                        <button id="${tool.id}-stepper-btn" class="btn-primary" style="padding: 8px 16px; font-size: 0.85rem;" onclick="progressStepper('${tool.id}')">Next</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const textEl = document.getElementById(`${tool.id}-stepper-text`);
+        const countEl = document.getElementById(`${tool.id}-stepper-count`);
+        const btnEl = document.getElementById(`${tool.id}-stepper-btn`);
+
+        const updateStep = (init = false) => {
+            const isLast = state.currentStep === tool.steps.length - 1;
+            const newText = tool.steps[state.currentStep];
+            
+            if (init && textEl) {
+                textEl.textContent = newText;
+                if (countEl) countEl.textContent = `${state.currentStep + 1} / ${tool.steps.length}`;
+                if (btnEl) btnEl.textContent = isLast ? 'Finish' : 'Next';
+            } else if (textEl) {
+                textEl.style.opacity = '0';
+                setTimeout(() => {
+                    if (!state.isRunning) return;
+                    textEl.textContent = newText;
+                    textEl.style.opacity = '1';
+                    if (countEl) countEl.textContent = `${state.currentStep + 1} / ${tool.steps.length}`;
+                    if (btnEl) btnEl.textContent = isLast ? 'Finish' : 'Next';
+                }, 300);
+            }
+        };
+        updateStep(true);
+        
+        window.progressStepper = (id) => {
+            if (activeTools[id].currentStep >= tool.steps.length - 1) {
+                endTool(id, container);
+            } else {
+                activeTools[id].currentStep++;
+                updateStep();
+            }
+        };
+    };
+
+    const runBreathingTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        
+        // Initial DOM Setup
+        container.innerHTML = `
+            <div class="tool-active-area fade-in" style="text-align:center;">
+                <div id="${tool.id}-circle" style="
+                    width:80px; height:80px; border-radius:50%; background:var(--primary-color); opacity:0.2; 
+                    margin: 20px auto; transition: transform 4s ease-in-out;
+                    transform: scale(1);
+                "></div>
+                <h3 id="${tool.id}-text" style="margin-bottom:8px; font-weight:600;"></h3>
+                <p id="${tool.id}-cycle" style="font-size:0.85rem; color:var(--text-light); margin-bottom: 20px;"></p>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+        
+        const updatePhase = () => {
+            if (!state.isRunning) return;
+            if (state.cycle >= tool.cycles) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            const phase = tool.phases[state.currentStep];
+            
+            // Visual circle that grows/shrinks
+            let circleTransform = 'scale(1)';
+            if (phase.text.includes('Inhale')) circleTransform = 'scale(1.5)';
+            else if (phase.text.includes('Hold')) circleTransform = state.currentStep === 1 ? 'scale(1.5)' : 'scale(1)';
+            else if (phase.text.includes('Exhale')) circleTransform = 'scale(1)';
+
+            const circle = document.getElementById(`${tool.id}-circle`);
+            const textEl = document.getElementById(`${tool.id}-text`);
+            const cycleEl = document.getElementById(`${tool.id}-cycle`);
+
+            if (circle) {
+                circle.style.transition = `transform ${phase.duration}s ease-in-out`;
+                circle.style.transform = circleTransform;
+            }
+            if (textEl) textEl.textContent = phase.text;
+            if (cycleEl) cycleEl.textContent = `Cycle ${state.cycle + 1} of ${tool.cycles}`;
+
+            state.timer = setTimeout(() => {
+                state.currentStep++;
+                if (state.currentStep >= tool.phases.length) {
+                    state.currentStep = 0;
+                    state.cycle++;
+                }
+                updatePhase();
+            }, phase.duration * 1000);
+        };
+        
+        // Trigger first phase slightly delayed so CSS transition registers
+        setTimeout(updatePhase, 50);
+    };
+
+    const runTimerTool = (tool, container) => {
+        const state = activeTools[tool.id];
+        let secondsLeft = tool.totalSeconds;
+
+        container.innerHTML = `
+            <div class="tool-active-area" style="text-align:center;">
+                <div id="${tool.id}-timer-text" style="font-size:2.5rem; font-weight:300; margin-bottom:16px; font-variant-numeric: tabular-nums;"></div>
+                <p id="${tool.id}-prompt-text" class="tool-prompt" style="font-size:1.1rem; min-height:90px; transition: opacity 0.5s; margin-bottom:20px;"></p>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+        
+        const timeEl = document.getElementById(`${tool.id}-timer-text`);
+        const promptEl = document.getElementById(`${tool.id}-prompt-text`);
+        let currentPromptText = "";
+
+        const updateTimer = () => {
+            if (!state.isRunning) return;
+            if (secondsLeft <= 0) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            if (timeEl) timeEl.textContent = `0:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+
+            const currentPrompt = tool.prompts.find(p => secondsLeft <= p.time);
+            const newPromptText = currentPrompt ? currentPrompt.text : '';
+            
+            if (promptEl && newPromptText !== currentPromptText) {
+                if (currentPromptText === "") {
+                    // first load
+                    promptEl.textContent = newPromptText;
+                } else {
+                    // fade transition
+                    promptEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (!state.isRunning) return;
+                        promptEl.textContent = newPromptText;
+                        promptEl.style.opacity = '1';
+                    }, 500);
+                }
+                currentPromptText = newPromptText;
+            }
+
+            state.timer = setTimeout(() => {
+                secondsLeft--;
+                updateTimer();
+            }, 1000);
+        };
+        updateTimer();
+    };
+
+    const runTimedStepsTool = (tool, container) => {
+        const state = activeTools[tool.id];
+
+        // Initial DOM Setup
+        container.innerHTML = `
+            <div class="tool-active-area fade-in" style="text-align:center; padding: 20px 0;">
+                <p id="${tool.id}-step-text" class="tool-prompt" style="font-size:1.15rem; font-weight:500; min-height:80px; margin-bottom: 20px; transition: opacity 0.3s;"></p>
+                <div style="margin-top:20px; width:100%; height:4px; background:var(--bg-dark); border-radius:2px; overflow:hidden; margin-bottom: 20px;">
+                    <div id="${tool.id}-progress" style="height:100%; background:var(--primary-color); width:0%;"></div>
+                </div>
+                <button class="btn-secondary" onclick="resetTool('${tool.id}')">Stop Exercise</button>
+            </div>
+        `;
+
+        const textEl = document.getElementById(`${tool.id}-step-text`);
+        const barEl = document.getElementById(`${tool.id}-progress`);
+
+        const updateStep = () => {
+            if (!state.isRunning) return;
+            if (state.currentStep >= tool.steps.length) {
+                endTool(tool.id, container);
+                return;
+            }
+
+            const step = tool.steps[state.currentStep];
+            
+            if (textEl && textEl.textContent !== step.text) {
+                if (textEl.textContent === "") {
+                    textEl.textContent = step.text;
+                } else {
+                    textEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (!state.isRunning) return;
+                        textEl.textContent = step.text;
+                        textEl.style.opacity = '1';
+                    }, 300);
+                }
+            }
+            
+            // Reset bar instantly
+            if (barEl) {
+                barEl.style.transition = 'none';
+                barEl.style.width = '0%';
+            }
+
+            // Trigger progress bar animation in next tick
+            setTimeout(() => {
+                if (barEl && state.isRunning) {
+                    barEl.style.transition = `width ${step.duration}s linear`;
+                    barEl.style.width = '100%';
+                }
+            }, 50);
+
+            state.timer = setTimeout(() => {
+                state.currentStep++;
+                updateStep();
+            }, step.duration * 1000);
+        };
+        
+        // Short delay to establish DOM before animations start
+        setTimeout(updateStep, 50);
+    };
 
     // 3. Grab DOM Elements
     const chatHistory = document.getElementById('chat-history');
@@ -591,7 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const regulationContainer = document.getElementById('regulation-cards-container');
 
-
+    // Render original card list but wired up for interactivity
     const renderRegulationTools = (mood) => {
         const sortedTools = [...regulationToolsData].sort((a, b) => {
             const aMatch = a.bestFor.includes(mood || 'calm') ? 1 : 0;
@@ -604,11 +960,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="card tool-card glass ${isRecommended ? 'recommended' : ''}">
                     ${isRecommended ? '<span class="recommended-badge">Recommended</span>' : ''}
-                    <h3>${tool.name}</h3>
-                    <p class="tool-desc">${tool.purpose}</p>
-                    <button class="btn-secondary tool-toggle" onclick="this.nextElementSibling.classList.toggle('hidden');">Start</button>
-                    <div class="tool-content hidden">
-                        <p>${tool.instructions}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h3 style="margin-bottom:4px;">${tool.name}</h3>
+                            <span style="font-size:0.8rem; color:var(--text-light); background:var(--bg-dark); padding:2px 8px; border-radius:12px;">⏱ ${tool.estimatedTime}</span>
+                        </div>
+                    </div>
+                    <p class="tool-desc" style="margin-top:12px;">${tool.purpose}</p>
+                    
+                    <button id="${tool.id}-start-btn" class="btn-secondary tool-toggle" onclick="startTool('${tool.id}')">Start Exercise</button>
+                    
+                    <div id="${tool.id}-content" class="tool-interactive-content hidden" style="margin-top:20px; border-top:1px solid rgba(0,0,0,0.05); padding-top:16px;">
+                        <!-- Interactive content injected here -->
                     </div>
                 </div>
             `;
@@ -998,42 +1361,91 @@ document.addEventListener('DOMContentLoaded', () => {
         newPromptBtn.addEventListener('click', showRandomPrompt);
     }
 
+    let currentCalendarDate = new Date();
+    
+    // Wire up Calendar Nav Buttons
+    const prevMonthBtn = document.getElementById('prev-month-btn');
+    const nextMonthBtn = document.getElementById('next-month-btn');
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
+
     const renderCalendar = () => {
         if (!calendarGrid) return;
         calendarGrid.innerHTML = '';
 
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth(); // 0-11
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth(); // 0-11
+        
+        const calendarHeaderMonthYear = document.getElementById('calendar-month-year');
+        if (calendarHeaderMonthYear) {
+            const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            calendarHeaderMonthYear.textContent = `${mNames[month]} ${year}`;
+        }
 
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         const currentUser = localStorage.getItem('soulie_currentUser');
+        
         const entriesStr = localStorage.getItem('soulie_entries');
         const allEntries = entriesStr ? JSON.parse(entriesStr) : [];
+        
+        const completedToolsStr = localStorage.getItem('soulie_completed_tools');
+        const allCompletedTools = completedToolsStr ? JSON.parse(completedToolsStr) : [];
+        
+        const supportBookingsStr = localStorage.getItem('soulie_bookings');
+        const allSupportBookings = supportBookingsStr ? JSON.parse(supportBookingsStr) : [];
 
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'calendar-day';
-            dayDiv.innerText = i;
 
             const monthStr = String(month + 1).padStart(2, '0');
             const dayStr = String(i).padStart(2, '0');
             const dateKey = `${year}-${monthStr}-${dayStr}`;
 
             // Look for matching user AND date
-            const entry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
+            const dayEntry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
+            const dayTools = allCompletedTools.filter(t => t.username === currentUser && t.date === dateKey);
+            const dayBookings = allSupportBookings.filter(b => b.username === currentUser && b.rawDate === dateKey);
 
-            if (entry) {
+            dayDiv.innerText = '';
+            const numSpan = document.createElement('span');
+            numSpan.textContent = i;
+            dayDiv.appendChild(numSpan);
+
+            // Add indicator dots
+            if (dayEntry || dayTools.length > 0 || dayBookings.length > 0) {
                 dayDiv.classList.add('has-entry');
-                // Replace plain text with number + colored dot
-                dayDiv.innerText = '';
-                const numSpan = document.createElement('span');
-                numSpan.textContent = i;
-                const dot = document.createElement('div');
-                dot.className = `mood-dot mood-dot--${entry.mood}`;
-                dayDiv.appendChild(numSpan);
-                dayDiv.appendChild(dot);
+                
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'calendar-dots-container';
+                
+                if (dayEntry) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mood-dot dot-journal';
+                    dotsContainer.appendChild(dot);
+                }
+                if (dayTools.length > 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mood-dot dot-regulate';
+                    dotsContainer.appendChild(dot);
+                }
+                if (dayBookings.length > 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mood-dot dot-support';
+                    dotsContainer.appendChild(dot);
+                }
+                dayDiv.appendChild(dotsContainer);
             }
 
             dayDiv.addEventListener('click', () => {
@@ -1043,15 +1455,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 const viewEl = document.getElementById('calendar-entry-view');
                 document.getElementById('calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
 
-                if (entry) {
-                    const emoji = moodEmojis[entry.mood] || '✨';
-                    const label = moodLabels[entry.mood] || entry.mood;
+                // 1. Journal
+                const jContainer = document.getElementById('detail-journal');
+                const delBtn = document.getElementById('delete-journal-entry-btn');
+                if (dayEntry) {
+                    jContainer.classList.remove('hidden');
+                    const emoji = moodEmojis[dayEntry.mood] || '✨';
+                    const label = moodLabels[dayEntry.mood] || dayEntry.mood;
                     document.getElementById('calendar-entry-mood').innerText = `${emoji} Mood: ${label}`;
-                    document.getElementById('calendar-entry-text').innerText = entry.text;
+                    document.getElementById('calendar-entry-text').innerText = dayEntry.text;
+                    if (delBtn) {
+                        delBtn.style.display = 'inline-block';
+                        delBtn.onclick = () => {
+                            if (confirm('Are you sure you want to delete this journal entry?')) {
+                                const newEntries = allEntries.filter(e => !(e.username === currentUser && e.date === dateKey));
+                                localStorage.setItem('soulie_entries', JSON.stringify(newEntries));
+                                viewEl.classList.add('hidden');
+                                renderCalendar();
+                            }
+                        };
+                    }
                 } else {
-                    document.getElementById('calendar-entry-mood').innerText = '';
-                    document.getElementById('calendar-entry-text').innerText = 'No entry for this day.';
+                    jContainer.classList.add('hidden');
+                    if (delBtn) delBtn.style.display = 'none';
                 }
+                
+                // 2. Regulate Tools
+                const rContainer = document.getElementById('detail-regulate');
+                const rList = document.getElementById('calendar-entry-regulate-list');
+                if (dayTools.length > 0) {
+                    rContainer.classList.remove('hidden');
+                    rList.innerHTML = dayTools.map(t => `<li style="margin-bottom:4px;">Completed <b>${t.toolName}</b></li>`).join('');
+                } else {
+                    rContainer.classList.add('hidden');
+                }
+                
+                // 3. Support Bookings
+                const sContainer = document.getElementById('detail-support');
+                const sList = document.getElementById('calendar-entry-support-list');
+                if (dayBookings.length > 0) {
+                    sContainer.classList.remove('hidden');
+                    sList.innerHTML = dayBookings.map(b => `<li style="margin-bottom:8px;"><b>${b.centerName}</b><br><span style="font-size:0.85rem; color:var(--text-light);">${b.time}</span></li>`).join('');
+                } else {
+                    sContainer.classList.add('hidden');
+                }
+                
+                // Show empty state if nothing
+                if (!dayEntry && dayTools.length === 0 && dayBookings.length === 0) {
+                    jContainer.classList.remove('hidden');
+                    document.getElementById('calendar-entry-mood').innerText = '';
+                    document.getElementById('calendar-entry-text').innerText = 'No wellness activity recorded for this day.';
+                }
+
                 viewEl.classList.remove('hidden');
             });
 
@@ -1109,25 +1564,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (tabButtons) {
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-
-                const tab = btn.getAttribute('data-tab');
-
-                if (tab === 'write-entry') {
-                    writeEntrySection.classList.remove('hidden');
-                    calendarSection.classList.add('hidden');
-                } else if (tab === 'calendar') {
-                    writeEntrySection.classList.add('hidden');
-                    calendarSection.classList.remove('hidden');
-                    renderCalendar();
-                }
-            });
-        });
-    }
+    // Dismiss calendar detail view when clicking outside
+    document.addEventListener('click', (e) => {
+        const calendarSection = document.getElementById('calendar-section');
+        const calendarView = document.getElementById('calendar-entry-view');
+        
+        // If clicking outside the entire calendar section
+        if (calendarSection && !calendarSection.contains(e.target)) {
+            if (calendarView && !calendarView.classList.contains('hidden')) {
+                calendarView.classList.add('hidden');
+                document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('active-day'));
+            }
+        }
+    });
 
     // Initialize Auth state on load
     const savedUser = localStorage.getItem('soulie_currentUser');

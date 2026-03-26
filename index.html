@@ -20,7 +20,9 @@
 <body>
   <!-- Navigation bar -->
   <nav class="navbar">
-    <div class="logo">Soulie</div>
+    <div class="logo">
+      <img src="logo.png" alt="Soulie Logo" style="height: 32px; width: auto; object-fit: contain;">
+    </div>
     <button id="logout-btn" class="logout-btn" style="display: none;" onclick="handleLogout()">Log out</button>
   </nav>
 
@@ -85,8 +87,8 @@
           </div>
           <div class="card glass feature-card" onclick="switchView('view-journal')">
             <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">📝</span>
-            <h3 style="margin-bottom: 4px;">Journaling</h3>
-            <p style="font-size: 0.95rem; color: var(--text-light);">Free write or guided prompts.</p>
+            <h3 style="margin-bottom: 4px;">Keep Track</h3>
+            <p style="font-size: 0.95rem; color: var(--text-light);">Log feelings, tools, and bookings.</p>
           </div>
           <div class="card glass feature-card" onclick="switchView('view-support')">
             <span class="emoji" style="font-size: 2rem; margin-bottom: 8px; display:block;">🤝</span>
@@ -143,15 +145,11 @@
 
       <!-- 4. Journal Section -->
       <section class="journal-input" style="margin-top: 20px;">
-        <h2>Diary</h2>
-        <p class="section-desc">Write your thoughts or revisit past entries.</p>
+        <h2>Keep Track</h2>
+        <p class="section-desc">View your wellness timeline and record new entries.</p>
 
-        <div class="journal-tabs">
-          <button class="tab-btn active" data-tab="write-entry">Write Entry</button>
-          <button class="tab-btn" data-tab="calendar">Calendar</button>
-        </div>
-
-        <div id="write-entry-section">
+        <!-- Write Entry Section -->
+        <div id="write-entry-section" style="margin-bottom: 40px;">
           <!-- Guided Reflection Prompt -->
           <div class="prompt-card">
             <div class="prompt-header">
@@ -168,17 +166,68 @@
           <p id="mood-feedback" class="mood-feedback" style="display: none;"></p>
         </div>
 
-        <div id="calendar-section" class="hidden">
-          <div class="card glass" style="padding: 20px;">
+        <!-- Calendar Timeline Section -->
+        <div id="calendar-section" class="compact-calendar" style="margin-bottom: 30px;">
+          <div class="card glass" style="padding: 16px;">
+
+            <!-- Calendar Navigation Header -->
+            <div id="calendar-header"
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <button id="prev-month-btn" class="calendar-nav-btn"
+                style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&lt;</button>
+              <h3 id="calendar-month-year"
+                style="margin: 0; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light);">
+                Month Year</h3>
+              <button id="next-month-btn" class="calendar-nav-btn"
+                style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&gt;</button>
+            </div>
+
             <div id="calendar-grid" class="calendar-grid"></div>
 
             <div id="calendar-entry-view" class="hidden"
-              style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eaeaea;">
-              <h4 id="calendar-entry-date" style="margin-bottom: 4px;"></h4>
-              <p id="calendar-entry-mood"
-                style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; text-transform: capitalize;">
-              </p>
-              <p id="calendar-entry-text" style="line-height: 1.5; color: var(--text-dark);"></p>
+              style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+
+              <h4 id="calendar-entry-date"
+                style="margin-bottom: 12px; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 4px; font-size: 0.9rem;">
+              </h4>
+
+              <!-- Journal Detail Container -->
+              <div id="detail-journal" class="hidden"
+                style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #a0a0ae;">
+                <div
+                  style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                  <p id="calendar-entry-mood"
+                    style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
+                  </p>
+                  <button id="delete-journal-entry-btn" title="Delete Entry"
+                    style="background: none; border: none; font-size: 1.2rem; color: var(--text-light); cursor: pointer; opacity: 0.5; display: none; padding: 0 4px; line-height: 1;">&times;</button>
+                </div>
+                <p id="calendar-entry-text"
+                  style="line-height: 1.4; color: var(--text-dark); font-size: 0.9rem; margin: 0;"></p>
+              </div>
+
+              <!-- Regulate Detail Container -->
+              <div id="detail-regulate" class="hidden"
+                style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #6BA1D2;">
+                <p
+                  style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6BA1D2; margin-bottom: 6px;">
+                  Regulate Tools</p>
+                <ul id="calendar-entry-regulate-list"
+                  style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;">
+                </ul>
+              </div>
+
+              <!-- Support Detail Container -->
+              <div id="detail-support" class="hidden"
+                style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #A189C6;">
+                <p
+                  style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #A189C6; margin-bottom: 6px;">
+                  Support Bookings</p>
+                <ul id="calendar-entry-support-list"
+                  style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;">
+                </ul>
+              </div>
+
             </div>
           </div>
         </div>
@@ -355,7 +404,7 @@
     </button>
     <button class="nav-item" onclick="switchView('view-journal')">
       <span class="emoji">📝</span>
-      <span class="nav-label">Journal</span>
+      <span class="nav-label">Keep Track</span>
     </button>
     <button class="nav-item" onclick="switchView('view-support')">
       <span class="emoji">🤝</span>

@@ -122,6 +122,9 @@ h2 {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--primary-color);
@@ -315,9 +318,9 @@ section {
 .prompt-card {
   background: linear-gradient(135deg, rgba(196, 215, 224, 0.35) 0%, rgba(220, 208, 227, 0.35) 100%);
   border: 1px solid rgba(196, 215, 224, 0.5);
-  border-radius: 16px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
 }
 
 .prompt-header {
@@ -356,7 +359,7 @@ section {
 }
 
 .prompt-text {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: var(--text-dark);
   font-style: italic;
   line-height: 1.5;
@@ -535,6 +538,7 @@ section {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  align-items: start;
 }
 
 @media (min-width: 600px) {
@@ -567,13 +571,19 @@ section {
   padding: 10px 24px;
 }
 
-.tool-content {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(0,0,0,0.05);
-  font-size: 0.95rem;
-  color: var(--text-dark);
-  line-height: 1.5;
+/* =========================================================================
+   6. Regulation Tools (Interactive)
+   ========================================================================= */
+
+.regulation-tools {
+  margin-top: 20px;
+}
+
+.tool-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .tool-card.recommended {
@@ -582,16 +592,74 @@ section {
 }
 
 .recommended-badge {
-  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
   background: var(--primary-color);
   color: #fff;
   font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 8px;
-  border-radius: 10px;
-  margin-bottom: 12px;
+  padding: 4px 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.tool-desc {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.tool-toggle {
   align-self: flex-start;
+  margin-top: auto;
+  width: auto;
+  padding: 10px 24px;
+}
+
+/* Interactive Areas inside the card */
+.tool-interactive-content {
+  margin-top: 16px;
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.tool-active-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-prompt {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.tool-completed {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+
+/* General Animations */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 4. Journal Input */
@@ -605,7 +673,7 @@ section {
 
 textarea {
   width: 100%;
-  height: 130px;
+  min-height: 150px;
   border: 1px solid transparent;
   border-radius: calc(var(--border-radius) - 4px);
   padding: 18px;
@@ -655,20 +723,49 @@ textarea:focus {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
 }
 
-/* Mood dot indicator */
+/* Calendar Indicator Dots */
+.calendar-dots-container {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+}
+
 .mood-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-.mood-dot--calm       { background: #8fc98f; }   /* soft green */
-.mood-dot--stressed   { background: #e8c46a; }   /* warm yellow */
-.mood-dot--lonely     { background: #7ab3d4; }   /* soft blue */
-.mood-dot--overwhelmed{ background: #b39dcc; }   /* muted purple */
-.mood-dot--burned_out { background: #7a5e99; }   /* dark muted purple */
-.mood-dot--angry      { background: #e07070; }   /* soft red */
 
+/* Journal Colors */
+.dot-journal          { background: #a0a0ae; }   /* nice soft gray */
+
+/* Activity Colors */
+.dot-regulate         { background: #6BA1D2; }   /* bright soft blue */
+.dot-support          { background: #A189C6; }   /* warm purple */
+
+/* Compact Calendar Styles */
+.compact-calendar .card {
+  padding: 12px !important;
+}
+.compact-calendar .calendar-grid {
+  gap: 4px;
+}
+.compact-calendar .calendar-day {
+  padding: 6px;
+  font-size: 0.85rem;
+  min-height: 40px;
+}
+.compact-calendar .calendar-dots-container {
+  gap: 2px;
+  margin-top: 2px;
+}
+.compact-calendar .mood-dot {
+  width: 5px;
+  height: 5px;
+}
 
 textarea::placeholder {
   color: #aab;
