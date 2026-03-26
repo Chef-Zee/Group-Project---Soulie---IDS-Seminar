@@ -195,8 +195,10 @@
 
         <!-- Tab bar -->
         <div class="support-tabs">
-          <button class="support-tab-btn active" data-tab="find" onclick="switchSupportTab('find')">Find Support</button>
-          <button class="support-tab-btn" data-tab="mybookings" onclick="switchSupportTab('mybookings')">My Bookings</button>
+          <button class="support-tab-btn active" data-tab="find" onclick="switchSupportTab('find')">Find
+            Support</button>
+          <button class="support-tab-btn" data-tab="mybookings" onclick="switchSupportTab('mybookings')">My
+            Bookings</button>
         </div>
 
         <!-- ====== FIND TAB ====== -->
@@ -205,7 +207,8 @@
           <!-- PANEL 1: Search -->
           <div id="support-panel-search" class="support-panel active-panel">
             <div class="nearby-search-box">
-              <input type="text" id="nearby-address-input" class="form-input" placeholder="Enter your address or area…" />
+              <input type="text" id="nearby-address-input" class="form-input"
+                placeholder="Enter your address or area…" />
               <button class="btn-primary nearby-search-btn" onclick="findNearbySupport()">Find Nearby Support</button>
             </div>
           </div>
@@ -279,8 +282,10 @@
               </select>
               <label class="booking-label" style="margin-top: 16px;">Your email address</label>
               <input type="email" id="booking-email" class="form-input booking-input" placeholder="you@example.com" />
-              <span id="booking-email-error" class="booking-email-error hidden">Please enter a valid email address.</span>
-              <button class="btn-primary" style="margin-top: 24px;" onclick="confirmBooking()">Confirm Appointment</button>
+              <span id="booking-email-error" class="booking-email-error hidden">Please enter a valid email
+                address.</span>
+              <button class="btn-primary" style="margin-top: 24px;" onclick="confirmBooking()">Confirm
+                Appointment</button>
             </div>
           </div>
 
@@ -292,7 +297,8 @@
               <p id="booking-success-details" class="booking-success-text"></p>
               <div style="display:flex; flex-direction:column; gap:12px; margin-top:24px;">
                 <button class="btn-primary" onclick="switchSupportTab('mybookings')">View My Bookings</button>
-                <button class="btn-secondary" style="margin-top:0;" onclick="showSupportPanel('search')">Find Another</button>
+                <button class="btn-secondary" style="margin-top:0;" onclick="showSupportPanel('search')">Find
+                  Another</button>
               </div>
             </div>
           </div>
