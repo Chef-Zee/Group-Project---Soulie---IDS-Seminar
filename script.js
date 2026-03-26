@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .find(item => item.getAttribute('onclick').includes(viewId));
         if (navItem) navItem.classList.add('active');
 
+        // Dynamic rendering
+        if (viewId === 'view-journal') {
+            if (typeof renderCalendar === 'function') renderCalendar();
+        }
+
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
@@ -1452,14 +1457,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 1. Journal
                 const jContainer = document.getElementById('detail-journal');
+                const delBtn = document.getElementById('delete-journal-entry-btn');
                 if (dayEntry) {
                     jContainer.classList.remove('hidden');
                     const emoji = moodEmojis[dayEntry.mood] || '✨';
                     const label = moodLabels[dayEntry.mood] || dayEntry.mood;
                     document.getElementById('calendar-entry-mood').innerText = `${emoji} Mood: ${label}`;
                     document.getElementById('calendar-entry-text').innerText = dayEntry.text;
+                    if (delBtn) {
+                        delBtn.style.display = 'inline-block';
+                        delBtn.onclick = () => {
+                            if (confirm('Are you sure you want to delete this journal entry?')) {
+                                const newEntries = allEntries.filter(e => !(e.username === currentUser && e.date === dateKey));
+                                localStorage.setItem('soulie_entries', JSON.stringify(newEntries));
+                                viewEl.classList.add('hidden');
+                                renderCalendar();
+                            }
+                        };
+                    }
                 } else {
                     jContainer.classList.add('hidden');
+                    if (delBtn) delBtn.style.display = 'none';
                 }
                 
                 // 2. Regulate Tools
@@ -1543,26 +1561,6 @@ document.addEventListener('DOMContentLoaded', () => {
             journalText.value = '';
             renderCalendar();
             renderRegulationTools(detectedMood);
-        });
-    }
-
-    if (tabButtons) {
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-
-                const tab = btn.getAttribute('data-tab');
-
-                if (tab === 'write-entry') {
-                    writeEntrySection.classList.remove('hidden');
-                    calendarSection.classList.add('hidden');
-                } else if (tab === 'calendar') {
-                    writeEntrySection.classList.add('hidden');
-                    calendarSection.classList.remove('hidden');
-                    renderCalendar();
-                }
-            });
         });
     }
 
