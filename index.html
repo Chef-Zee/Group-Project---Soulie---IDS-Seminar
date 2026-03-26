@@ -216,6 +216,31 @@
               <button class="back-link" onclick="showSupportPanel('search')">← Back</button>
               <span id="nearby-results-label" class="nearby-results-label"></span>
             </div>
+
+            <!-- Mood recommendation banner -->
+            <div id="support-recommendation-banner" class="support-recommendation-banner hidden">
+              <span class="recommendation-icon">✨</span>
+              <p id="support-recommendation-text"></p>
+            </div>
+
+            <!-- Category filter chips -->
+            <div class="results-filter-row">
+              <div class="results-chips" id="results-category-chips">
+                <button class="result-chip active" data-cat="all">All</button>
+                <button class="result-chip" data-cat="Meditation">Meditation</button>
+                <button class="result-chip" data-cat="Yoga">Yoga</button>
+                <button class="result-chip" data-cat="Counseling">Counseling</button>
+                <button class="result-chip" data-cat="Breathwork">Breathwork</button>
+                <button class="result-chip" data-cat="Support Groups">Groups</button>
+              </div>
+              <div class="results-sort">
+                <select id="results-sort-select" class="sort-select" onchange="applyResultsFilters()">
+                  <option value="nearest">Nearest</option>
+                  <option value="recommended">Recommended</option>
+                </select>
+              </div>
+            </div>
+
             <div id="nearby-results-grid" class="support-grid">
               <!-- Result cards injected by JS -->
             </div>

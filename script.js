@@ -241,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Simulate a brief loading feel, then show results
         const btn = document.querySelector('.nearby-search-btn');
         btn.textContent = 'Searching…';
         btn.disabled = true;
@@ -253,29 +252,116 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = document.getElementById('nearby-results-label');
             if (label) label.textContent = `Results near "${address}"`;
 
+            // Reset filters & sort to defaults each new search
+            currentResultsCategory = 'all';
+            currentResultsSort = 'nearest';
+            const sortSelect = document.getElementById('results-sort-select');
+            if (sortSelect) sortSelect.value = 'nearest';
+            document.querySelectorAll('.result-chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-cat') === 'all');
+            });
+
+            showRecommendationBanner();
             renderNearbyResults();
             showSupportPanel('results');
         }, 900);
     };
 
-    // Step 2: Render result cards
+    // Filter/sort state for results panel
+    let currentResultsCategory = 'all';
+    let currentResultsSort = 'nearest';
+
+    // Mood → recommended category mapping
+    const moodToCategory = {
+        stressed:    { cat: 'Breathwork',     msg: 'Based on your recent journal, Breathwork sessions may help you reset right now.' },
+        anxious:     { cat: 'Meditation',     msg: 'Your journal suggests some anxiety — Meditation could bring you calm.' },
+        overwhelmed: { cat: 'Breathwork',     msg: 'When things feel like too much, Breathwork can help you feel grounded.' },
+        lonely:      { cat: 'Support Groups', msg: 'You don\'t have to go through this alone — Support Groups are a great place to connect.' },
+        burned_out:  { cat: 'Meditation',     msg: 'Rest and recovery matter — Meditation sessions are recommended for burnout.' },
+        angry:       { cat: 'Yoga',           msg: 'Yoga can help channel and release intense emotions safely.' },
+        calm:        { cat: 'Yoga',           msg: 'You\'re feeling balanced — a Yoga class is a great way to maintain that peace.' }
+    };
+
+    // Show or hide the mood recommendation banner
+    const showRecommendationBanner = () => {
+        const banner = document.getElementById('support-recommendation-banner');
+        const text = document.getElementById('support-recommendation-text');
+        if (!banner || !text) return;
+        const rec = moodToCategory[selectedMood];
+        if (rec) {
+            text.textContent = rec.msg;
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+    };
+
+    // Apply current filter + sort and re-render — called by chips and sort select
+    window.applyResultsFilters = () => {
+        const sortEl = document.getElementById('results-sort-select');
+        if (sortEl) currentResultsSort = sortEl.value;
+        renderNearbyResults();
+    };
+
+    // Wire up category chip clicks (delegated on the chips container)
+    document.addEventListener('click', e => {
+        const chip = e.target.closest('.result-chip');
+        if (!chip) return;
+        document.querySelectorAll('.result-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentResultsCategory = chip.getAttribute('data-cat');
+        renderNearbyResults();
+    });
+
+    // Step 2: Render results with filtering and sorting
     const renderNearbyResults = () => {
         const grid = document.getElementById('nearby-results-grid');
         if (!grid) return;
-        grid.innerHTML = nearbyCentersData.map(center => `
-            <div class="support-card nearby-result-card" onclick="viewCenterDetail(${center.id})">
-                <div class="nearby-result-top">
-                    <span class="nearby-result-icon">${center.icon}</span>
-                    <span class="nearby-distance-badge">${center.distance}</span>
+
+        const recommendedCat = (moodToCategory[selectedMood] || {}).cat || null;
+
+        // 1. Filter by category
+        let results = currentResultsCategory === 'all'
+            ? [...nearbyCentersData]
+            : nearbyCentersData.filter(c => c.type === currentResultsCategory);
+
+        // 2. Sort
+        if (currentResultsSort === 'nearest') {
+            results.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+        } else {
+            // Recommended: mood-matched category floats to top, then by distance
+            results.sort((a, b) => {
+                const aRec = recommendedCat && a.type === recommendedCat ? 1 : 0;
+                const bRec = recommendedCat && b.type === recommendedCat ? 1 : 0;
+                if (bRec !== aRec) return bRec - aRec;
+                return parseFloat(a.distance) - parseFloat(b.distance);
+            });
+        }
+
+        if (results.length === 0) {
+            grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-light);">No ${currentResultsCategory} centers found. Try a different category.</p>`;
+            return;
+        }
+
+        grid.innerHTML = results.map(center => {
+            const isRecommended = recommendedCat && center.type === recommendedCat && currentResultsSort === 'recommended';
+            return `
+                <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail(${center.id})">
+                    ${isRecommended ? '<span class="result-rec-badge">✨ Recommended for you</span>' : ''}
+                    <div class="nearby-result-top">
+                        <span class="nearby-result-icon">${center.icon}</span>
+                        <span class="nearby-distance-badge">${center.distance}</span>
+                    </div>
+                    <div class="support-category">${center.type}</div>
+                    <h3>${center.name}</h3>
+                    <p class="support-desc">${center.desc}</p>
+                    <button class="btn-primary" style="width:auto; padding:10px 20px; font-size:0.88rem; margin-top:auto;"
+                        onclick="event.stopPropagation(); viewCenterDetail(${center.id})">View Details</button>
                 </div>
-                <div class="support-category">${center.type}</div>
-                <h3>${center.name}</h3>
-                <p class="support-desc">${center.desc}</p>
-                <button class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.88rem; margin-top: auto;"
-                    onclick="event.stopPropagation(); viewCenterDetail(${center.id})">View Details</button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     };
+
 
     // Step 3: Show detail view
     window.viewCenterDetail = (centerId) => {
