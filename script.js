@@ -6,20 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.app-view').forEach(view => {
             view.classList.remove('active');
         });
-        
+
         // Remove active class from nav items
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
         });
-        
+
         // Show target view
         document.getElementById(viewId).classList.add('active');
-        
+
         // Set nav item active
         const navItem = Array.from(document.querySelectorAll('.nav-item'))
             .find(item => item.getAttribute('onclick').includes(viewId));
         if (navItem) navItem.classList.add('active');
-        
+
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
@@ -47,13 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loginUser = (username) => {
         localStorage.setItem('soulie_currentUser', username);
-        
+
         const homeGreeting = document.getElementById('home-greeting');
         const companionGreeting = document.getElementById('companion-greeting');
-        
+
         if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${username}.<br>Breathe.<br>Reflect.<br>Reset.`;
         if (companionGreeting) companionGreeting.innerText = `Hi, ${username}. I'm here with you.`;
-        
+
         const appNav = document.getElementById('app-nav');
         if (appNav) appNav.style.display = 'flex';
 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         users[usernameInput] = passwordInput;
         localStorage.setItem('soulie_users', JSON.stringify(users));
-        
+
         loginUser(usernameInput);
     };
 
@@ -368,12 +368,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Format date nicely
         const [y, m, d] = date.split('-');
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        const prettyDate = `${months[parseInt(m,10)-1]} ${parseInt(d,10)}, ${y}`;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const prettyDate = `${months[parseInt(m, 10) - 1]} ${parseInt(d, 10)}, ${y}`;
 
         const successEl = document.getElementById('booking-success-details');
         if (successEl && selectedCenter) {
-            successEl.innerHTML = `Your appointment at <strong>${selectedCenter.name}</strong><br>has been confirmed for <strong>${prettyDate}</strong> at <strong>${time}</strong>. We look forward to seeing you! 🌿`;
+            successEl.innerHTML = `Your appointment has been confirmed. A confirmation email has been sent.<br><span style="font-size:0.9rem; color:var(--text-light);">You can view it anytime in My Bookings.</span>`;
         }
 
         // --- Save booking to localStorage ---
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mybookings-empty">
                     <div class="mybookings-empty-icon">🗓️</div>
                     <h3>No bookings yet</h3>
-                    <p>Once you book a wellness session,<br>it will appear here.</p>
+                    <p>Your upcoming support sessions will appear here.</p>
                     <button class="btn-secondary" style="margin-top:20px; width:auto; padding:10px 24px;"
                         onclick="switchSupportTab('find')">Find Support</button>
                 </div>
@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatReplyButtons = document.querySelectorAll('.chat-reply-btn');
     const chatInput = document.getElementById('chat-input-field');
     const chatSendBtn = document.getElementById('chat-send-btn');
-    
+
     const journalText = document.getElementById('journal-entry');
     const tabButtons = document.querySelectorAll('.tab-btn');
     const regulationContainer = document.getElementById('regulation-cards-container');
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Chat Reply & Input Logic
     const processUserMessage = (userText, explicitMood = null) => {
-        
+
         chatHistory.innerHTML += `
             <div class="chat-bubble user-message">
                 <div class="message-avatar">👤</div>
@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.scrollTop = chatHistory.scrollHeight;
 
         let mood = explicitMood;
-        
+
         if (!mood) {
             const textLower = userText.toLowerCase();
             if (textLower.includes('overwhelm') || textLower.includes('too much') || textLower.includes('heavy')) mood = 'overwhelmed';
@@ -573,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }, 600);
-        
+
         // Update regulation tools based on mood
         renderRegulationTools(selectedMood);
     };
@@ -620,13 +620,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCalendar = () => {
         if (!calendarGrid) return;
         calendarGrid.innerHTML = '';
-        
+
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth(); // 0-11
-        
+
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
+
         const currentUser = localStorage.getItem('soulie_currentUser');
         const entriesStr = localStorage.getItem('soulie_entries');
         const allEntries = entriesStr ? JSON.parse(entriesStr) : [];
@@ -635,14 +635,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'calendar-day';
             dayDiv.innerText = i;
-            
+
             const monthStr = String(month + 1).padStart(2, '0');
             const dayStr = String(i).padStart(2, '0');
             const dateKey = `${year}-${monthStr}-${dayStr}`;
-            
+
             // Look for matching user AND date
             const entry = allEntries.find(e => e.username === currentUser && e.date === dateKey);
-            
+
             if (entry) {
                 dayDiv.classList.add('has-entry');
                 // Replace plain text with number + colored dot
@@ -654,14 +654,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayDiv.appendChild(numSpan);
                 dayDiv.appendChild(dot);
             }
-            
+
             dayDiv.addEventListener('click', () => {
                 document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('active-day'));
                 dayDiv.classList.add('active-day');
-                
+
                 const viewEl = document.getElementById('calendar-entry-view');
                 document.getElementById('calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
-                
+
                 if (entry) {
                     const emoji = moodEmojis[entry.mood] || '✨';
                     const label = moodLabels[entry.mood] || entry.mood;
@@ -673,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 viewEl.classList.remove('hidden');
             });
-            
+
             calendarGrid.appendChild(dayDiv);
         }
     };
@@ -685,7 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Please write something before saving.");
                 return;
             }
-            
+
             const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
             const todayDate = new Date();
             const yearStr = todayDate.getFullYear();
@@ -696,22 +696,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Auto-detect mood from the written text
             const detectedMood = detectMood(text);
             selectedMood = detectedMood;
-            
+
             const entriesStr = localStorage.getItem('soulie_entries');
             let allEntries = entriesStr ? JSON.parse(entriesStr) : [];
-            
+
             // Override existing entry for the user today
             allEntries = allEntries.filter(e => !(e.username === currentUser && e.date === todayStr));
-            
+
             allEntries.push({
                 username: currentUser,
                 date: todayStr,
                 mood: detectedMood,
                 text: text
             });
-            
+
             localStorage.setItem('soulie_entries', JSON.stringify(allEntries));
-            
+
             // Show mood feedback
             const moodFeedback = document.getElementById('mood-feedback');
             if (moodFeedback) {
@@ -733,9 +733,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 tabButtons.forEach(t => t.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 const tab = btn.getAttribute('data-tab');
-                
+
                 if (tab === 'write-entry') {
                     writeEntrySection.classList.remove('hidden');
                     calendarSection.classList.add('hidden');
@@ -755,12 +755,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const companionGreeting = document.getElementById('companion-greeting');
         const appNav = document.getElementById('app-nav');
         const logoutBtn = document.getElementById('logout-btn');
-        
+
         if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${savedUser}.<br>Breathe.<br>Reflect.<br>Reset.`;
         if (companionGreeting) companionGreeting.innerText = `Hi, ${savedUser}. I'm here with you.`;
         if (appNav) appNav.style.display = 'flex';
         if (logoutBtn) logoutBtn.style.display = 'block';
-        
+
         const authView = document.getElementById('view-auth');
         const homeView = document.getElementById('view-home');
         if (authView) authView.classList.remove('active');
