@@ -122,6 +122,9 @@ h2 {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--primary-color);
