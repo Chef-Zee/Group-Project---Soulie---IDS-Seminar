@@ -739,13 +739,8 @@ textarea:focus {
   flex-shrink: 0;
 }
 
-/* Journal Mood Colors */
-.mood-dot--calm       { background: #8fc98f; }   /* soft green */
-.mood-dot--stressed   { background: #e8c46a; }   /* warm yellow */
-.mood-dot--lonely     { background: #7ab3d4; }   /* soft blue */
-.mood-dot--overwhelmed{ background: #b39dcc; }   /* muted purple */
-.mood-dot--burned_out { background: #7a5e99; }   /* dark muted purple */
-.mood-dot--angry      { background: #e07070; }   /* soft red */
+/* Journal Colors */
+.dot-journal          { background: #a0a0ae; }   /* nice soft gray */
 
 /* Activity Colors */
 .dot-regulate         { background: #6BA1D2; }   /* bright soft blue */

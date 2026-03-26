@@ -1432,7 +1432,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (dayEntry) {
                     const dot = document.createElement('div');
-                    dot.className = `mood-dot mood-dot--${dayEntry.mood}`;
+                    dot.className = 'mood-dot dot-journal';
                     dotsContainer.appendChild(dot);
                 }
                 if (dayTools.length > 0) {
