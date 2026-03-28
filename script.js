@@ -1707,6 +1707,10 @@ const loginPro = (username) => {
     document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
     const proDash = document.getElementById('view-pro-dashboard');
     if (proDash) proDash.classList.add('active');
+    
+    // Initialize Dashboard Home
+    window.switchProTab('home');
+    
     window.scrollTo({ top: 0, behavior: 'auto' });
 
     // Reset form
@@ -1847,11 +1851,94 @@ window.switchProTab = (tab) => {
     document.querySelectorAll('[data-pro-tab]').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-pro-tab') === tab);
     });
+    document.getElementById('pro-tab-home').classList.toggle('hidden', tab !== 'home');
     document.getElementById('pro-tab-add').classList.toggle('hidden', tab !== 'add');
     document.getElementById('pro-tab-my').classList.toggle('hidden', tab !== 'my');
     document.getElementById('pro-tab-schedule').classList.toggle('hidden', tab !== 'schedule');
+    
+    if (tab === 'home') renderProDashboardHome();
     if (tab === 'my') renderProOfferings();
     if (tab === 'schedule') renderProCalendar();
+};
+
+window.renderProDashboardHome = () => {
+    const currentPro = localStorage.getItem('soulie_currentPro') || '';
+    if (!currentPro) return;
+
+    // Load Data
+    const allBookings = JSON.parse(localStorage.getItem('soulie_bookings') || '[]');
+    const allOfferings = JSON.parse(localStorage.getItem('soulie_pro_offerings') || '[]');
+    
+    // Filter for current professional
+    const myBookings = allBookings.filter(b => b.proEmail === currentPro);
+    const myOfferings = allOfferings.filter(o => o.proEmail === currentPro);
+    
+    // Dates for calculations
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    const nextWeek = new Date();
+    nextWeek.setDate(now.getDate() + 7);
+    const nextWeekStr = nextWeek.toISOString().split('T')[0];
+
+    // Stats Calculations
+    const todayBookings = myBookings.filter(b => b.rawDate === todayStr);
+    const weekBookings = myBookings.filter(b => b.rawDate >= todayStr && b.rawDate <= nextWeekStr);
+    const uniqueClients = [...new Set(myBookings.map(b => b.username))];
+
+    // Update Stats DOM
+    const tBookEl = document.getElementById('stat-today-bookings');
+    const wBookEl = document.getElementById('stat-week-bookings');
+    const aOffEl  = document.getElementById('stat-active-offers');
+    const tCliEl  = document.getElementById('stat-total-clients');
+
+    if (tBookEl) tBookEl.textContent = todayBookings.length;
+    if (wBookEl) wBookEl.textContent = weekBookings.length;
+    if (aOffEl) aOffEl.textContent = myOfferings.length;
+    if (tCliEl) tCliEl.textContent = uniqueClients.length;
+
+    // Render Today's Schedule
+    const todayList = document.getElementById('pro-dash-today-list');
+    if (todayList) {
+        if (todayBookings.length === 0) {
+            todayList.innerHTML = `<div class="pro-empty-dash"><p style="font-size:0.85rem; color:var(--text-light);">No sessions scheduled for today.</p></div>`;
+        } else {
+            // Sort by time
+            todayBookings.sort((a,b) => a.time.localeCompare(b.time));
+            todayList.innerHTML = todayBookings.map(b => `
+                <div class="pro-dashboard-item">
+                    <div class="pro-item-time">${b.time}</div>
+                    <div class="pro-item-info">
+                        <span class="pro-item-title">${b.centerName}</span>
+                        <span class="pro-item-subtitle">Student: ${b.username}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Render Upcoming Clients (Next 3 bookings excluding today)
+    const upcomingList = document.getElementById('pro-dash-upcoming-list');
+    if (upcomingList) {
+        const upcoming = myBookings
+            .filter(b => b.rawDate > todayStr)
+            .sort((a,b) => a.rawDate.localeCompare(b.rawDate))
+            .slice(0, 3);
+
+        if (upcoming.length === 0) {
+            upcomingList.innerHTML = `<div class="pro-empty-dash"><p style="font-size:0.85rem; color:var(--text-light);">No upcoming bookings found.</p></div>`;
+        } else {
+            upcomingList.innerHTML = upcoming.map(b => `
+                <div class="pro-dashboard-item">
+                    <div class="pro-item-time" style="background:var(--accent-blue); color:var(--text-dark);">${b.date.split(',')[0]}</div>
+                    <div class="pro-item-info">
+                        <span class="pro-item-title">${b.username}</span>
+                        <span class="pro-item-subtitle">${b.category} • ${b.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
 };
 
 let currentProCalendarDate = new Date();

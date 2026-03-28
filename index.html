@@ -479,13 +479,58 @@
       <!-- Pro Tab Bar -->
       <section style="margin-top: 16px;">
         <div class="support-tabs">
-          <button class="support-tab-btn active" data-pro-tab="add" onclick="switchProTab('add')">➕ Add Offering</button>
+          <button class="support-tab-btn active" data-pro-tab="home" onclick="switchProTab('home')">🏠 Overview</button>
+          <button class="support-tab-btn" data-pro-tab="add" onclick="switchProTab('add')">➕ Add Offering</button>
           <button class="support-tab-btn" data-pro-tab="my" onclick="switchProTab('my')">📋 My Offerings</button>
           <button class="support-tab-btn" data-pro-tab="schedule" onclick="switchProTab('schedule')">📅 Schedule</button>
         </div>
 
+        <!-- OVERVIEW TAB (Home) -->
+        <div id="pro-tab-home" class="support-tab-content">
+          <!-- Summary Stats Grid -->
+          <div class="pro-stats-grid">
+            <div class="pro-stat-card">
+              <span id="stat-today-bookings" class="pro-stat-value">0</span>
+              <span class="pro-stat-label">Today</span>
+            </div>
+            <div class="pro-stat-card">
+              <span id="stat-week-bookings" class="pro-stat-value">0</span>
+              <span class="pro-stat-label">This Week</span>
+            </div>
+            <div class="pro-stat-card">
+              <span id="stat-active-offers" class="pro-stat-value">0</span>
+              <span class="pro-stat-label">Offerings</span>
+            </div>
+            <div class="pro-stat-card">
+              <span id="stat-total-clients" class="pro-stat-value">0</span>
+              <span class="pro-stat-label">Clients</span>
+            </div>
+          </div>
+
+          <!-- Today's Schedule -->
+          <div class="pro-dashboard-section">
+            <div class="pro-dashboard-header">
+              <h3>Today's Schedule</h3>
+            </div>
+            <div id="pro-dash-today-list" class="pro-dashboard-list">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- Upcoming Clients -->
+          <div class="pro-dashboard-section">
+            <div class="pro-dashboard-header">
+              <h3>Upcoming Clients</h3>
+              <button class="text-link-btn" onclick="switchProTab('schedule')" style="font-size: 0.8rem; background: none; border: none; color: var(--primary-color); cursor: pointer;">View Calendar →</button>
+            </div>
+            <div id="pro-dash-upcoming-list" class="pro-dashboard-list">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+
         <!-- ADD OFFERING TAB -->
-        <div id="pro-tab-add" class="support-tab-content">
+        <div id="pro-tab-add" class="support-tab-content hidden">
           <div class="card glass" style="padding: 28px;">
             <h3 style="margin-bottom: 20px;">New Support Offering</h3>
             <div style="display: flex; flex-direction: column; gap: 14px;">

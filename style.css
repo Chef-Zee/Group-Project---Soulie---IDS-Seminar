@@ -1860,6 +1860,113 @@ select.booking-input {
   to { transform: translateY(0); opacity: 1; }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
+/* Professional Dashboard Styles */
+.pro-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pro-stat-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.pro-stat-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+}
+
+.pro-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light);
+}
+
+.pro-dashboard-section {
+  margin-bottom: 30px;
+}
+
+.pro-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.pro-dashboard-header h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0;
+  color: var(--text-dark);
+}
+
+.pro-dashboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pro-dashboard-item {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 14px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.pro-item-time {
+  background: var(--bg-color);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 85px;
+  text-align: center;
+}
+
+.pro-item-info {
+  flex: 1;
+}
+
+.pro-item-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.pro-item-subtitle {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.pro-empty-dash {
+  padding: 24px;
+  text-align: center;
+  background: rgba(0,0,0,0.02);
+  border-radius: 16px;
+  border: 1px dashed rgba(0,0,0,0.05);
+}
+
+@media (max-width: 480px) {
+  .pro-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
