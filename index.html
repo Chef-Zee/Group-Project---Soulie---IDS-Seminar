@@ -481,8 +481,6 @@
         <div class="support-tabs">
           <button class="support-tab-btn active" data-pro-tab="home" onclick="switchProTab('home')">🏠 Overview</button>
           <button class="support-tab-btn" data-pro-tab="add" onclick="switchProTab('add')">➕ Add Offering</button>
-          <button class="support-tab-btn" data-pro-tab="my" onclick="switchProTab('my')">📋 My Offerings</button>
-          <button class="support-tab-btn" data-pro-tab="schedule" onclick="switchProTab('schedule')">📅 Schedule</button>
         </div>
 
         <!-- OVERVIEW TAB (Home) -->
@@ -497,9 +495,10 @@
               <span id="stat-week-bookings" class="pro-stat-value">0</span>
               <span class="pro-stat-label">This Week</span>
             </div>
-            <div class="pro-stat-card">
+            <div class="pro-stat-card clickable" onclick="switchProTab('my')">
               <span id="stat-active-offers" class="pro-stat-value">0</span>
               <span class="pro-stat-label">Offerings</span>
+              <span style="font-size: 0.65rem; color: var(--primary-color); display: block; margin-top: 4px;">Click to view →</span>
             </div>
             <div class="pro-stat-card">
               <span id="stat-total-clients" class="pro-stat-value">0</span>
