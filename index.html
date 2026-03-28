@@ -29,11 +29,35 @@
 
   <main class="container">
 
+    <div id="view-landing" class="app-view active fade-in landing-fullscreen">
+      <section class="landing-content delay-1">
+        <div class="landing-logo-box">
+          <img src="logo.png" alt="Soulie Logo">
+        </div>
+
+        <h1 class="landing-title">Your Private Space to Breathe.</h1>
+        <p class="landing-subtitle">A gentle mental wellness companion for students and young professionals.</p>
+        
+        <button class="btn-primary" style="padding: 16px 44px; font-size: 1.1rem; width: auto; box-shadow: 0 10px 30px rgba(163, 184, 163, 0.4); margin-bottom: 8px;" onclick="switchView('view-auth')">Get Started</button>
+
+        <div class="feature-pills">
+          <span class="f-pill">✨ AI Companion</span>
+          <span class="f-pill">📅 Journal & Calendar</span>
+          <span class="f-pill">🏥 Nearby Support</span>
+        </div>
+
+        <div class="landing-why">
+          <p style="font-weight: 500; font-size: 1.1rem; color: var(--text-dark); margin-bottom: 12px;">The world is loud. Soulie is your quiet corner.</p>
+          <p>A private, judgment-free space designed to help you pause, reflect, and find grounded support whenever you need it most.</p>
+        </div>
+      </section>
+    </div>
+
     <!-- ==================== AUTH VIEW ==================== -->
-    <div id="view-auth" class="app-view active fade-in">
+    <div id="view-auth" class="app-view fade-in">
       <section class="hero" style="margin-top: 60px;">
         <div class="hero-content">
-          <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Welcome to Soulie</h1>
+          <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Welcome Back</h1>
           <p class="subtitle">Your private, judgment-free space to reflect and reset.</p>
         </div>
       </section>
@@ -136,17 +160,6 @@
         </div>
       </section>
 
-      <!-- 2. Problem and Solution Section -->
-      <section class="about delay-1">
-        <div class="card about-card glass">
-          <h2>Why Soulie?</h2>
-          <p>As a student or young professional, the pressure to perform while managing personal life can lead to
-            burnout, stress, and loneliness.</p>
-          <p><strong>You don't have to carry it all alone.</strong></p>
-          <p>Soulie is a gentle reminder to pause. A private, judgment-free zone to untangle your thoughts and receive
-            simple, grounded support when you need it most.</p>
-        </div>
-      </section>
 
       <!-- Dashboard / Feature Cards -->
       <section class="home-features delay-2" style="margin-top: 40px;">
