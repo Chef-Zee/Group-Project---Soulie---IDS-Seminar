@@ -25,6 +25,7 @@
       <img src="logo.png" alt="Soulie Logo" style="height: 32px; width: auto; object-fit: contain;">
     </div>
     <button id="logout-btn" class="logout-btn" style="display: none;" onclick="handleLogout()">Log out</button>
+    <span id="pro-badge" class="pro-nav-badge" style="display: none;">Pro</span>
   </nav>
 
   <main class="container">
@@ -48,6 +49,30 @@
             <button class="btn-primary" onclick="handleLogin()">Log In</button>
             <p style="text-align: center; margin: 10px 0; font-size: 0.9rem; color: var(--text-light);">or</p>
             <button class="btn-secondary" style="margin-top: 0;" onclick="handleSignup()">Sign Up</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Professional Login Section -->
+      <section class="delay-2" style="margin-top: 28px; max-width: 400px; margin-left: auto; margin-right: auto;">
+        <div class="pro-login-divider">
+          <span>Are you a professional?</span>
+        </div>
+        <div class="card glass pro-login-card">
+          <div class="pro-login-header">
+            <span class="pro-icon">🏥</span>
+            <div>
+              <h3 style="margin-bottom: 4px; font-size: 1.1rem;">Professional Login</h3>
+              <p style="font-size: 0.88rem; color: var(--text-light); margin: 0;">Offer classes, sessions, and support through Soulie.</p>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+            <input type="email" id="pro-auth-email" class="form-input" placeholder="Professional email" />
+            <input type="password" id="pro-auth-password" class="form-input" placeholder="Password" />
+            <div id="pro-auth-error" class="error-message" style="display: none;"></div>
+            <button class="btn-pro-primary" onclick="handleProLogin()">Log In as Professional</button>
+            <p style="text-align: center; margin: 4px 0; font-size: 0.88rem; color: var(--text-light);">or</p>
+            <button class="btn-pro-secondary" onclick="handleProSignup()">Create Professional Account</button>
           </div>
         </div>
       </section>
@@ -392,6 +417,82 @@
     </div>
 
   </main>
+
+  <!-- ==================== PROFESSIONAL DASHBOARD VIEW ==================== -->
+  <div id="view-pro-dashboard" class="app-view hidden fade-in">
+    <main class="container">
+
+      <!-- Pro Hero -->
+      <section class="hero" style="margin-top: 20px;">
+        <div class="hero-content">
+          <h1 id="pro-greeting" style="font-size: 2rem;">Your Professional<br>Dashboard</h1>
+          <p class="subtitle">Manage your wellness offerings and reach people who need support.</p>
+        </div>
+      </section>
+
+      <!-- Pro Tab Bar -->
+      <section style="margin-top: 16px;">
+        <div class="support-tabs">
+          <button class="support-tab-btn active" data-pro-tab="add" onclick="switchProTab('add')">➕ Add Offering</button>
+          <button class="support-tab-btn" data-pro-tab="my" onclick="switchProTab('my')">📋 My Offerings</button>
+        </div>
+
+        <!-- ADD OFFERING TAB -->
+        <div id="pro-tab-add" class="support-tab-content">
+          <div class="card glass" style="padding: 28px;">
+            <h3 style="margin-bottom: 20px;">New Support Offering</h3>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div>
+                <label class="booking-label">Title</label>
+                <input type="text" id="pro-offer-title" class="form-input" placeholder="e.g. Morning Breathwork Session" />
+              </div>
+              <div>
+                <label class="booking-label">Category</label>
+                <select id="pro-offer-category" class="form-input booking-input">
+                  <option value="">-- Select a category --</option>
+                  <option value="Meditation">Meditation</option>
+                  <option value="Yoga">Yoga</option>
+                  <option value="Counseling">Counseling</option>
+                  <option value="Breathwork">Breathwork</option>
+                  <option value="Support Groups">Support Groups</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="booking-label">Description</label>
+                <textarea id="pro-offer-desc" placeholder="Describe what you offer and who it's for..." style="min-height: 90px; border-radius: 14px;"></textarea>
+              </div>
+              <div>
+                <label class="booking-label">Format</label>
+                <div class="pro-format-toggle">
+                  <button class="pro-format-btn active" data-format="In-Person" onclick="selectProFormat(this)">📍 In-Person</button>
+                  <button class="pro-format-btn" data-format="Online" onclick="selectProFormat(this)">💻 Online</button>
+                </div>
+              </div>
+              <div>
+                <label class="booking-label">Address / Location</label>
+                <input type="text" id="pro-offer-address" class="form-input" placeholder="e.g. 12 Rue de la Paix, Paris or 'Online via Zoom'" />
+              </div>
+              <div>
+                <label class="booking-label">Available Time</label>
+                <input type="text" id="pro-offer-time" class="form-input" placeholder="e.g. Mon–Fri 9am–12pm" />
+              </div>
+              <div id="pro-offer-error" class="error-message" style="display: none;"></div>
+              <button class="btn-pro-primary" style="margin-top: 8px;" onclick="saveProOffering()">Publish Offering</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MY OFFERINGS TAB -->
+        <div id="pro-tab-my" class="support-tab-content hidden">
+          <div id="pro-offerings-list">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
 
   <!-- App Bottom Navigation -->
   <nav id="app-nav" class="bottom-nav" style="display: none;">

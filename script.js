@@ -240,6 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Step 1: Search
     window.findNearbySupport = () => {
+        // Inject pro offerings before rendering results
+        injectProOfferingsIntoResults();
+
         const address = document.getElementById('nearby-address-input').value.trim();
         if (!address) {
             document.getElementById('nearby-address-input').focus();
@@ -325,10 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const recommendedCat = (moodToCategory[selectedMood] || {}).cat || null;
 
+        // Merge pro offerings into the result set
+        const proExtras = (window._proExtraCenters || []);
+        const allCenters = [...nearbyCentersData, ...proExtras];
+
         // 1. Filter by category
         let results = currentResultsCategory === 'all'
-            ? [...nearbyCentersData]
-            : nearbyCentersData.filter(c => c.type === currentResultsCategory);
+            ? [...allCenters]
+            : allCenters.filter(c => c.type === currentResultsCategory);
 
         // 2. Sort
         if (currentResultsSort === 'nearest') {
@@ -350,9 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         grid.innerHTML = results.map(center => {
             const isRecommended = recommendedCat && center.type === recommendedCat && currentResultsSort === 'recommended';
+            const proTag = center.isProCreated ? `<span class="pro-created-badge">✦ Soulie Pro</span>` : '';
             return `
-                <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail(${center.id})">
+                <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail('${center.id}')">
                     ${isRecommended ? '<span class="result-rec-badge">✨ Recommended for you</span>' : ''}
+                    ${proTag}
                     <div class="nearby-result-top">
                         <span class="nearby-result-icon">${center.icon}</span>
                         <span class="nearby-distance-badge">${center.distance}</span>
@@ -361,31 +370,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3>${center.name}</h3>
                     <p class="support-desc">${center.desc}</p>
                     <button class="btn-primary" style="width:auto; padding:10px 20px; font-size:0.88rem; margin-top:auto;"
-                        onclick="event.stopPropagation(); viewCenterDetail(${center.id})">View Details</button>
+                        onclick="event.stopPropagation(); viewCenterDetail('${center.id}')">View Details</button>
                 </div>
             `;
         }).join('');
     };
 
 
+
     // Step 3: Show detail view
     window.viewCenterDetail = (centerId) => {
-        selectedCenter = nearbyCentersData.find(c => c.id === centerId);
+        // Search both hardcoded centers and pro-created ones
+        const allCenters = [...nearbyCentersData, ...(window._proExtraCenters || [])];
+        selectedCenter = allCenters.find(c => String(c.id) === String(centerId));
         if (!selectedCenter) return;
 
         const detailCard = document.getElementById('nearby-detail-card');
         if (detailCard) {
+            const proTagHtml = selectedCenter.isProCreated
+                ? `<span class="pro-created-badge" style="display:inline-block; margin-bottom:12px;">✦ Soulie Pro Offering</span>`
+                : '';
+            const timeHtml = selectedCenter.availableTime
+                ? `<p class="detail-address">🕐 ${selectedCenter.availableTime}</p>`
+                : '';
             detailCard.innerHTML = `
                 <div class="detail-icon">${selectedCenter.icon}</div>
+                ${proTagHtml}
                 <div class="detail-type-chip">${selectedCenter.type}</div>
                 <h3 class="detail-name">${selectedCenter.name}</h3>
                 <p class="detail-address">📍 ${selectedCenter.address}</p>
+                ${timeHtml}
                 <p class="detail-desc">${selectedCenter.desc}</p>
                 <button class="btn-primary" style="margin-top: 28px;" onclick="openBookingForm()">Book Appointment</button>
             `;
         }
         showSupportPanel('detail');
     };
+
 
     // Step 4: Open booking form
     window.openBookingForm = () => {
@@ -1580,7 +1601,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Auth state on load
     const savedUser = localStorage.getItem('soulie_currentUser');
-    if (savedUser) {
+    const savedPro  = localStorage.getItem('soulie_currentPro');
+
+    if (savedPro) {
+        // Restore professional session
+        const proGreeting = document.getElementById('pro-greeting');
+        if (proGreeting) proGreeting.innerHTML = `Welcome back, ${savedPro.split('@')[0]}.<br>Your Dashboard`;
+
+        const appNav  = document.getElementById('app-nav');
+        const logoutBtn = document.getElementById('logout-btn');
+        const proBadge  = document.getElementById('pro-badge');
+
+        if (appNav)    appNav.style.display = 'none';
+        if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out (Pro)'; }
+        if (proBadge)  proBadge.style.display = 'block';
+
+        const authView = document.getElementById('view-auth');
+        const proDash  = document.getElementById('view-pro-dashboard');
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        if (authView) authView.classList.remove('active');
+        if (proDash)  proDash.classList.add('active');
+
+    } else if (savedUser) {
         const homeGreeting = document.getElementById('home-greeting');
         const companionGreeting = document.getElementById('companion-greeting');
         const appNav = document.getElementById('app-nav');
@@ -1597,3 +1639,250 @@ document.addEventListener('DOMContentLoaded', () => {
         if (homeView) homeView.classList.add('active');
     }
 });
+
+// ============================================================
+//  PROFESSIONAL MODE — Auth & Dashboard (outside DOMContentLoaded
+//  so they are available as global onclick handlers)
+// ============================================================
+
+// --- Helper: get/save professional accounts ---
+const getProUsers = () => {
+    const d = localStorage.getItem('soulie_pro_users');
+    return d ? JSON.parse(d) : {};
+};
+
+const showProError = (msg) => {
+    const el = document.getElementById('pro-auth-error');
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
+};
+const hideProError = () => {
+    const el = document.getElementById('pro-auth-error');
+    if (el) el.style.display = 'none';
+};
+
+// --- Log in a professional ---
+const loginPro = (email) => {
+    localStorage.setItem('soulie_currentPro', email);
+
+    // Update greeting
+    const proGreeting = document.getElementById('pro-greeting');
+    const name = email.split('@')[0];
+    if (proGreeting) proGreeting.innerHTML = `Welcome, ${name}.<br>Your Dashboard`;
+
+    // Show pro badge + logout; hide user bottom nav
+    const appNav    = document.getElementById('app-nav');
+    const logoutBtn = document.getElementById('logout-btn');
+    const proBadge  = document.getElementById('pro-badge');
+    if (appNav)    appNav.style.display = 'none';
+    if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out (Pro)'; }
+    if (proBadge)  proBadge.style.display = 'block';
+
+    // Switch to pro dashboard
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+    const proDash = document.getElementById('view-pro-dashboard');
+    if (proDash) proDash.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // Reset form
+    const emailInput = document.getElementById('pro-auth-email');
+    const passInput  = document.getElementById('pro-auth-password');
+    if (emailInput) emailInput.value = '';
+    if (passInput)  passInput.value  = '';
+};
+
+window.handleProSignup = () => {
+    hideProError();
+    const email    = (document.getElementById('pro-auth-email')?.value || '').trim();
+    const password =  document.getElementById('pro-auth-password')?.value || '';
+
+    if (!email || !password) { showProError('Please enter your email and a password.'); return; }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) { showProError('Please enter a valid email address.'); return; }
+    if (password.length < 4) { showProError('Password must be at least 4 characters.'); return; }
+
+    const pros = getProUsers();
+    if (pros[email]) { showProError('An account with this email already exists. Please log in.'); return; }
+
+    pros[email] = password;
+    localStorage.setItem('soulie_pro_users', JSON.stringify(pros));
+    loginPro(email);
+};
+
+window.handleProLogin = () => {
+    hideProError();
+    const email    = (document.getElementById('pro-auth-email')?.value || '').trim();
+    const password =  document.getElementById('pro-auth-password')?.value || '';
+
+    if (!email || !password) { showProError('Please enter your email and password.'); return; }
+
+    const pros = getProUsers();
+    if (!pros[email] || pros[email] !== password) { showProError('Email or password is incorrect.'); return; }
+
+    loginPro(email);
+};
+
+// Override the existing handleLogout to also handle pro sessions
+const _originalHandleLogout = window.handleLogout;
+window.handleLogout = () => {
+    const isPro = !!localStorage.getItem('soulie_currentPro');
+    if (isPro) {
+        localStorage.removeItem('soulie_currentPro');
+
+        const appNav    = document.getElementById('app-nav');
+        const logoutBtn = document.getElementById('logout-btn');
+        const proBadge  = document.getElementById('pro-badge');
+        if (logoutBtn) { logoutBtn.style.display = 'none'; logoutBtn.textContent = 'Log out'; }
+        if (proBadge)  proBadge.style.display = 'none';
+        if (appNav)    appNav.style.display = 'none';
+
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        const authView = document.getElementById('view-auth');
+        if (authView) authView.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+        _originalHandleLogout();
+    }
+};
+
+// --- Pro tab switcher ---
+window.switchProTab = (tab) => {
+    document.querySelectorAll('[data-pro-tab]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-pro-tab') === tab);
+    });
+    document.getElementById('pro-tab-add').classList.toggle('hidden', tab !== 'add');
+    document.getElementById('pro-tab-my').classList.toggle('hidden', tab !== 'my');
+    if (tab === 'my') renderProOfferings();
+};
+
+// --- Format toggle ---
+let selectedProFormat = 'In-Person';
+window.selectProFormat = (btn) => {
+    document.querySelectorAll('.pro-format-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedProFormat = btn.getAttribute('data-format');
+};
+
+// --- Save a new offering ---
+window.saveProOffering = () => {
+    const title    = (document.getElementById('pro-offer-title')?.value || '').trim();
+    const category =  document.getElementById('pro-offer-category')?.value || '';
+    const desc     = (document.getElementById('pro-offer-desc')?.value || '').trim();
+    const address  = (document.getElementById('pro-offer-address')?.value || '').trim();
+    const time     = (document.getElementById('pro-offer-time')?.value || '').trim();
+
+    const errorEl = document.getElementById('pro-offer-error');
+    const showErr = (msg) => { if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; } };
+    const hideErr = () => { if (errorEl) errorEl.style.display = 'none'; };
+
+    hideErr();
+    if (!title)    { showErr('Please give your offering a title.'); return; }
+    if (!category) { showErr('Please select a category.'); return; }
+    if (!desc)     { showErr('Please add a short description.'); return; }
+    if (!address)  { showErr('Please enter an address or location.'); return; }
+    if (!time)     { showErr('Please enter your available times.'); return; }
+
+    const currentPro = localStorage.getItem('soulie_currentPro') || 'unknown@pro.com';
+    const catIcons = {
+        'Meditation': '🧘', 'Yoga': '🧘‍♀️', 'Counseling': '💬',
+        'Breathwork': '🌬️', 'Support Groups': '👥', 'Other': '💛'
+    };
+
+    const offering = {
+        id: Date.now(),
+        proEmail: currentPro,
+        title,
+        category,
+        icon: catIcons[category] || '💛',
+        desc,
+        format: selectedProFormat,
+        address,
+        time,
+        createdAt: new Date().toISOString()
+    };
+
+    const existing = localStorage.getItem('soulie_pro_offerings');
+    const all = existing ? JSON.parse(existing) : [];
+    all.push(offering);
+    localStorage.setItem('soulie_pro_offerings', JSON.stringify(all));
+
+    // Clear form
+    ['pro-offer-title', 'pro-offer-address', 'pro-offer-time'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    const descEl = document.getElementById('pro-offer-desc'); if (descEl) descEl.value = '';
+    const catEl  = document.getElementById('pro-offer-category'); if (catEl) catEl.value = '';
+    document.querySelectorAll('.pro-format-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+    selectedProFormat = 'In-Person';
+
+    // Switch to My Offerings tab to show success
+    window.switchProTab('my');
+};
+
+// --- Render pro's own offerings ---
+const renderProOfferings = () => {
+    const container = document.getElementById('pro-offerings-list');
+    if (!container) return;
+
+    const currentPro = localStorage.getItem('soulie_currentPro') || '';
+    const all = JSON.parse(localStorage.getItem('soulie_pro_offerings') || '[]');
+    const mine = all.filter(o => o.proEmail === currentPro);
+
+    if (mine.length === 0) {
+        container.innerHTML = `
+            <div class="pro-empty-state">
+                <div class="pro-empty-state-icon">📋</div>
+                <h3 style="color: var(--text-dark); margin-bottom: 8px;">No offerings yet</h3>
+                <p>Switch to the <strong>Add Offering</strong> tab to publish your first support session.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = mine.slice().reverse().map(o => `
+        <div class="pro-offering-card">
+            <div class="pro-offering-header">
+                <div>
+                    <span class="pro-offering-category">${o.category}</span>
+                    <h3 class="pro-offering-title">${o.icon} ${o.title}</h3>
+                </div>
+                <button class="pro-offering-delete-btn" onclick="deleteProOffering(${o.id})" title="Delete offering">✕</button>
+            </div>
+            <p class="pro-offering-desc">${o.desc}</p>
+            <div class="pro-offering-meta">
+                <span><span class="pro-format-badge">${o.format}</span></span>
+                <span>📍 ${o.address}</span>
+                <span>🕐 ${o.time}</span>
+            </div>
+        </div>
+    `).join('');
+};
+
+// --- Delete an offering ---
+window.deleteProOffering = (id) => {
+    const all = JSON.parse(localStorage.getItem('soulie_pro_offerings') || '[]');
+    const updated = all.filter(o => o.id !== id);
+    localStorage.setItem('soulie_pro_offerings', JSON.stringify(updated));
+    renderProOfferings();
+};
+
+// Inject pro offerings into window._proExtraCenters so renderNearbyResults can merge them.
+// Declared as a function (not const arrow) so it is hoisted and callable from inside DOMContentLoaded.
+function injectProOfferingsIntoResults() {
+    const proOfferings = JSON.parse(localStorage.getItem('soulie_pro_offerings') || '[]');
+    const catIcons = {
+        'Meditation': '🧘', 'Yoga': '🧘‍♀️', 'Counseling': '💬',
+        'Breathwork': '🌬️', 'Support Groups': '👥', 'Other': '💛'
+    };
+    window._proExtraCenters = proOfferings.map(o => ({
+        id: `pro_${o.id}`,
+        name: o.title,
+        type: o.category,
+        icon: o.icon || catIcons[o.category] || '💛',
+        address: o.address,
+        desc: `${o.desc} (${o.format})`,
+        distance: '0.5 km',
+        isProCreated: true,
+        proEmail: o.proEmail,
+        availableTime: o.time
+    }));
+}
