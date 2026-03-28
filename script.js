@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'auto' });
+
+        // Track navigation
+        if (window.posthog) {
+            posthog.capture('view_changed', { view_id: viewId });
+        }
     };
 
     // Initial check for navbar
@@ -87,6 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) logoutBtn.style.display = 'block';
 
+        // Track login
+        if (window.posthog) {
+            posthog.identify(username);
+            posthog.capture('user_login', { username: username });
+        }
+
         switchView('view-home');
     };
 
@@ -105,6 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clear auth inputs
         document.querySelectorAll('.auth-form input, #pro-login-card input').forEach(el => el.value = '');
+
+        // Track logout
+        if (window.posthog) {
+            posthog.capture('user_logout');
+            posthog.reset();
+        }
 
         switchView('view-landing');
     };
