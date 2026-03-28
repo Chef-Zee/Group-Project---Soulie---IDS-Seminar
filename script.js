@@ -498,7 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
             date: prettyDate,
             rawDate: date,
             time: time,
-            email: email
+            email: email,
+            proEmail: selectedCenter && selectedCenter.isProCreated ? selectedCenter.proEmail : null
         };
         const existing = localStorage.getItem('soulie_bookings');
         const allBookings = existing ? JSON.parse(existing) : [];
@@ -1751,8 +1752,102 @@ window.switchProTab = (tab) => {
     });
     document.getElementById('pro-tab-add').classList.toggle('hidden', tab !== 'add');
     document.getElementById('pro-tab-my').classList.toggle('hidden', tab !== 'my');
+    document.getElementById('pro-tab-schedule').classList.toggle('hidden', tab !== 'schedule');
     if (tab === 'my') renderProOfferings();
+    if (tab === 'schedule') renderProCalendar();
 };
+
+let currentProCalendarDate = new Date();
+
+window.renderProCalendar = () => {
+    const grid = document.getElementById('pro-calendar-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const year = currentProCalendarDate.getFullYear();
+    const month = currentProCalendarDate.getMonth();
+    
+    const headerTitle = document.getElementById('pro-calendar-month-year');
+    if (headerTitle) {
+        const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        headerTitle.textContent = `${mNames[month]} ${year}`;
+    }
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const currentProEmail = localStorage.getItem('soulie_currentPro');
+    
+    const allBookings = JSON.parse(localStorage.getItem('soulie_bookings') || '[]');
+    const proBookings = allBookings.filter(b => b.proEmail === currentProEmail);
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+
+        const monthStr = String(month + 1).padStart(2, '0');
+        const dayStr = String(i).padStart(2, '0');
+        const dateKey = `${year}-${monthStr}-${dayStr}`;
+
+        const dayBookings = proBookings.filter(b => b.rawDate === dateKey);
+
+        const numSpan = document.createElement('span');
+        numSpan.textContent = i;
+        dayDiv.appendChild(numSpan);
+
+        if (dayBookings.length > 0) {
+            dayDiv.classList.add('has-entry');
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'calendar-dots-container';
+            const dot = document.createElement('div');
+            dot.className = 'mood-dot dot-support';
+            dotsContainer.appendChild(dot);
+            dayDiv.appendChild(dotsContainer);
+        }
+
+        dayDiv.addEventListener('click', () => {
+            document.querySelectorAll('#pro-calendar-grid .calendar-day').forEach(el => el.classList.remove('active-day'));
+            dayDiv.classList.add('active-day');
+
+            const viewEl = document.getElementById('pro-calendar-entry-view');
+            document.getElementById('pro-calendar-entry-date').innerText = new Date(year, month, i).toLocaleDateString();
+
+            const sList = document.getElementById('pro-calendar-entry-support-list');
+            if (dayBookings.length > 0) {
+                sList.innerHTML = dayBookings.map(b => 
+                    `<li style="margin-bottom:8px;">
+                        <b>${b.centerName}</b> (${b.category})<br>
+                        <span style="font-size:0.85rem; color:var(--text-light);">
+                            Time: ${b.time}<br>
+                            User: ${b.username || 'Anonymous'} (${b.email})
+                        </span>
+                    </li>`
+                ).join('');
+            } else {
+                sList.innerHTML = `<li style="margin-bottom:8px; color:var(--text-light);">No scheduled sessions for this day.</li>`;
+            }
+
+            viewEl.classList.remove('hidden');
+        });
+
+        grid.appendChild(dayDiv);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const prevProMonthBtn = document.getElementById('prev-pro-month-btn');
+    const nextProMonthBtn = document.getElementById('next-pro-month-btn');
+    if (prevProMonthBtn) {
+        prevProMonthBtn.addEventListener('click', () => {
+            currentProCalendarDate.setMonth(currentProCalendarDate.getMonth() - 1);
+            if (typeof renderProCalendar === 'function') renderProCalendar();
+        });
+    }
+    if (nextProMonthBtn) {
+        nextProMonthBtn.addEventListener('click', () => {
+            currentProCalendarDate.setMonth(currentProCalendarDate.getMonth() + 1);
+            if (typeof renderProCalendar === 'function') renderProCalendar();
+        });
+    }
+});
 
 // --- Format toggle ---
 let selectedProFormat = 'In-Person';
