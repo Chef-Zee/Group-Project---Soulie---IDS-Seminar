@@ -694,6 +694,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // State tracking for active tools
     const activeTools = {};
 
+    // --- Background Music Controls ---
+    const playSoulieMusic = () => {
+        const bgm = document.getElementById('soulie-bgm');
+        if (bgm) {
+            bgm.currentTime = 0;
+            bgm.play().catch(err => console.log("Audio play prevented by browser policy:", err));
+        }
+    };
+
+    const stopSoulieMusic = () => {
+        const bgm = document.getElementById('soulie-bgm');
+        if (bgm) {
+            bgm.pause();
+            bgm.currentTime = 0;
+        }
+    };
+
     window.startTool = (toolId) => {
         // Enforce single-activity: reset any currently running tools
         Object.keys(activeTools).forEach(id => {
@@ -704,6 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tool = regulationToolsData.find(t => t.id === toolId);
         if (!tool) return;
+
+        // Start background music
+        playSoulieMusic();
 
         const container = document.getElementById(`${toolId}-content`);
         const startBtn = document.getElementById(`${toolId}-start-btn`);
@@ -727,6 +747,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const endTool = (toolId, container) => {
         clearInterval(activeTools[toolId].timer);
         activeTools[toolId].isRunning = false;
+        
+        // Stop background music
+        stopSoulieMusic();
+
         container.innerHTML = `
             <div class="tool-completed slide-in">
                 <span class="emoji" style="font-size:2rem; margin-bottom:8px; display:block;">✨</span>
@@ -763,6 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(activeTools[toolId].timer);
         }
         activeTools[toolId] = null;
+
+        // Stop background music
+        stopSoulieMusic();
         
         container.innerHTML = '';
         container.classList.add('hidden');
