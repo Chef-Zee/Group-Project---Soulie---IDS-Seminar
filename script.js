@@ -358,6 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = results.map(center => {
             const isRecommended = recommendedCat && center.type === recommendedCat && currentResultsSort === 'recommended';
             const proTag = center.isProCreated ? `<span class="pro-created-badge">✦ Soulie Pro</span>` : '';
+            const pAvt = (center.isProCreated && center.proPhoto) ? `<img src="${center.proPhoto}" style="width:24px; height:24px; border-radius:50%; object-fit:cover; margin-right:6px; vertical-align:middle;">` : (center.isProCreated ? `<span style="font-size:1.1rem; margin-right:6px; vertical-align:middle;">👤</span>` : '');
+            const pRow = center.isProCreated ? `<div style="font-size:0.85rem; color:var(--text-light); margin-bottom:10px; display:flex; align-items:center;">${pAvt}<span>By ${center.proName}</span> <span style="margin-left:6px; padding-left:6px; border-left:1px solid #ddd; font-weight:500;">${center.proProfession}</span></div>` : '';
+
             return `
                 <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail('${center.id}')">
                     ${isRecommended ? '<span class="result-rec-badge">✨ Recommended for you</span>' : ''}
@@ -367,7 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="nearby-distance-badge">${center.distance}</span>
                     </div>
                     <div class="support-category">${center.type}</div>
-                    <h3>${center.name}</h3>
+                    <h3 style="${center.isProCreated ? 'margin-bottom:6px;' : ''}">${center.name}</h3>
+                    ${pRow}
                     <p class="support-desc">${center.desc}</p>
                     <button class="btn-primary" style="width:auto; padding:10px 20px; font-size:0.88rem; margin-top:auto;"
                         onclick="event.stopPropagation(); viewCenterDetail('${center.id}')">View Details</button>
@@ -390,16 +394,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const proTagHtml = selectedCenter.isProCreated
                 ? `<span class="pro-created-badge" style="display:inline-block; margin-bottom:12px;">✦ Soulie Pro Offering</span>`
                 : '';
+                
+            const pAvt = (selectedCenter.isProCreated && selectedCenter.proPhoto) 
+                ? `<img src="${selectedCenter.proPhoto}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:8px;">` 
+                : (selectedCenter.isProCreated ? `<div style="font-size:2.2rem; margin-bottom:6px;">👤</div>` : '');
+                
+            const pRow = selectedCenter.isProCreated 
+                ? `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:20px; padding:12px; background:rgba(255,255,255,0.4); border-radius:12px;">${pAvt}<span style="font-size:0.95rem; font-weight:600; color:var(--text-dark);">By ${selectedCenter.proName}</span><span style="font-size:0.85rem; color:var(--text-light); margin-top:2px;">${selectedCenter.proProfession}</span></div>` 
+                : '';
+                
             const timeHtml = selectedCenter.availableTime
                 ? `<p class="detail-address">🕐 ${selectedCenter.availableTime}</p>`
                 : '';
+                
             detailCard.innerHTML = `
-                <div class="detail-icon">${selectedCenter.icon}</div>
+                <div class="detail-icon" style="${selectedCenter.isProCreated ? 'font-size:2.2rem; margin-bottom:8px;' : ''}">${selectedCenter.icon}</div>
                 ${proTagHtml}
                 <div class="detail-type-chip">${selectedCenter.type}</div>
                 <h3 class="detail-name">${selectedCenter.name}</h3>
-                <p class="detail-address">📍 ${selectedCenter.address}</p>
+                ${pRow}
+                <p class="detail-address" style="margin-bottom:8px;">📍 ${selectedCenter.address}</p>
                 ${timeHtml}
+                <div style="height:1px; background:rgba(0,0,0,0.06); margin:16px 0;"></div>
                 <p class="detail-desc">${selectedCenter.desc}</p>
                 <button class="btn-primary" style="margin-top: 28px;" onclick="openBookingForm()">Book Appointment</button>
             `;
@@ -1607,7 +1623,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedPro) {
         // Restore professional session
         const proGreeting = document.getElementById('pro-greeting');
-        if (proGreeting) proGreeting.innerHTML = `Welcome back, ${savedPro.split('@')[0]}.<br>Your Dashboard`;
+        const proUsersStr = localStorage.getItem('soulie_pro_users');
+        const proUsers = proUsersStr ? JSON.parse(proUsersStr) : {};
+        const uObj = proUsers[savedPro];
+        const dispName = (uObj && uObj.fullName) ? uObj.fullName : savedPro.split('@')[0];
+        if (proGreeting) proGreeting.innerHTML = `Welcome back, ${dispName}.<br>Your Dashboard`;
 
         const appNav  = document.getElementById('app-nav');
         const logoutBtn = document.getElementById('logout-btn');
@@ -1662,12 +1682,14 @@ const hideProError = () => {
 };
 
 // --- Log in a professional ---
-const loginPro = (email) => {
-    localStorage.setItem('soulie_currentPro', email);
+const loginPro = (username) => {
+    localStorage.setItem('soulie_currentPro', username);
 
     // Update greeting
     const proGreeting = document.getElementById('pro-greeting');
-    const name = email.split('@')[0];
+    const pros = getProUsers();
+    const uObj = pros[username];
+    const name = (uObj && uObj.fullName) ? uObj.fullName : username;
     if (proGreeting) proGreeting.innerHTML = `Welcome, ${name}.<br>Your Dashboard`;
 
     // Show pro badge + logout; hide user bottom nav
@@ -1691,35 +1713,107 @@ const loginPro = (email) => {
     if (passInput)  passInput.value  = '';
 };
 
-window.handleProSignup = () => {
+window.showProSignupForm = () => {
     hideProError();
-    const email    = (document.getElementById('pro-auth-email')?.value || '').trim();
-    const password =  document.getElementById('pro-auth-password')?.value || '';
+    const errorEl = document.getElementById('pro-signup-error');
+    if(errorEl) errorEl.style.display = 'none';
+    const lCard = document.getElementById('pro-login-card');
+    const sCard = document.getElementById('pro-signup-card');
+    if (lCard) lCard.classList.add('hidden');
+    if (sCard) sCard.classList.remove('hidden');
+};
 
-    if (!email || !password) { showProError('Please enter your email and a password.'); return; }
+window.showProLoginForm = () => {
+    const errorEl = document.getElementById('pro-signup-error');
+    if(errorEl) errorEl.style.display = 'none';
+    const lCard = document.getElementById('pro-login-card');
+    const sCard = document.getElementById('pro-signup-card');
+    if (sCard) sCard.classList.add('hidden');
+    if (lCard) lCard.classList.remove('hidden');
+};
+
+let capturedProPhoto = '';
+document.addEventListener('DOMContentLoaded', () => {
+    const photoInput = document.getElementById('pro-signup-photo');
+    if (photoInput) {
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    capturedProPhoto = evt.target.result;
+                    const img = document.getElementById('pro-photo-img');
+                    const icon = document.getElementById('pro-photo-icon');
+                    if (img && icon) {
+                        img.src = capturedProPhoto;
+                        img.style.display = 'block';
+                        icon.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+window.submitProSignup = () => {
+    const errorEl = document.getElementById('pro-signup-error');
+    const showErr = (msg) => { if(errorEl){ errorEl.textContent = msg; errorEl.style.display = 'block'; } };
+    if(errorEl) errorEl.style.display = 'none';
+
+    const fullName   = (document.getElementById('pro-signup-fname')?.value || '').trim();
+    const username   = (document.getElementById('pro-signup-username')?.value || '').trim();
+    const email      = (document.getElementById('pro-signup-email')?.value || '').trim();
+    const password   = document.getElementById('pro-signup-password')?.value || '';
+    const gender     = document.getElementById('pro-signup-gender')?.value || '';
+    const profession = (document.getElementById('pro-signup-profession')?.value || '').trim();
+    const location   = (document.getElementById('pro-signup-location')?.value || '').trim();
+    const bio        = (document.getElementById('pro-signup-bio')?.value || '').trim();
+
+    if (!fullName || !username || !email || !password || !profession || !location) {
+        showErr('Please fill out all required fields marked with *');
+        return;
+    }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) { showProError('Please enter a valid email address.'); return; }
-    if (password.length < 4) { showProError('Password must be at least 4 characters.'); return; }
+    if (!emailPattern.test(email)) { showErr('Please enter a valid email address.'); return; }
+    if (password.length < 4) { showErr('Password must be at least 4 characters.'); return; }
 
     const pros = getProUsers();
-    if (pros[email]) { showProError('An account with this email already exists. Please log in.'); return; }
+    if (pros[username]) { showErr('Account with this username already exists. Please choose another.'); return; }
 
-    pros[email] = password;
+    pros[username] = {
+        password, fullName, username, email, gender, profession, location, bio,
+        profilePhoto: capturedProPhoto
+    };
+    
     localStorage.setItem('soulie_pro_users', JSON.stringify(pros));
-    loginPro(email);
+    loginPro(username);
+    
+    // reset form
+    document.querySelectorAll('#pro-signup-card .form-input').forEach(el => el.value = '');
+    const photoInput = document.getElementById('pro-signup-photo');
+    if (photoInput) photoInput.value = '';
+    capturedProPhoto = '';
+    const img = document.getElementById('pro-photo-img');
+    const icon = document.getElementById('pro-photo-icon');
+    if(img) img.style.display = 'none';
+    if(icon) icon.style.display = 'inline';
 };
 
 window.handleProLogin = () => {
     hideProError();
-    const email    = (document.getElementById('pro-auth-email')?.value || '').trim();
+    const username = (document.getElementById('pro-auth-username')?.value || '').trim();
     const password =  document.getElementById('pro-auth-password')?.value || '';
 
-    if (!email || !password) { showProError('Please enter your email and password.'); return; }
+    if (!username || !password) { showProError('Please enter your username and password.'); return; }
 
     const pros = getProUsers();
-    if (!pros[email] || pros[email] !== password) { showProError('Email or password is incorrect.'); return; }
+    const userObj = pros[username];
+    const savedPassword = (userObj && typeof userObj === 'object') ? userObj.password : userObj;
+    
+    if (!userObj || savedPassword !== password) { showProError('Username or password is incorrect.'); return; }
 
-    loginPro(email);
+    loginPro(username);
 };
 
 // Override the existing handleLogout to also handle pro sessions
@@ -1964,20 +2058,30 @@ window.deleteProOffering = (id) => {
 // Declared as a function (not const arrow) so it is hoisted and callable from inside DOMContentLoaded.
 function injectProOfferingsIntoResults() {
     const proOfferings = JSON.parse(localStorage.getItem('soulie_pro_offerings') || '[]');
+    const proUsers = JSON.parse(localStorage.getItem('soulie_pro_users') || '{}');
     const catIcons = {
         'Meditation': '🧘', 'Yoga': '🧘‍♀️', 'Counseling': '💬',
         'Breathwork': '🌬️', 'Support Groups': '👥', 'Other': '💛'
     };
-    window._proExtraCenters = proOfferings.map(o => ({
-        id: `pro_${o.id}`,
-        name: o.title,
-        type: o.category,
-        icon: o.icon || catIcons[o.category] || '💛',
-        address: o.address,
-        desc: `${o.desc} (${o.format})`,
-        distance: '0.5 km',
-        isProCreated: true,
-        proEmail: o.proEmail,
-        availableTime: o.time
-    }));
+    window._proExtraCenters = proOfferings.map(o => {
+        const uObj = proUsers[o.proEmail] || {};
+        const pPhoto = uObj.profilePhoto || '';
+        const pName = uObj.fullName || o.proEmail.split('@')[0];
+        const pProf = uObj.profession || 'Professional';
+        return {
+            id: `pro_${o.id}`,
+            name: o.title,
+            type: o.category,
+            icon: o.icon || catIcons[o.category] || '💛',
+            address: o.address,
+            desc: `${o.desc} (${o.format})`,
+            distance: '0.5 km',
+            isProCreated: true,
+            proEmail: o.proEmail,
+            proName: pName,
+            proPhoto: pPhoto,
+            proProfession: pProf,
+            availableTime: o.time
+        };
+    });
 }

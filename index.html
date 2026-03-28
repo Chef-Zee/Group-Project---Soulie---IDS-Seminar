@@ -57,7 +57,7 @@
         <div class="pro-login-divider">
           <span>Are you a professional?</span>
         </div>
-        <div class="card glass pro-login-card">
+        <div class="card glass pro-login-card" id="pro-login-card">
           <div class="pro-login-header">
             <span class="pro-icon">🏥</span>
             <div>
@@ -66,12 +66,59 @@
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
-            <input type="email" id="pro-auth-email" class="form-input" placeholder="Professional email" />
+            <input type="text" id="pro-auth-username" class="form-input" placeholder="Professional username" />
             <input type="password" id="pro-auth-password" class="form-input" placeholder="Password" />
             <div id="pro-auth-error" class="error-message" style="display: none;"></div>
             <button class="btn-pro-primary" onclick="handleProLogin()">Log In as Professional</button>
             <p style="text-align: center; margin: 4px 0; font-size: 0.88rem; color: var(--text-light);">or</p>
-            <button class="btn-pro-secondary" onclick="handleProSignup()">Create Professional Account</button>
+            <button class="btn-pro-secondary" onclick="showProSignupForm()">Create Professional Account</button>
+          </div>
+        </div>
+
+        <!-- NEW SIGNUP CARD -->
+        <div class="card glass pro-signup-card hidden" id="pro-signup-card">
+          <div class="pro-login-header">
+            <span class="pro-icon">🏥</span>
+            <div>
+              <h3 style="margin-bottom: 4px; font-size: 1.1rem;">Professional Sign-up</h3>
+              <p style="font-size: 0.88rem; color: var(--text-light); margin: 0;">Create your professional profile.</p>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="pro-signup-fname" class="form-input" placeholder="Full Name *" />
+              <input type="text" id="pro-signup-username" class="form-input" placeholder="Username *" />
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <select id="pro-signup-gender" class="form-input" style="flex:1;">
+                <option value="">Gender</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+              <input type="text" id="pro-signup-profession" class="form-input" placeholder="Profession *" style="flex:2;" />
+            </div>
+            <input type="text" id="pro-signup-location" class="form-input" placeholder="City / Location *" />
+            <textarea id="pro-signup-bio" class="form-input" placeholder="Short self-introduction..." style="min-height: 70px; border-radius: 12px;"></textarea>
+            
+            <label class="booking-label" style="margin-top: 4px; margin-bottom: -6px;">Profile Photo (Optional)</label>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="pro-photo-preview" id="pro-photo-preview-box">
+                <img id="pro-photo-img" src="" alt="Profile Preview" style="display:none;" />
+                <span id="pro-photo-icon" style="font-size: 1.6rem;">👤</span>
+              </div>
+              <input type="file" id="pro-signup-photo" accept="image/*" style="font-size: 0.85rem;" />
+            </div>
+
+            <div style="height: 1px; background: rgba(0,0,0,0.06); margin: 4px 0;"></div>
+
+            <input type="email" id="pro-signup-email" class="form-input" placeholder="Professional email *" />
+            <input type="password" id="pro-signup-password" class="form-input" placeholder="Password *" />
+            
+            <div id="pro-signup-error" class="error-message" style="display: none;"></div>
+            <button class="btn-pro-primary" onclick="submitProSignup()">Create Account</button>
+            <button class="btn-pro-secondary" onclick="showProLoginForm()">← Back to Login</button>
           </div>
         </div>
       </section>
