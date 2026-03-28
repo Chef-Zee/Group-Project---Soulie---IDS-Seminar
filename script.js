@@ -1616,49 +1616,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize Auth state on load
-    const savedUser = localStorage.getItem('soulie_currentUser');
-    const savedPro  = localStorage.getItem('soulie_currentPro');
-
-    if (savedPro) {
-        // Restore professional session
-        const proGreeting = document.getElementById('pro-greeting');
-        const proUsersStr = localStorage.getItem('soulie_pro_users');
-        const proUsers = proUsersStr ? JSON.parse(proUsersStr) : {};
-        const uObj = proUsers[savedPro];
-        const dispName = (uObj && uObj.fullName) ? uObj.fullName : savedPro.split('@')[0];
-        if (proGreeting) proGreeting.innerHTML = `Welcome back, ${dispName}.<br>Your Dashboard`;
-
-        const appNav  = document.getElementById('app-nav');
-        const logoutBtn = document.getElementById('logout-btn');
-        const proBadge  = document.getElementById('pro-badge');
-
-        if (appNav)    appNav.style.display = 'none';
-        if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out'; }
-        if (proBadge)  proBadge.style.display = 'block';
-
-        const authView = document.getElementById('view-auth');
-        const proDash  = document.getElementById('view-pro-dashboard');
-        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-        if (authView) authView.classList.remove('active');
-        if (proDash)  proDash.classList.add('active');
-
-    } else if (savedUser) {
-        const homeGreeting = document.getElementById('home-greeting');
-        const companionGreeting = document.getElementById('companion-greeting');
-        const appNav = document.getElementById('app-nav');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        if (homeGreeting) homeGreeting.innerHTML = `Welcome, ${savedUser}.<br>Breathe.<br>Reflect.<br>Reset.`;
-        if (companionGreeting) companionGreeting.innerText = `Hi, ${savedUser}. I'm here with you.`;
-        if (appNav) appNav.style.display = 'flex';
-        if (logoutBtn) logoutBtn.style.display = 'block';
-
-        const authView = document.getElementById('view-auth');
-        const homeView = document.getElementById('view-home');
-        if (authView) authView.classList.remove('active');
-        if (homeView) homeView.classList.add('active');
-    }
 });
 
 // ============================================================
