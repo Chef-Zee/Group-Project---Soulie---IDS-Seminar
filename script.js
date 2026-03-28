@@ -358,8 +358,21 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = results.map(center => {
             const isRecommended = recommendedCat && center.type === recommendedCat && currentResultsSort === 'recommended';
             const proTag = center.isProCreated ? `<span class="pro-created-badge">✦ Soulie Pro</span>` : '';
-            const pAvt = (center.isProCreated && center.proPhoto) ? `<img src="${center.proPhoto}" style="width:24px; height:24px; border-radius:50%; object-fit:cover; margin-right:6px; vertical-align:middle;">` : (center.isProCreated ? `<span style="font-size:1.1rem; margin-right:6px; vertical-align:middle;">👤</span>` : '');
-            const pRow = center.isProCreated ? `<div style="font-size:0.85rem; color:var(--text-light); margin-bottom:10px; display:flex; align-items:center;">${pAvt}<span>By ${center.proName}</span> <span style="margin-left:6px; padding-left:6px; border-left:1px solid #ddd; font-weight:500;">${center.proProfession}</span></div>` : '';
+            
+            // Professional Avatar Clickable
+            const pAvt = (center.isProCreated && center.proPhoto) 
+                ? `<img src="${center.proPhoto}" onclick="event.stopPropagation(); openProProfile('${center.proEmail}')" style="width:24px; height:24px; border-radius:50%; object-fit:cover; margin-right:6px; vertical-align:middle; cursor:pointer;">` 
+                : (center.isProCreated ? `<span onclick="event.stopPropagation(); openProProfile('${center.proEmail}')" style="font-size:1.1rem; margin-right:6px; vertical-align:middle; cursor:pointer;">👤</span>` : '');
+            
+            // Professional Row Clickable (Photo + Name)
+            const pRow = center.isProCreated 
+                ? `<div style="font-size:0.85rem; color:var(--text-light); margin-bottom:10px; display:flex; align-items:center;">
+                    <span onclick="event.stopPropagation(); openProProfile('${center.proEmail}')" style="cursor:pointer; display:flex; align-items:center;">
+                        ${pAvt}<span>By ${center.proName}</span>
+                    </span> 
+                    <span style="margin-left:6px; padding-left:6px; border-left:1px solid #ddd; font-weight:500;">${center.proProfession}</span>
+                   </div>` 
+                : '';
 
             return `
                 <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail('${center.id}')">
@@ -396,11 +409,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 : '';
                 
             const pAvt = (selectedCenter.isProCreated && selectedCenter.proPhoto) 
-                ? `<img src="${selectedCenter.proPhoto}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:8px;">` 
-                : (selectedCenter.isProCreated ? `<div style="font-size:2.2rem; margin-bottom:6px;">👤</div>` : '');
+                ? `<img src="${selectedCenter.proPhoto}" onclick="openProProfile('${selectedCenter.proEmail}')" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:8px; cursor:pointer;">` 
+                : (selectedCenter.isProCreated ? `<div onclick="openProProfile('${selectedCenter.proEmail}')" style="font-size:2.2rem; margin-bottom:6px; cursor:pointer;">👤</div>` : '');
                 
             const pRow = selectedCenter.isProCreated 
-                ? `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:20px; padding:12px; background:rgba(255,255,255,0.4); border-radius:12px;">${pAvt}<span style="font-size:0.95rem; font-weight:600; color:var(--text-dark);">By ${selectedCenter.proName}</span><span style="font-size:0.85rem; color:var(--text-light); margin-top:2px;">${selectedCenter.proProfession}</span></div>` 
+                ? `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:20px; padding:12px; background:rgba(255,255,255,0.4); border-radius:12px;">
+                    <div onclick="openProProfile('${selectedCenter.proEmail}')" style="cursor:pointer; text-align:center;">
+                        ${pAvt}<br>
+                        <span style="font-size:0.95rem; font-weight:600; color:var(--text-dark);">By ${selectedCenter.proName}</span>
+                    </div>
+                    <span style="font-size:0.85rem; color:var(--text-light); margin-top:2px;">${selectedCenter.proProfession}</span>
+                   </div>` 
                 : '';
                 
             const timeHtml = selectedCenter.availableTime
@@ -2023,7 +2042,7 @@ function injectProOfferingsIntoResults() {
     window._proExtraCenters = proOfferings.map(o => {
         const uObj = proUsers[o.proEmail] || {};
         const pPhoto = uObj.profilePhoto || '';
-        const pName = uObj.fullName || o.proEmail.split('@')[0];
+        const pName = uObj.fullName || o.proEmail;
         const pProf = uObj.profession || 'Professional';
         return {
             id: `pro_${o.id}`,
@@ -2042,3 +2061,43 @@ function injectProOfferingsIntoResults() {
         };
     });
 }
+
+// --- Professional Profile Popup ---
+window.openProProfile = (proUsername) => {
+    const pros = JSON.parse(localStorage.getItem('soulie_pro_users') || '{}');
+    const profile = pros[proUsername];
+    if (!profile) return;
+
+    const modal = document.getElementById('pro-profile-modal');
+    const pPhoto = document.getElementById('modal-pro-photo');
+    const pIcon  = document.getElementById('modal-pro-icon');
+    const pName  = document.getElementById('modal-pro-name');
+    const pProf  = document.getElementById('modal-pro-profession');
+    const pGend  = document.getElementById('modal-pro-gender');
+    const pBio   = document.getElementById('modal-pro-bio');
+
+    if (profile.profilePhoto) {
+        pPhoto.src = profile.profilePhoto;
+        pPhoto.style.display = 'block';
+        pIcon.style.display = 'none';
+    } else {
+        pPhoto.style.display = 'none';
+        pIcon.style.display = 'block';
+    }
+
+    pName.innerText = profile.fullName || profile.username;
+    pProf.innerText = profile.profession || '';
+    pGend.innerText = profile.gender || 'Not specified';
+    pBio.innerText  = profile.bio || 'No introduction provided.';
+
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+};
+
+window.closeProProfile = () => {
+    const modal = document.getElementById('pro-profile-modal');
+    modal.classList.add('hidden');
+    setTimeout(() => {
+        if (modal.classList.contains('hidden')) modal.style.display = 'none';
+    }, 300);
+};
