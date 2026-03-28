@@ -397,6 +397,10 @@ document.addEventListener('DOMContentLoaded', () => {
                    </div>` 
                 : '';
 
+            const daysLabel = center.isProCreated && center.availableDays && center.availableDays.length > 0
+                ? `<div style="font-size:0.8rem; color:var(--primary-hover); margin-bottom:8px; font-weight:500;">🗓️ ${center.availableDays.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}</div>`
+                : '';
+
             return `
                 <div class="support-card nearby-result-card${isRecommended ? ' result-card--recommended' : ''}" onclick="viewCenterDetail('${center.id}')">
                     ${isRecommended ? '<span class="result-rec-badge">✨ Recommended for you</span>' : ''}
@@ -408,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="support-category">${center.type}</div>
                     <h3 style="${center.isProCreated ? 'margin-bottom:6px;' : ''}">${center.name}</h3>
                     ${pRow}
+                    ${daysLabel}
                     <p class="support-desc">${center.desc}</p>
                     <button class="btn-primary" style="width:auto; padding:10px 20px; font-size:0.88rem; margin-top:auto;"
                         onclick="event.stopPropagation(); viewCenterDetail('${center.id}')">View Details</button>
@@ -449,6 +454,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<p class="detail-address">🕐 ${selectedCenter.availableTime}</p>`
                 : '';
                 
+            const daysLabel = selectedCenter.isProCreated && selectedCenter.availableDays && selectedCenter.availableDays.length > 0
+                ? `<p class="detail-address" style="color:var(--primary-hover); font-weight:500;">🗓️ Available on: ${selectedCenter.availableDays.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}</p>`
+                : '';
+
             detailCard.innerHTML = `
                 <div class="detail-icon" style="${selectedCenter.isProCreated ? 'font-size:2.2rem; margin-bottom:8px;' : ''}">${selectedCenter.icon}</div>
                 ${proTagHtml}
@@ -457,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${pRow}
                 <p class="detail-address" style="margin-bottom:8px;">📍 ${selectedCenter.address}</p>
                 ${timeHtml}
+                ${daysLabel}
                 <div style="height:1px; background:rgba(0,0,0,0.06); margin:16px 0;"></div>
                 <p class="detail-desc">${selectedCenter.desc}</p>
                 <button class="btn-primary" style="margin-top: 28px;" onclick="openBookingForm()">Book Appointment</button>
@@ -467,6 +477,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Step 4: Open booking form
+    let currentBookingCalendarDate = new Date();
+    let selectedBookingDate = null;
+
     window.openBookingForm = () => {
         if (!selectedCenter) return;
         const nameEl = document.getElementById('booking-center-name');
@@ -474,16 +487,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nameEl) nameEl.textContent = selectedCenter.name;
         if (typeEl) typeEl.textContent = selectedCenter.type;
 
-        // Set min date to today
+        // Reset error message
+        const dateError = document.getElementById('booking-date-error');
+        if (dateError) dateError.classList.add('hidden');
+
+        // Reset booking calendar
+        currentBookingCalendarDate = new Date();
+        selectedBookingDate = null;
         const dateInput = document.getElementById('booking-date');
-        if (dateInput) {
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            dateInput.min = `${yyyy}-${mm}-${dd}`;
-            dateInput.value = '';
-        }
+        if (dateInput) dateInput.value = '';
+        renderBookingCalendar();
+
         const timeInput = document.getElementById('booking-time');
         if (timeInput) timeInput.value = '';
 
@@ -497,6 +511,87 @@ document.addEventListener('DOMContentLoaded', () => {
         if (noteInput) noteInput.value = '';
 
         showSupportPanel('booking');
+    };
+
+    window.navBookingCalendar = (dir) => {
+        currentBookingCalendarDate.setMonth(currentBookingCalendarDate.getMonth() + dir);
+        renderBookingCalendar();
+    };
+
+    const renderBookingCalendar = () => {
+        const grid = document.getElementById('booking-calendar-grid');
+        const monthYearEl = document.getElementById('booking-month-year');
+        const selectedLabel = document.getElementById('booking-selected-date-label');
+        if (!grid || !monthYearEl || !selectedCenter) return;
+
+        grid.innerHTML = '';
+        const year = currentBookingCalendarDate.getFullYear();
+        const month = currentBookingCalendarDate.getMonth();
+        
+        const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthYearEl.textContent = `${mNames[month]} ${year}`;
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay(); // 0-6
+
+        // Today for min-date check
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // Fill empty slots for first day offset
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement('div');
+            empty.className = 'calendar-day empty';
+            grid.appendChild(empty);
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.textContent = i;
+
+            const thisDate = new Date(year, month, i);
+            const dayOfWeek = thisDate.getDay();
+            
+            // Check availability: pro available days?
+            const isAvailableDay = !selectedCenter.isProCreated || 
+                                  !selectedCenter.availableDays || 
+                                  selectedCenter.availableDays.length === 0 || 
+                                  selectedCenter.availableDays.includes(dayOfWeek);
+            
+            const isPast = thisDate < today;
+
+            if (isAvailableDay && !isPast) {
+                dayDiv.classList.add('available');
+                
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                if (selectedBookingDate === dateKey) {
+                    dayDiv.classList.add('selected-day');
+                }
+
+                dayDiv.onclick = () => {
+                    selectedBookingDate = dateKey;
+                    document.getElementById('booking-date').value = dateKey;
+                    if (selectedLabel) selectedLabel.textContent = `Selected: ${thisDate.toLocaleDateString()}`;
+                    
+                    // Trigger visual update
+                    renderBookingCalendar();
+                    
+                    // Hide any previous error
+                    const dateError = document.getElementById('booking-date-error');
+                    if (dateError) dateError.classList.add('hidden');
+                };
+            } else {
+                dayDiv.classList.add('unavailable');
+            }
+
+            grid.appendChild(dayDiv);
+        }
+
+        if (!selectedBookingDate && selectedLabel) {
+            selectedLabel.textContent = "No date selected";
+        }
     };
 
     // Tab switcher: 'find' or 'mybookings'
@@ -520,15 +615,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeInput = document.getElementById('booking-time');
         const emailInput = document.getElementById('booking-email');
         const emailError = document.getElementById('booking-email-error');
-        const date = dateInput ? dateInput.value : '';
         const time = timeInput ? timeInput.value : '';
         const email = emailInput ? emailInput.value.trim() : '';
 
         // Validate date & time
-        if (!date || !time) {
+        if (!selectedBookingDate || !time) {
             alert('Please choose both a date and a time to continue.');
             return;
         }
+        const date = selectedBookingDate;
 
         // Validate email
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -2075,6 +2170,11 @@ window.selectProFormat = (btn) => {
     selectedProFormat = btn.getAttribute('data-format');
 };
 
+// --- Day toggle for pro offering ---
+window.toggleProDay = (btn) => {
+    btn.classList.toggle('active');
+};
+
 // --- Save a new offering ---
 window.saveProOffering = () => {
     const title    = (document.getElementById('pro-offer-title')?.value || '').trim();
@@ -2095,6 +2195,11 @@ window.saveProOffering = () => {
     if (!time)     { showErr('Please enter your available times.'); return; }
 
     const currentPro = localStorage.getItem('soulie_currentPro') || 'unknown@pro.com';
+    
+    // Collect active days
+    const activeDayBtns = document.querySelectorAll('#pro-offer-days .pro-day-btn.active');
+    const availableDays = Array.from(activeDayBtns).map(btn => parseInt(btn.getAttribute('data-day')));
+
     const catIcons = {
         'Meditation': '🧘', 'Yoga': '🧘‍♀️', 'Counseling': '💬',
         'Breathwork': '🌬️', 'Support Groups': '👥', 'Other': '💛'
@@ -2110,6 +2215,7 @@ window.saveProOffering = () => {
         format: selectedProFormat,
         address,
         time,
+        availableDays, // [0, 1, 2...] where 0 is Sunday
         createdAt: new Date().toISOString()
     };
 
@@ -2125,6 +2231,7 @@ window.saveProOffering = () => {
     const descEl = document.getElementById('pro-offer-desc'); if (descEl) descEl.value = '';
     const catEl  = document.getElementById('pro-offer-category'); if (catEl) catEl.value = '';
     document.querySelectorAll('.pro-format-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+    document.querySelectorAll('#pro-offer-days .pro-day-btn').forEach(b => b.classList.remove('active'));
     selectedProFormat = 'In-Person';
 
     // Switch to My Offerings tab to show success
@@ -2151,23 +2258,31 @@ const renderProOfferings = () => {
         return;
     }
 
-    container.innerHTML = mine.slice().reverse().map(o => `
-        <div class="pro-offering-card">
-            <div class="pro-offering-header">
-                <div>
-                    <span class="pro-offering-category">${o.category}</span>
-                    <h3 class="pro-offering-title">${o.icon} ${o.title}</h3>
+    container.innerHTML = mine.slice().reverse().map(o => {
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const daysLabel = o.availableDays && o.availableDays.length > 0
+            ? o.availableDays.map(d => dayNames[d]).join(', ')
+            : 'Not specified';
+
+        return `
+            <div class="pro-offering-card">
+                <div class="pro-offering-header">
+                    <div>
+                        <span class="pro-offering-category">${o.category}</span>
+                        <h3 class="pro-offering-title">${o.icon} ${o.title}</h3>
+                    </div>
+                    <button class="pro-offering-delete-btn" onclick="deleteProOffering(${o.id})" title="Delete offering">✕</button>
                 </div>
-                <button class="pro-offering-delete-btn" onclick="deleteProOffering(${o.id})" title="Delete offering">✕</button>
+                <p class="pro-offering-desc">${o.desc}</p>
+                <div class="pro-offering-meta">
+                    <span><span class="pro-format-badge">${o.format}</span></span>
+                    <span>📍 ${o.address}</span>
+                    <span>🗓️ ${daysLabel}</span>
+                    <span>🕐 ${o.time}</span>
+                </div>
             </div>
-            <p class="pro-offering-desc">${o.desc}</p>
-            <div class="pro-offering-meta">
-                <span><span class="pro-format-badge">${o.format}</span></span>
-                <span>📍 ${o.address}</span>
-                <span>🕐 ${o.time}</span>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 };
 
 // --- Delete an offering ---
@@ -2205,7 +2320,8 @@ function injectProOfferingsIntoResults() {
             proName: pName,
             proPhoto: pPhoto,
             proProfession: pProf,
-            availableTime: o.time
+            availableTime: o.time,
+            availableDays: o.availableDays || []
         };
     });
 }
