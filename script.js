@@ -1613,7 +1613,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const proBadge  = document.getElementById('pro-badge');
 
         if (appNav)    appNav.style.display = 'none';
-        if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out (Pro)'; }
+        if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out'; }
         if (proBadge)  proBadge.style.display = 'block';
 
         const authView = document.getElementById('view-auth');
@@ -1674,7 +1674,7 @@ const loginPro = (email) => {
     const logoutBtn = document.getElementById('logout-btn');
     const proBadge  = document.getElementById('pro-badge');
     if (appNav)    appNav.style.display = 'none';
-    if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out (Pro)'; }
+    if (logoutBtn) { logoutBtn.style.display = 'block'; logoutBtn.textContent = 'Log out'; }
     if (proBadge)  proBadge.style.display = 'block';
 
     // Switch to pro dashboard
