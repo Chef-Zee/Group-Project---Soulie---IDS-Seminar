@@ -411,7 +411,21 @@
               <h3 id="booking-center-name" style="margin-bottom: 4px;"></h3>
               <p id="booking-center-type" class="support-category" style="margin-bottom: 24px;"></p>
               <label class="booking-label">Choose a date</label>
-              <input type="date" id="booking-date" class="form-input booking-input" />
+              <div class="booking-calendar-container">
+                  <div class="booking-calendar-header">
+                      <button type="button" class="calendar-nav-btn" onclick="navBookingCalendar(-1)">&lt;</button>
+                      <span id="booking-month-year" class="booking-calendar-month">Month Year</span>
+                      <button type="button" class="calendar-nav-btn" onclick="navBookingCalendar(1)">&gt;</button>
+                  </div>
+                  <div id="booking-calendar-grid" class="calendar-grid">
+                      <!-- Populated by JS -->
+                  </div>
+                  <div id="booking-selected-date-label" class="booking-selected-date-label">No date selected</div>
+              </div>
+              <input type="hidden" id="booking-date" />
+              <div id="booking-date-error" class="booking-error-message hidden">
+                <span>⚠️ Professional is not available on this day.</span>
+              </div>
               <label class="booking-label" style="margin-top: 16px;">Choose a time</label>
               <select id="booking-time" class="form-input booking-input">
                 <option value="">-- Select a time --</option>
@@ -599,8 +613,20 @@
                   placeholder="e.g. 12 Rue de la Paix, Paris or 'Online via Zoom'" />
               </div>
               <div>
-                <label class="booking-label">Available Time</label>
-                <input type="text" id="pro-offer-time" class="form-input" placeholder="e.g. Mon–Fri 9am–12pm" />
+                <label class="booking-label">Available Days</label>
+                <div class="pro-day-picker" id="pro-offer-days">
+                  <button type="button" class="pro-day-btn" data-day="1" onclick="toggleProDay(this)">M</button>
+                  <button type="button" class="pro-day-btn" data-day="2" onclick="toggleProDay(this)">T</button>
+                  <button type="button" class="pro-day-btn" data-day="3" onclick="toggleProDay(this)">W</button>
+                  <button type="button" class="pro-day-btn" data-day="4" onclick="toggleProDay(this)">T</button>
+                  <button type="button" class="pro-day-btn" data-day="5" onclick="toggleProDay(this)">F</button>
+                  <button type="button" class="pro-day-btn" data-day="6" onclick="toggleProDay(this)">S</button>
+                  <button type="button" class="pro-day-btn" data-day="0" onclick="toggleProDay(this)">S</button>
+                </div>
+              </div>
+              <div>
+                <label class="booking-label">Available Time Hours</label>
+                <input type="text" id="pro-offer-time" class="form-input" placeholder="e.g. 9am–12pm" />
               </div>
               <div id="pro-offer-error" class="error-message" style="display: none;"></div>
               <button class="btn-pro-primary" style="margin-top: 8px;" onclick="saveProOffering()">Publish
