@@ -642,15 +642,15 @@ document.addEventListener('DOMContentLoaded', () => {
             purpose: "Find your surroundings and return to the present.",
             estimatedTime: "2-3 minutes",
             bestFor: ['overwhelmed', 'lonely', 'anxious'],
-            type: 'stepper',
+            type: 'timed-steps',
             steps: [
-                "Take a deep, slow breath.",
-                "Look around. Silently name 5 things you can see.",
-                "Notice your body. Name 4 things you can physically feel.",
-                "Listen closely. Name 3 things you can hear.",
-                "Name 2 things you can smell (or your favorite smells).",
-                "Name 1 thing you can taste (or a comforting flavor).",
-                "Take one last deep breath. You are here."
+                { text: "Take a deep, slow breath.", duration: 7 },
+                { text: "Look around. Silently name 5 things you can see.", duration: 10 },
+                { text: "Notice your body. Name 4 things you can physically feel.", duration: 10 },
+                { text: "Listen closely. Name 3 things you can hear.", duration: 7 },
+                { text: "Name 2 things you can smell (or your favorite smells).", duration: 7 },
+                { text: "Name 1 thing you can taste (or a comforting flavor).", duration: 7 },
+                { text: "Take one last deep breath. You are here.", duration: 7 }
             ]
         },
         {
