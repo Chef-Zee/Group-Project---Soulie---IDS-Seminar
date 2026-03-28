@@ -642,15 +642,15 @@ document.addEventListener('DOMContentLoaded', () => {
             purpose: "Find your surroundings and return to the present.",
             estimatedTime: "2-3 minutes",
             bestFor: ['overwhelmed', 'lonely', 'anxious'],
-            type: 'stepper',
+            type: 'timed-steps',
             steps: [
-                "Take a deep, slow breath.",
-                "Look around. Silently name 5 things you can see.",
-                "Notice your body. Name 4 things you can physically feel.",
-                "Listen closely. Name 3 things you can hear.",
-                "Name 2 things you can smell (or your favorite smells).",
-                "Name 1 thing you can taste (or a comforting flavor).",
-                "Take one last deep breath. You are here."
+                { text: "Take a deep, slow breath.", duration: 7 },
+                { text: "Look around. Silently name 5 things you can see.", duration: 10 },
+                { text: "Notice your body. Name 4 things you can physically feel.", duration: 10 },
+                { text: "Listen closely. Name 3 things you can hear.", duration: 7 },
+                { text: "Name 2 things you can smell (or your favorite smells).", duration: 7 },
+                { text: "Name 1 thing you can taste (or a comforting flavor).", duration: 7 },
+                { text: "Take one last deep breath. You are here.", duration: 7 }
             ]
         },
         {
@@ -694,6 +694,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // State tracking for active tools
     const activeTools = {};
 
+    // --- Background Music Controls ---
+    const playSoulieMusic = () => {
+        const bgm = document.getElementById('soulie-bgm');
+        if (bgm) {
+            bgm.currentTime = 0;
+            bgm.play().catch(err => console.log("Audio play prevented by browser policy:", err));
+        }
+    };
+
+    const stopSoulieMusic = () => {
+        const bgm = document.getElementById('soulie-bgm');
+        if (bgm) {
+            bgm.pause();
+            bgm.currentTime = 0;
+        }
+    };
+
     window.startTool = (toolId) => {
         // Enforce single-activity: reset any currently running tools
         Object.keys(activeTools).forEach(id => {
@@ -704,6 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tool = regulationToolsData.find(t => t.id === toolId);
         if (!tool) return;
+
+        // Start background music
+        playSoulieMusic();
 
         const container = document.getElementById(`${toolId}-content`);
         const startBtn = document.getElementById(`${toolId}-start-btn`);
@@ -727,6 +747,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const endTool = (toolId, container) => {
         clearInterval(activeTools[toolId].timer);
         activeTools[toolId].isRunning = false;
+        
+        // Stop background music
+        stopSoulieMusic();
+
         container.innerHTML = `
             <div class="tool-completed slide-in">
                 <span class="emoji" style="font-size:2rem; margin-bottom:8px; display:block;">✨</span>
@@ -763,6 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(activeTools[toolId].timer);
         }
         activeTools[toolId] = null;
+
+        // Stop background music
+        stopSoulieMusic();
         
         container.innerHTML = '';
         container.classList.add('hidden');
