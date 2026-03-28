@@ -147,11 +147,76 @@ section {
   box-shadow: var(--shadow);
 }
 
-/* 1. Hero */
+/* 1. Hero & Landing */
 .hero {
   margin-top: 20px;
   margin-bottom: 60px;
   text-align: center;
+}
+
+.landing-fullscreen {
+  min-height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('landing.png');
+  background-size: cover;
+  background-position: center;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+.landing-content {
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 48px 32px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  margin: auto;
+}
+
+.landing-title {
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+}
+
+.landing-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.landing-why {
+  margin-top: 32px;
+  margin-bottom: 32px;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.landing-why h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.landing-why p {
+  font-size: 1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 12px;
 }
 
 .hero h1 {

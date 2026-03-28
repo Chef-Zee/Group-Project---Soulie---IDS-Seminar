@@ -7,17 +7,33 @@ document.addEventListener('DOMContentLoaded', () => {
             view.classList.remove('active');
         });
 
+        // Hide/Show Navbar and Logo logic
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            if (viewId === 'view-landing') {
+                navbar.style.display = 'none';
+            } else {
+                // Only show navbar if logged in or on auth view
+                const currentUser = localStorage.getItem('soulie_currentUser');
+                const currentPro = localStorage.getItem('soulie_currentPro');
+                if (viewId === 'view-auth' || currentUser || currentPro) {
+                    navbar.style.display = 'flex';
+                }
+            }
+        }
+
         // Remove active class from nav items
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
         });
 
         // Show target view
-        document.getElementById(viewId).classList.add('active');
+        const targetView = document.getElementById(viewId);
+        if (targetView) targetView.classList.add('active');
 
         // Set nav item active
         const navItem = Array.from(document.querySelectorAll('.nav-item'))
-            .find(item => item.getAttribute('onclick').includes(viewId));
+            .find(item => item.getAttribute('onclick')?.includes(viewId));
         if (navItem) navItem.classList.add('active');
 
         // Dynamic rendering
@@ -28,6 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'auto' });
     };
+
+    // Initial check for navbar
+    if (document.getElementById('view-landing')?.classList.contains('active')) {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) navbar.style.display = 'none';
+    }
 
     // Auth helper functions
     const getSavedUsers = () => {
@@ -70,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.handleLogout = () => {
         localStorage.removeItem('soulie_currentUser');
+        localStorage.removeItem('soulie_currentPro');
 
         const appNav = document.getElementById('app-nav');
         if (appNav) appNav.style.display = 'none';
@@ -77,13 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) logoutBtn.style.display = 'none';
 
-        // Clear auth inputs
-        const usernameInput = document.getElementById('auth-username');
-        const passwordInput = document.getElementById('auth-password');
-        if (usernameInput) usernameInput.value = '';
-        if (passwordInput) passwordInput.value = '';
+        const proBadge = document.getElementById('pro-badge');
+        if (proBadge) proBadge.style.display = 'none';
 
-        switchView('view-auth');
+        // Clear auth inputs
+        document.querySelectorAll('.auth-form input, #pro-login-card input').forEach(el => el.value = '');
+
+        switchView('view-landing');
     };
 
     window.handleSignup = () => {
