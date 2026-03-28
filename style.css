@@ -1969,6 +1969,26 @@ select.booking-input {
   color: var(--text-light);
 }
 
+.pro-item-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  margin-top: 4px;
+  background: rgba(163, 184, 163, 0.1);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 2px solid var(--primary-color);
+}
+
+.booking-history-note {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
 .pro-empty-dash {
   padding: 24px;
   text-align: center;

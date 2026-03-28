@@ -470,6 +470,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailError = document.getElementById('booking-email-error');
         if (emailError) emailError.classList.add('hidden');
 
+        const noteInput = document.getElementById('booking-note');
+        if (noteInput) noteInput.value = '';
+
         showSupportPanel('booking');
     };
 
@@ -525,6 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Save booking to localStorage ---
         const currentUser = localStorage.getItem('soulie_currentUser') || 'Anonymous';
+        const noteInput = document.getElementById('booking-note');
+        const note = noteInput ? noteInput.value.trim() : '';
+        
         const newBooking = {
             username: currentUser,
             centerName: selectedCenter ? selectedCenter.name : '',
@@ -534,6 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rawDate: date,
             time: time,
             email: email,
+            note: note,
             proEmail: selectedCenter && selectedCenter.isProCreated ? selectedCenter.proEmail : null
         };
         const existing = localStorage.getItem('soulie_bookings');
@@ -587,6 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>🕐 ${b.time}</span>
                     ${b.email ? `<span class="booking-history-email">✉️ ${b.email}</span>` : ''}
                 </div>
+                ${b.note ? `<div class="booking-history-note">Note: ${b.note}</div>` : ''}
             </div>
         `).join('');
     };
@@ -1911,6 +1919,7 @@ window.renderProDashboardHome = () => {
                     <div class="pro-item-info">
                         <span class="pro-item-title">${b.centerName}</span>
                         <span class="pro-item-subtitle">Student: ${b.username}</span>
+                        ${b.note ? `<span class="pro-item-note">Note: ${b.note}</span>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1934,6 +1943,7 @@ window.renderProDashboardHome = () => {
                     <div class="pro-item-info">
                         <span class="pro-item-title">${b.username}</span>
                         <span class="pro-item-subtitle">${b.category} • ${b.time}</span>
+                        ${b.note ? `<span class="pro-item-note">Note: ${b.note}</span>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1997,12 +2007,13 @@ window.renderProCalendar = () => {
             const sList = document.getElementById('pro-calendar-entry-support-list');
             if (dayBookings.length > 0) {
                 sList.innerHTML = dayBookings.map(b => 
-                    `<li style="margin-bottom:8px;">
+                    `<li style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.03);">
                         <b>${b.centerName}</b> (${b.category})<br>
                         <span style="font-size:0.85rem; color:var(--text-light);">
                             Time: ${b.time}<br>
                             User: ${b.username || 'Anonymous'} (${b.email})
                         </span>
+                        ${b.note ? `<br><span class="pro-item-note">Note: ${b.note}</span>` : ''}
                     </li>`
                 ).join('');
             } else {
