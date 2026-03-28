@@ -15,6 +15,16 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+  <!-- PostHog Analytics -->
+  <script>
+    !function (t, e) { var o, n, p, r; e.__SV || (window.posthog && window.posthog.__loaded) || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "init os ds Ie us vs ss ls capture calculateEventProperties register register_once register_for_session unregister unregister_for_session ws getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty bs ps createPersonProfile setInternalOrTestUser ys es $s opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing cs debug M gs getPageViewId captureTraceFeedback captureTraceMetric Qr".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+
+    posthog.init('phc_jaDmtsZuQuEGJTLgcO2IOfqHy9sygNiqT6hbSfMmrkL', {
+      api_host: 'https://us.i.posthog.com',
+      defaults: '2026-01-30'
+    });
+  </script>
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -38,8 +48,10 @@
 
         <h1 class="landing-title">Your Private Space to Breathe.</h1>
         <p class="landing-subtitle">A gentle mental wellness companion for students and young professionals.</p>
-        
-        <button class="btn-primary" style="padding: 16px 44px; font-size: 1.1rem; width: auto; box-shadow: 0 10px 30px rgba(163, 184, 163, 0.4); margin-bottom: 8px;" onclick="switchView('view-auth')">Get Started</button>
+
+        <button class="btn-primary"
+          style="padding: 16px 44px; font-size: 1.1rem; width: auto; box-shadow: 0 10px 30px rgba(163, 184, 163, 0.4); margin-bottom: 8px;"
+          onclick="switchView('view-auth')">Get Started</button>
 
         <div class="feature-pills">
           <span class="f-pill">✨ AI Companion</span>
@@ -48,8 +60,10 @@
         </div>
 
         <div class="landing-why">
-          <p style="font-weight: 500; font-size: 1.1rem; color: var(--text-dark); margin-bottom: 12px;">The world is loud. Soulie is your quiet corner.</p>
-          <p>A private, judgment-free space designed to help you pause, reflect, and find grounded support whenever you need it most.</p>
+          <p style="font-weight: 500; font-size: 1.1rem; color: var(--text-dark); margin-bottom: 12px;">The world is
+            loud. Soulie is your quiet corner.</p>
+          <p>A private, judgment-free space designed to help you pause, reflect, and find grounded support whenever you
+            need it most.</p>
         </div>
       </section>
     </div>
@@ -87,7 +101,8 @@
             <span class="pro-icon">🏥</span>
             <div>
               <h3 style="margin-bottom: 4px; font-size: 1.1rem;">Professional Login</h3>
-              <p style="font-size: 0.88rem; color: var(--text-light); margin: 0;">Offer classes, sessions, and support through Soulie.</p>
+              <p style="font-size: 0.88rem; color: var(--text-light); margin: 0;">Offer classes, sessions, and support
+                through Soulie.</p>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
@@ -122,11 +137,13 @@
                 <option value="Non-binary">Non-binary</option>
                 <option value="Prefer not to say">Prefer not to say</option>
               </select>
-              <input type="text" id="pro-signup-profession" class="form-input" placeholder="Profession *" style="flex:2;" />
+              <input type="text" id="pro-signup-profession" class="form-input" placeholder="Profession *"
+                style="flex:2;" />
             </div>
             <input type="text" id="pro-signup-location" class="form-input" placeholder="City / Location *" />
-            <textarea id="pro-signup-bio" class="form-input" placeholder="Short self-introduction..." style="min-height: 70px; border-radius: 12px;"></textarea>
-            
+            <textarea id="pro-signup-bio" class="form-input" placeholder="Short self-introduction..."
+              style="min-height: 70px; border-radius: 12px;"></textarea>
+
             <label class="booking-label" style="margin-top: 4px; margin-bottom: -6px;">Profile Photo (Optional)</label>
             <div style="display: flex; align-items: center; gap: 12px;">
               <div class="pro-photo-preview" id="pro-photo-preview-box">
@@ -140,7 +157,7 @@
 
             <input type="email" id="pro-signup-email" class="form-input" placeholder="Professional email *" />
             <input type="password" id="pro-signup-password" class="form-input" placeholder="Password *" />
-            
+
             <div id="pro-signup-error" class="error-message" style="display: none;"></div>
             <button class="btn-pro-primary" onclick="submitProSignup()">Create Account</button>
             <button class="btn-pro-secondary" onclick="showProLoginForm()">← Back to Login</button>
@@ -416,7 +433,9 @@
                 <option value="04:30 PM">04:30 PM</option>
               </select>
               <label class="booking-label" style="margin-top: 16px;">Notes for Instructor</label>
-              <textarea id="booking-note" class="form-input booking-input" placeholder="Any special requests or background info..." style="min-height: 80px; border-radius: 14px; font-family: inherit; font-size: 0.9rem; padding: 12px;"></textarea>
+              <textarea id="booking-note" class="form-input booking-input"
+                placeholder="Any special requests or background info..."
+                style="min-height: 80px; border-radius: 14px; font-family: inherit; font-size: 0.9rem; padding: 12px;"></textarea>
 
               <label class="booking-label" style="margin-top: 16px;">Your email address</label>
               <input type="email" id="booking-email" class="form-input booking-input" placeholder="you@example.com" />
@@ -515,7 +534,8 @@
             <div class="pro-stat-card clickable" onclick="switchProTab('my')">
               <span id="stat-active-offers" class="pro-stat-value">0</span>
               <span class="pro-stat-label">Offerings</span>
-              <span style="font-size: 0.65rem; color: var(--primary-color); display: block; margin-top: 4px;">Click to view →</span>
+              <span style="font-size: 0.65rem; color: var(--primary-color); display: block; margin-top: 4px;">Click to
+                view →</span>
             </div>
             <div class="pro-stat-card">
               <span id="stat-total-clients" class="pro-stat-value">0</span>
@@ -537,7 +557,9 @@
           <div class="pro-dashboard-section">
             <div class="pro-dashboard-header">
               <h3>Upcoming Clients</h3>
-              <button class="text-link-btn" onclick="switchProTab('schedule')" style="font-size: 0.8rem; background: none; border: none; color: var(--primary-color); cursor: pointer;">View Calendar →</button>
+              <button class="text-link-btn" onclick="switchProTab('schedule')"
+                style="font-size: 0.8rem; background: none; border: none; color: var(--primary-color); cursor: pointer;">View
+                Calendar →</button>
             </div>
             <div id="pro-dash-upcoming-list" class="pro-dashboard-list">
               <!-- Injected by JS -->
@@ -552,7 +574,8 @@
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <div>
                 <label class="booking-label">Title</label>
-                <input type="text" id="pro-offer-title" class="form-input" placeholder="e.g. Morning Breathwork Session" />
+                <input type="text" id="pro-offer-title" class="form-input"
+                  placeholder="e.g. Morning Breathwork Session" />
               </div>
               <div>
                 <label class="booking-label">Category</label>
@@ -568,25 +591,29 @@
               </div>
               <div>
                 <label class="booking-label">Description</label>
-                <textarea id="pro-offer-desc" placeholder="Describe what you offer and who it's for..." style="min-height: 90px; border-radius: 14px;"></textarea>
+                <textarea id="pro-offer-desc" placeholder="Describe what you offer and who it's for..."
+                  style="min-height: 90px; border-radius: 14px;"></textarea>
               </div>
               <div>
                 <label class="booking-label">Format</label>
                 <div class="pro-format-toggle">
-                  <button class="pro-format-btn active" data-format="In-Person" onclick="selectProFormat(this)">📍 In-Person</button>
+                  <button class="pro-format-btn active" data-format="In-Person" onclick="selectProFormat(this)">📍
+                    In-Person</button>
                   <button class="pro-format-btn" data-format="Online" onclick="selectProFormat(this)">💻 Online</button>
                 </div>
               </div>
               <div>
                 <label class="booking-label">Address / Location</label>
-                <input type="text" id="pro-offer-address" class="form-input" placeholder="e.g. 12 Rue de la Paix, Paris or 'Online via Zoom'" />
+                <input type="text" id="pro-offer-address" class="form-input"
+                  placeholder="e.g. 12 Rue de la Paix, Paris or 'Online via Zoom'" />
               </div>
               <div>
                 <label class="booking-label">Available Time</label>
                 <input type="text" id="pro-offer-time" class="form-input" placeholder="e.g. Mon–Fri 9am–12pm" />
               </div>
               <div id="pro-offer-error" class="error-message" style="display: none;"></div>
-              <button class="btn-pro-primary" style="margin-top: 8px;" onclick="saveProOffering()">Publish Offering</button>
+              <button class="btn-pro-primary" style="margin-top: 8px;" onclick="saveProOffering()">Publish
+                Offering</button>
             </div>
           </div>
         </div>
@@ -603,21 +630,34 @@
           <div class="compact-calendar" style="margin-bottom: 30px;">
             <div class="card glass" style="padding: 16px;">
               <!-- Calendar Navigation Header -->
-              <div id="pro-calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <button id="prev-pro-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&lt;</button>
-                <h3 id="pro-calendar-month-year" style="margin: 0; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light);">Month Year</h3>
-                <button id="next-pro-month-btn" class="calendar-nav-btn" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&gt;</button>
+              <div id="pro-calendar-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <button id="prev-pro-month-btn" class="calendar-nav-btn"
+                  style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&lt;</button>
+                <h3 id="pro-calendar-month-year"
+                  style="margin: 0; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light);">
+                  Month Year</h3>
+                <button id="next-pro-month-btn" class="calendar-nav-btn"
+                  style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-dark); padding: 4px 12px; border-radius: 8px;">&gt;</button>
               </div>
 
               <div id="pro-calendar-grid" class="calendar-grid"></div>
 
-              <div id="pro-calendar-entry-view" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
-                <h4 id="pro-calendar-entry-date" style="margin-bottom: 12px; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 4px; font-size: 0.9rem;"></h4>
-                
+              <div id="pro-calendar-entry-view" class="hidden"
+                style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+                <h4 id="pro-calendar-entry-date"
+                  style="margin-bottom: 12px; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 4px; font-size: 0.9rem;">
+                </h4>
+
                 <!-- Schedule Bookings Detail Container -->
-                <div id="pro-detail-support" style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #A189C6;">
-                  <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #A189C6; margin-bottom: 6px;">Scheduled Sessions</p>
-                  <ul id="pro-calendar-entry-support-list" style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;"></ul>
+                <div id="pro-detail-support"
+                  style="margin-bottom: 12px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; border-left: 3px solid #A189C6;">
+                  <p
+                    style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #A189C6; margin-bottom: 6px;">
+                    Scheduled Sessions</p>
+                  <ul id="pro-calendar-entry-support-list"
+                    style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-dark); line-height: 1.4;">
+                  </ul>
                 </div>
               </div>
 
@@ -654,25 +694,38 @@
   </nav>
 
   <!-- ==================== PROFESSIONAL PROFILE POPUP ==================== -->
-  <div id="pro-profile-modal" class="modal hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+  <div id="pro-profile-modal" class="modal hidden"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
     <div class="card glass animate-slide-up" style="max-width: 400px; width: 90%; padding: 28px; position: relative;">
-      <button onclick="closeProProfile()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-light);">&times;</button>
-      
+      <button onclick="closeProProfile()"
+        style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-light);">&times;</button>
+
       <div style="text-align: center; margin-bottom: 20px;">
-        <div id="modal-pro-photo-preview" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0,0,0,0.05); margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-          <img id="modal-pro-photo" src="" alt="Pro Photo" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
+        <div id="modal-pro-photo-preview"
+          style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0,0,0,0.05); margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <img id="modal-pro-photo" src="" alt="Pro Photo"
+            style="width: 100%; height: 100%; object-fit: cover; display: none;" />
           <span id="modal-pro-icon" style="font-size: 2.22rem;">👤</span>
         </div>
-        <h3 id="modal-pro-name" style="font-size: 1.35rem; margin-bottom: 4px; color: var(--text-dark);">Professional Name</h3>
-        <p id="modal-pro-profession" style="font-size: 0.92rem; color: var(--primary-hover); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"></p>
+        <h3 id="modal-pro-name" style="font-size: 1.35rem; margin-bottom: 4px; color: var(--text-dark);">Professional
+          Name</h3>
+        <p id="modal-pro-profession"
+          style="font-size: 0.92rem; color: var(--primary-hover); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+        </p>
       </div>
 
       <div style="margin-bottom: 20px;">
-        <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-bottom: 6px;">Gender</p>
+        <p
+          style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-bottom: 6px;">
+          Gender</p>
         <p id="modal-pro-gender" style="font-size: 0.95rem; color: var(--text-dark); margin-bottom: 16px;"></p>
-        
-        <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-bottom: 6px;">Introduction</p>
-        <p id="modal-pro-bio" style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.6; background: rgba(255,255,255,0.4); padding: 12px; border-radius: 12px;"></p>
+
+        <p
+          style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-bottom: 6px;">
+          Introduction</p>
+        <p id="modal-pro-bio"
+          style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.6; background: rgba(255,255,255,0.4); padding: 12px; border-radius: 12px;">
+        </p>
       </div>
 
       <button class="btn-primary" onclick="closeProProfile()" style="width: 100%;">Close Profile</button>
